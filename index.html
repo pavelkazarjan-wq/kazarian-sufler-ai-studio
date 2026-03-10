@@ -19,5 +19,54 @@
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- PiP Studio Button -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+          // Find header or create floating button
+          const header = document.querySelector('header');
+
+          const pipBtn = document.createElement('a');
+          pipBtn.href = 'pip.html';
+          pipBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
+              <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+              <circle cx="16" cy="13" r="3"></circle>
+            </svg>
+            PiP Studio
+          `;
+          pipBtn.style.cssText = `
+            position: fixed;
+            top: 12px;
+            right: 200px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            z-index: 9999;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+          `;
+          pipBtn.onmouseover = () => {
+            pipBtn.style.transform = 'translateY(-2px)';
+            pipBtn.style.boxShadow = '0 6px 20px rgba(139, 92, 246, 0.4)';
+          };
+          pipBtn.onmouseout = () => {
+            pipBtn.style.transform = '';
+            pipBtn.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.3)';
+          };
+
+          document.body.appendChild(pipBtn);
+        }, 500);
+      });
+    </script>
   </body>
 </html>

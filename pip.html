@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PiP Studio - Вебинар режим</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      color: white;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .logo-text span {
+      color: #3b82f6;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .rec-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: rgba(239, 68, 68, 0.2);
+      border-radius: 20px;
+      font-size: 13px;
+      color: #fca5a5;
+      display: none;
+    }
+
+    .rec-indicator.active {
+      display: flex;
+    }
+
+    .rec-dot {
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Main Canvas Area */
+    .canvas-area {
+      position: fixed;
+      top: 60px;
+      left: 0;
+      right: 0;
+      bottom: 80px;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .placeholder {
+      text-align: center;
+      color: #64748b;
+    }
+
+    .placeholder svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .placeholder p {
+      font-size: 16px;
+    }
+
+    /* Screen Share Video */
+    #screen-video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: none;
+    }
+
+    /* Camera Circle */
+    #camera-circle {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid #3b82f6;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      cursor: move;
+      display: none;
+      z-index: 50;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    #camera-circle:hover {
+      transform: scale(1.03);
+      box-shadow: 0 12px 40px rgba(59, 130, 246, 0.3);
+    }
+
+    #camera-circle video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+
+    #camera-circle.top-left { top: 20px; left: 20px; }
+    #camera-circle.top-right { top: 20px; right: 20px; }
+    #camera-circle.bottom-left { bottom: 20px; left: 20px; }
+    #camera-circle.bottom-right { bottom: 20px; right: 20px; }
+
+    /* Controls */
+    .controls {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 0 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .btn-screen {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: white;
+    }
+
+    .btn-screen:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-screen.active {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .btn-camera {
+      background: rgba(255,255,255,0.1);
+      color: #e2e8f0;
+    }
+
+    .btn-camera:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .btn-camera.active {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+
+    .btn-record {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-record:hover {
+      background: #dc2626;
+    }
+
+    .btn-record.recording {
+      animation: pulse-red 1s infinite;
+    }
+
+    @keyframes pulse-red {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+
+    /* Position & Size Controls */
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+    }
+
+    .control-group label {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .position-btns {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+    }
+
+    .pos-btn {
+      width: 28px;
+      height: 28px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .pos-btn:hover {
+      border-color: #3b82f6;
+    }
+
+    .pos-btn.active {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.3);
+    }
+
+    .pos-btn::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #3b82f6;
+      border-radius: 50%;
+    }
+
+    .pos-btn[data-pos="top-left"]::after { top: 4px; left: 4px; }
+    .pos-btn[data-pos="top-right"]::after { top: 4px; right: 4px; }
+    .pos-btn[data-pos="bottom-left"]::after { bottom: 4px; left: 4px; }
+    .pos-btn[data-pos="bottom-right"]::after { bottom: 4px; right: 4px; }
+
+    .size-slider {
+      width: 80px;
+      accent-color: #3b82f6;
+    }
+
+    /* Divider */
+    .divider {
+      width: 1px;
+      height: 40px;
+      background: rgba(255,255,255,0.1);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="window.location.href='index.html'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Назад
+      </button>
+      <div class="logo">
+        <div class="logo-icon">K</div>
+        <div class="logo-text">PiP <span>Studio</span></div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="rec-indicator" id="rec-indicator">
+        <div class="rec-dot"></div>
+        <span id="rec-time">00:00</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Canvas Area -->
+  <div class="canvas-area">
+    <div class="placeholder" id="placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="8" y1="21" x2="16" y2="21"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+      </svg>
+      <p>Нажмите "Демонстрация экрана" чтобы начать</p>
+    </div>
+    <video id="screen-video" autoplay playsinline></video>
+    <div id="camera-circle" class="bottom-right">
+      <video autoplay playsinline muted></video>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="btn btn-screen" id="btn-screen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="8" y1="21" x2="16" y2="21"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+      </svg>
+      Демонстрация экрана
+    </button>
+
+    <button class="btn btn-camera" id="btn-camera">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M23 7l-7 5 7 5V7z"></path>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+      </svg>
+      Камера
+    </button>
+
+    <div class="divider"></div>
+
+    <div class="control-group">
+      <label>Позиция</label>
+      <div class="position-btns">
+        <button class="pos-btn" data-pos="top-left"></button>
+        <button class="pos-btn" data-pos="top-right"></button>
+        <button class="pos-btn" data-pos="bottom-left"></button>
+        <button class="pos-btn active" data-pos="bottom-right"></button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>Размер</label>
+      <input type="range" class="size-slider" id="size-slider" min="100" max="300" value="180">
+    </div>
+
+    <div class="divider"></div>
+
+    <button class="btn btn-record" id="btn-record">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="12" r="8"></circle>
+      </svg>
+      Запись
+    </button>
+  </div>
+
+  <script>
+    // State
+    let screenStream = null;
+    let cameraStream = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let recordingTimer = null;
+    let recordingSeconds = 0;
+
+    // Elements
+    const screenVideo = document.getElementById('screen-video');
+    const cameraCircle = document.getElementById('camera-circle');
+    const cameraVideo = cameraCircle.querySelector('video');
+    const placeholder = document.getElementById('placeholder');
+    const btnScreen = document.getElementById('btn-screen');
+    const btnCamera = document.getElementById('btn-camera');
+    const btnRecord = document.getElementById('btn-record');
+    const sizeSlider = document.getElementById('size-slider');
+    const recIndicator = document.getElementById('rec-indicator');
+    const recTime = document.getElementById('rec-time');
+
+    // Screen Share
+    btnScreen.addEventListener('click', async () => {
+      if (screenStream) {
+        stopScreen();
+      } else {
+        try {
+          screenStream = await navigator.mediaDevices.getDisplayMedia({
+            video: { cursor: 'always' },
+            audio: true
+          });
+
+          screenVideo.srcObject = screenStream;
+          screenVideo.style.display = 'block';
+          placeholder.style.display = 'none';
+
+          btnScreen.classList.add('active');
+          btnScreen.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+            </svg>
+            Остановить
+          `;
+
+          screenStream.getVideoTracks()[0].onended = stopScreen;
+        } catch (err) {
+          console.error('Screen share error:', err);
+        }
+      }
+    });
+
+    function stopScreen() {
+      if (screenStream) {
+        screenStream.getTracks().forEach(t => t.stop());
+        screenStream = null;
+      }
+      screenVideo.srcObject = null;
+      screenVideo.style.display = 'none';
+      placeholder.style.display = 'block';
+
+      btnScreen.classList.remove('active');
+      btnScreen.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+        Демонстрация экрана
+      `;
+    }
+
+    // Camera
+    btnCamera.addEventListener('click', async () => {
+      if (cameraStream) {
+        stopCamera();
+      } else {
+        try {
+          cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user', width: 480, height: 480 },
+            audio: false
+          });
+
+          cameraVideo.srcObject = cameraStream;
+          cameraCircle.style.display = 'block';
+          btnCamera.classList.add('active');
+        } catch (err) {
+          console.error('Camera error:', err);
+        }
+      }
+    });
+
+    function stopCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(t => t.stop());
+        cameraStream = null;
+      }
+      cameraVideo.srcObject = null;
+      cameraCircle.style.display = 'none';
+      btnCamera.classList.remove('active');
+    }
+
+    // Position buttons
+    document.querySelectorAll('.pos-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pos = btn.dataset.pos;
+        cameraCircle.className = pos;
+        cameraCircle.style.top = '';
+        cameraCircle.style.left = '';
+        cameraCircle.style.right = '';
+        cameraCircle.style.bottom = '';
+
+        document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // Size slider
+    sizeSlider.addEventListener('input', (e) => {
+      const size = e.target.value;
+      cameraCircle.style.width = size + 'px';
+      cameraCircle.style.height = size + 'px';
+    });
+
+    // Drag camera
+    let isDragging = false;
+    let startX, startY, initialX, initialY;
+
+    cameraCircle.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      const rect = cameraCircle.getBoundingClientRect();
+      initialX = rect.left;
+      initialY = rect.top;
+      cameraCircle.style.transition = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      cameraCircle.style.left = (initialX + dx) + 'px';
+      cameraCircle.style.top = (initialY + dy) + 'px';
+      cameraCircle.style.right = 'auto';
+      cameraCircle.style.bottom = 'auto';
+      cameraCircle.className = '';
+      document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      cameraCircle.style.transition = 'transform 0.15s ease, box-shadow 0.15s ease';
+    });
+
+    // Recording
+    btnRecord.addEventListener('click', () => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    });
+
+    function startRecording() {
+      if (!screenStream) {
+        alert('Сначала включите демонстрацию экрана');
+        return;
+      }
+
+      // Combine streams
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 1920;
+      canvas.height = 1080;
+
+      const canvasStream = canvas.captureStream(30);
+
+      // Add audio from screen if available
+      const audioTracks = screenStream.getAudioTracks();
+      if (audioTracks.length > 0) {
+        canvasStream.addTrack(audioTracks[0]);
+      }
+
+      // Draw loop
+      function draw() {
+        if (!mediaRecorder || mediaRecorder.state !== 'recording') return;
+
+        // Draw screen
+        ctx.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
+
+        // Draw camera circle if active
+        if (cameraStream && cameraCircle.style.display !== 'none') {
+          const rect = cameraCircle.getBoundingClientRect();
+          const canvasArea = document.querySelector('.canvas-area').getBoundingClientRect();
+
+          const x = (rect.left - canvasArea.left) / canvasArea.width * canvas.width;
+          const y = (rect.top - canvasArea.top) / canvasArea.height * canvas.height;
+          const size = rect.width / canvasArea.width * canvas.width;
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.translate(x + size, y);
+          ctx.scale(-1, 1);
+          ctx.drawImage(cameraVideo, 0, 0, size, size);
+          ctx.restore();
+
+          // Border
+          ctx.strokeStyle = '#3b82f6';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      mediaRecorder = new MediaRecorder(canvasStream, { mimeType: 'video/webm;codecs=vp9' });
+      recordedChunks = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `pip-studio-${Date.now()}.webm`;
+        a.click();
+      };
+
+      mediaRecorder.start();
+      draw();
+
+      btnRecord.classList.add('recording');
+      btnRecord.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+        </svg>
+        Стоп
+      `;
+
+      recIndicator.classList.add('active');
+      recordingSeconds = 0;
+      recordingTimer = setInterval(() => {
+        recordingSeconds++;
+        const mins = Math.floor(recordingSeconds / 60).toString().padStart(2, '0');
+        const secs = (recordingSeconds % 60).toString().padStart(2, '0');
+        recTime.textContent = `${mins}:${secs}`;
+      }, 1000);
+    }
+
+    function stopRecording() {
+      if (mediaRecorder) {
+        mediaRecorder.stop();
+        mediaRecorder = null;
+      }
+
+      clearInterval(recordingTimer);
+      recIndicator.classList.remove('active');
+
+      btnRecord.classList.remove('recording');
+      btnRecord.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="12" r="8"></circle>
+        </svg>
+        Запись
+      `;
+    }
+  </script>
+</body>
+</html>
