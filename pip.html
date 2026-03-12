@@ -2745,6 +2745,19 @@
 
     // Overlay state
     const savedOverlaySettings = JSON.parse(localStorage.getItem('overlaySettings') || '{}');
+
+    // Migration: Update old ticker text to new default
+    const newTickerText = 'Добро пожаловать, друзья. С вами психолог-психотерапевт Павел Казарьян. Подписывайтесь, пожалуйста, на мой канал, ставьте лайк и делитесь этим видео с близкими. Давайте делать мир лучше.';
+    const oldTickerTexts = [
+      'Добро пожаловать на вебинар! Подписывайтесь на наш канал.',
+      'Добро пожаловать на вебинар'
+    ];
+    if (savedOverlaySettings.tickerText && oldTickerTexts.some(old => savedOverlaySettings.tickerText.includes(old.substring(0, 20)))) {
+      console.log('🔄 Migrating ticker text to new default');
+      savedOverlaySettings.tickerText = newTickerText;
+      localStorage.setItem('overlaySettings', JSON.stringify(savedOverlaySettings));
+    }
+
     let overlayState = {
       tickerEnabled: savedOverlaySettings.tickerEnabled || false,
       tickerText: savedOverlaySettings.tickerText || 'Добро пожаловать, друзья. С вами психолог-психотерапевт Павел Казарьян. Подписывайтесь, пожалуйста, на мой канал, ставьте лайк и делитесь этим видео с близкими. Давайте делать мир лучше.',
