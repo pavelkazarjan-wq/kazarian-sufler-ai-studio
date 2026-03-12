@@ -30,7 +30,7 @@ exports.handler = async (event, context) => {
 
     // Parse the request body
     const body = JSON.parse(event.body);
-    const { prompt, systemPrompt } = body;
+    const { prompt, systemPrompt, model = 'gpt-4o-mini', maxTokens = 2000, temperature = 0.7 } = body;
 
     if (!prompt) {
       return {
@@ -51,7 +51,7 @@ exports.handler = async (event, context) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: model,
         messages: [
           {
             role: 'system',
@@ -62,8 +62,8 @@ exports.handler = async (event, context) => {
             content: prompt
           }
         ],
-        max_tokens: 2000,
-        temperature: 0.7
+        max_tokens: maxTokens,
+        temperature: temperature
       })
     });
 
