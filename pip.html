@@ -3781,9 +3781,18 @@
 
     // Initialize host peer for consultations (always available)
     function initHostPeer(roomCode) {
-      if (peer && !peer.destroyed) return; // Already initialized
-
       const peerId = roomCode || 'kazarian-host';
+
+      // If roomCode is provided, destroy existing peer and create new one with sessionId
+      if (roomCode && peer && !peer.destroyed) {
+        console.log('🔄 Host: Destroying old peer and creating new one with ID:', peerId);
+        peer.destroy();
+        peer = null;
+      }
+
+      // Don't recreate if already exists with same ID
+      if (peer && !peer.destroyed) return;
+
       peer = new Peer(peerId);
 
       peer.on('open', (id) => {
