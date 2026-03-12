@@ -15,8 +15,6 @@
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <!-- Face-api.js для распознавания эмоций -->
   <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/dist/face-api.min.js"></script>
-  <!-- WebGazer.js для отслеживания взгляда -->
-  <script src="https://webgazer.cs.brown.edu/webgazer.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; min-height: 100vh; overflow: hidden; }
@@ -27,24 +25,6 @@
       display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100;
     }
     .header-left { display: flex; align-items: center; gap: 12px; }
-    .header-legal-links {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-left: 12px;
-      padding-left: 12px;
-      border-left: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .header-legal-links a {
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 11px;
-      transition: color 0.2s;
-      white-space: nowrap;
-    }
-    .header-legal-links a:hover {
-      color: #00ffaa;
-    }
     .back-btn {
       display: flex; align-items: center; gap: 8px; padding: 8px 16px;
       background: rgba(255,255,255,0.1); border: none; border-radius: 8px;
@@ -92,6 +72,18 @@
       height: 14px;
       fill: #ffffff;
     }
+    .header-legal-links {
+      display: flex;
+      gap: 12px;
+      margin-left: 10px;
+    }
+    .header-legal-links a {
+      font-size: 10px;
+      color: #64748b;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .header-legal-links a:hover { color: #00ffaa; }
 
     /* Real-time Clock Overlay */
     #clock-overlay {
@@ -327,7 +319,7 @@
     }
 
     .canvas-area {
-      position: fixed; top: 60px; left: 0; right: 0; bottom: 70px;
+      position: fixed; top: 60px; left: 0; right: 0; bottom: 80px;
       background: #000; display: flex; align-items: center; justify-content: center;
     }
     .canvas-area:fullscreen {
@@ -399,22 +391,18 @@
 
     /* Controls */
     .controls {
-      position: fixed; bottom: 0; left: 0; right: 0; height: 70px;
+      position: fixed; bottom: 0; left: 0; right: 0; height: 80px;
       background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255,255,255,0.1);
-      display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 10px;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      z-index: 1000;
+      display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 20px;
+      flex-wrap: wrap;
     }
 
     .btn {
-      display: flex; align-items: center; gap: 4px; padding: 8px 10px;
-      border: none; border-radius: 8px; font-size: 11px; font-weight: 500;
+      display: flex; align-items: center; gap: 6px; padding: 10px 14px;
+      border: none; border-radius: 10px; font-size: 13px; font-weight: 500;
       cursor: pointer; transition: all 0.2s ease; font-family: 'Inter', sans-serif;
-      white-space: nowrap;
-      flex-shrink: 0;
     }
-    .btn svg { width: 16px; height: 16px; }
+    .btn svg { width: 18px; height: 18px; }
     .btn-primary { background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); }
     .btn-secondary { background: rgba(255,255,255,0.1); color: #e2e8f0; }
@@ -447,7 +435,7 @@
     .pos-btn[data-pos="bottom-left"]::after { bottom: 3px; left: 3px; }
     .pos-btn[data-pos="bottom-right"]::after { bottom: 3px; right: 3px; }
     .size-slider { width: 60px; accent-color: #3b82f6; }
-    .divider { width: 1px; height: 40px; background: rgba(255,255,255,0.1); display: none; }
+    .divider { width: 1px; height: 40px; background: rgba(255,255,255,0.1); }
 
     .mic-level { display: flex; align-items: center; gap: 4px; }
     .mic-bar { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden; }
@@ -473,6 +461,72 @@
     .split-view.with-thumbs ~ #clock-overlay { left: calc(50% + 50px); }
     .split-view.with-thumbs ~ #youtube-overlay { left: calc(50% + 50px); }
 
+    /* Teleprompter panel */
+    #teleprompter-panel {
+      position: fixed;
+      top: 70px;
+      left: 10px;
+      width: 400px;
+      min-width: 250px;
+      min-height: 200px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      border-radius: 12px;
+      z-index: 200;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      resize: both;
+      overflow: hidden;
+    }
+    #teleprompter-panel .panel-header {
+      cursor: move;
+      user-select: none;
+      padding: 12px;
+      margin: 0;
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #teleprompter-panel .panel-header h4 { color: #60a5fa; margin: 0; font-size: 14px; }
+    #teleprompter-panel .panel-close {
+      background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 16px;
+    }
+    #teleprompter-panel .panel-close:hover { color: #ef4444; }
+    #teleprompter-body {
+      padding: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    #teleprompter-content {
+      color: #e2e8f0;
+      white-space: pre-wrap;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 10px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      outline: none;
+      line-height: 1.8;
+      font-size: 18px;
+    }
+    #teleprompter-content:focus {
+      border: 1px solid rgba(59, 130, 246, 0.5);
+    }
+    #teleprompter-content::-webkit-scrollbar { width: 6px; }
+    #teleprompter-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }
+    #teleprompter-content::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 3px; }
+    #teleprompter-controls {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      padding: 0 12px 12px 12px;
+    }
+
     /* Emotion Panel - Professional Analytics Dashboard */
     #emotion-panel {
       position: fixed;
@@ -497,6 +551,8 @@
       padding: 10px 12px;
       background: rgba(0, 255, 170, 0.08);
       border-bottom: 1px solid rgba(0, 255, 170, 0.3);
+      cursor: move;
+      user-select: none;
     }
     .emotion-header h4 {
       font-size: 11px;
@@ -715,72 +771,45 @@
       box-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
     }
 
-    /* Teleprompter Panel - Host only, outside recording area */
-    #teleprompter-panel {
+    /* Footer */
+    #footer {
+      display: none;
       position: fixed;
-      top: 70px;
-      left: 10px;
-      width: 400px;
-      min-width: 250px;
-      min-height: 200px;
-      background: rgba(15, 23, 42, 0.75);
-      border: 1px solid rgba(59, 130, 246, 0.4);
-      border-radius: 12px;
-      z-index: 200;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-      resize: both;
-      overflow: hidden;
-    }
-    #teleprompter-panel .emotion-header {
-      cursor: move;
-      user-select: none;
-      padding: 12px;
-      margin: 0;
-      background: rgba(0,0,0,0.2);
-      border-radius: 12px 12px 0 0;
-    }
-    #teleprompter-panel .emotion-header h4 { color: #60a5fa; }
-    #teleprompter-body {
-      padding: 12px;
-      max-height: 400px;
-      overflow-y: auto;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(10, 15, 25, 0.98);
+      border-top: 1px solid rgba(0, 255, 170, 0.2);
+      padding: 12px 30px;
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
     }
-    #teleprompter-content {
-      color: #e2e8f0;
-      white-space: pre-wrap;
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 10px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 8px;
-      outline: none;
-      line-height: 1.8;
-      font-size: 18px;
-    }
-    #teleprompter-content:focus {
-      border: 1px solid rgba(59, 130, 246, 0.5);
-    }
-    #teleprompter-content::-webkit-scrollbar {
-      width: 6px;
-    }
-    #teleprompter-content::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.2);
-      border-radius: 3px;
-    }
-    #teleprompter-content::-webkit-scrollbar-thumb {
-      background: rgba(59, 130, 246, 0.5);
-      border-radius: 3px;
-    }
-    #teleprompter-controls {
-      margin-top: 10px;
-      display: flex;
-      gap: 8px;
-      padding: 0 12px 12px 12px;
-    }
+    .footer-legal { display: flex; flex-direction: column; gap: 4px; }
+    .footer-legal a { color: #fff; text-decoration: none; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; opacity: 0.8; font-weight: 500; }
+    .footer-legal a:hover { opacity: 1; color: #00ffaa; }
+    .footer-center { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .footer-logo { font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 1px; text-transform: uppercase; }
+    .footer-copyright { font-size: 8px; color: #64748b; opacity: 0.7; }
+    .footer-social { display: flex; gap: 12px; align-items: center; }
+    .footer-social a { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); transition: all 0.3s; text-decoration: none; }
+    .footer-social a:hover { background: rgba(0, 255, 170, 0.2); transform: translateY(-2px); }
+    .footer-social svg { width: 14px; height: 14px; fill: #ffffff; }
+
+    /* Legal Modals */
+    .legal-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.85); z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
+    .legal-modal.active { display: flex; }
+    .legal-modal-content { background: linear-gradient(135deg, rgba(10, 15, 25, 0.98), rgba(15, 20, 30, 0.98)); border: 1px solid rgba(0, 255, 170, 0.3); border-radius: 4px; padding: 0; max-width: 800px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; }
+    .legal-modal-header { background: rgba(0, 255, 170, 0.08); border-bottom: 1px solid rgba(0, 255, 170, 0.3); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .legal-modal-title { font-size: 14px; font-weight: 700; color: #00ffaa; text-transform: uppercase; letter-spacing: 2px; font-family: 'Courier New', monospace; }
+    .legal-modal-close { background: rgba(255, 70, 70, 0.1); border: 1px solid rgba(255, 70, 70, 0.4); color: #ff4646; cursor: pointer; padding: 6px 12px; font-size: 11px; border-radius: 2px; font-family: 'Courier New', monospace; font-weight: bold; }
+    .legal-modal-close:hover { background: rgba(255, 70, 70, 0.2); color: #ff6666; }
+    .legal-modal-body { padding: 20px; overflow-y: auto; color: #e2e8f0; font-size: 12px; line-height: 1.8; }
+    .legal-modal-body h2 { color: #00ffaa; font-size: 16px; margin: 20px 0 10px 0; font-family: 'Courier New', monospace; }
+    .legal-modal-body h3 { color: #00cc88; font-size: 14px; margin: 15px 0 8px 0; }
+    .legal-modal-body p { margin: 10px 0; }
+    .legal-modal-body ul, .legal-modal-body ol { margin: 10px 0; padding-left: 20px; }
 
     /* Converting overlay */
     .converting-overlay {
@@ -927,19 +956,16 @@
       position: absolute;
       white-space: nowrap; font-size: 18px; font-weight: 500;
       color: white; line-height: 40px;
-      padding-right: 50px; /* Space between repeating text */
       animation: ticker-scroll linear infinite;
       will-change: transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+      transform: translate3d(0,0,0);
       -webkit-font-smoothing: antialiased;
     }
-    #ticker-text-2 {
-      animation-delay: calc(var(--ticker-duration) / -2); /* Start halfway through */
-    }
     @keyframes ticker-scroll {
-      from { transform: translate3d(100vw, 0, 0); }
-      to { transform: translate3d(-100%, 0, 0); }
+      0% { transform: translate3d(100vw, 0, 0); }
+      100% { transform: translate3d(-100%, 0, 0); }
     }
 
     /* Name plates / Lower thirds */
@@ -1312,6 +1338,7 @@
       .header { height: 45px; }
 
       .logo-text span { display: none; }
+      .logo-text::after { content: 'Studio'; }
 
       .canvas-area {
         top: 45px;
@@ -1352,7 +1379,6 @@
       .header { height: 40px; }
       .canvas-area { top: 40px; bottom: 50px; }
       .controls { height: 50px; }
-      #footer { padding: 8px 20px; margin-bottom: 50px; }
 
       .overlay-settings {
         top: 40px;
@@ -1361,198 +1387,6 @@
 
       .transcription-content { max-height: 95vh; }
       .transcription-text { max-height: 100px; }
-    }
-
-    /* Footer */
-    #footer {
-      display: none;
-    }
-    .footer-legal {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .footer-legal a {
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: all 0.2s;
-      opacity: 0.8;
-      font-weight: 500;
-    }
-    .footer-legal a:hover {
-      opacity: 1;
-      color: #00ffaa;
-    }
-    .footer-center {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-    .footer-logo {
-      font-size: 12px;
-      font-weight: 700;
-      color: #ffffff;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .footer-copyright {
-      font-size: 8px;
-      color: #64748b;
-      opacity: 0.7;
-    }
-    .footer-social {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-    .footer-social a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.05);
-      transition: all 0.3s;
-      text-decoration: none;
-    }
-    .footer-social a:hover {
-      background: rgba(0, 255, 170, 0.2);
-      transform: translateY(-2px);
-    }
-    .footer-social svg {
-      width: 14px;
-      height: 14px;
-      fill: #ffffff;
-    }
-
-    /* Footer Responsive */
-    @media (max-width: 768px) {
-      #footer {
-        flex-direction: column;
-        padding: 12px 20px;
-        gap: 12px;
-        align-items: center;
-      }
-      .footer-legal {
-        flex-direction: row;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      .footer-legal a {
-        font-size: 8px;
-      }
-      .footer-center {
-        order: -1;
-      }
-      .footer-logo {
-        font-size: 11px;
-      }
-      .footer-copyright {
-        font-size: 7px;
-      }
-      .footer-social {
-        gap: 10px;
-      }
-      .footer-social a {
-        width: 24px;
-        height: 24px;
-      }
-      .footer-social svg {
-        width: 12px;
-        height: 12px;
-      }
-    }
-
-    /* Modal windows */
-    .legal-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 9999;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .legal-modal.active {
-      display: flex;
-    }
-    .legal-modal-content {
-      background: linear-gradient(135deg, rgba(10, 15, 25, 0.98), rgba(15, 20, 30, 0.98));
-      border: 1px solid rgba(0, 255, 170, 0.3);
-      border-radius: 4px;
-      padding: 0;
-      max-width: 800px;
-      max-height: 90vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    .legal-modal-header {
-      background: rgba(0, 255, 170, 0.08);
-      border-bottom: 1px solid rgba(0, 255, 170, 0.3);
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .legal-modal-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #00ffaa;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-family: 'Courier New', monospace;
-    }
-    .legal-modal-close {
-      background: rgba(255, 70, 70, 0.1);
-      border: 1px solid rgba(255, 70, 70, 0.4);
-      color: #ff4646;
-      cursor: pointer;
-      padding: 6px 12px;
-      font-size: 11px;
-      border-radius: 2px;
-      font-family: 'Courier New', monospace;
-      font-weight: bold;
-    }
-    .legal-modal-close:hover {
-      background: rgba(255, 70, 70, 0.2);
-      color: #ff6666;
-    }
-    .legal-modal-body {
-      padding: 20px;
-      overflow-y: auto;
-      color: #e2e8f0;
-      font-size: 12px;
-      line-height: 1.8;
-    }
-    .legal-modal-body h2 {
-      color: #00ffaa;
-      font-size: 16px;
-      margin: 20px 0 10px 0;
-      font-family: 'Courier New', monospace;
-    }
-    .legal-modal-body h3 {
-      color: #00cc88;
-      font-size: 14px;
-      margin: 15px 0 8px 0;
-    }
-    .legal-modal-body p {
-      margin: 10px 0;
-    }
-    .legal-modal-body ul, .legal-modal-body ol {
-      margin: 10px 0;
-      padding-left: 20px;
     }
   </style>
 </head>
@@ -1575,40 +1409,26 @@
   </div>
   <script>
     const AUTH_KEY = 'kazarian_studio_auth';
-    const AUTH_TOKEN_KEY = 'kazarian_studio_token';
+    const VALID_HASH = 'e10adc3949ba59abbe56e057f20f883e'; // md5 of password
 
-    async function checkAuth() {
-      const pwdInput = document.getElementById('auth-password');
-      const errorDiv = document.getElementById('auth-error');
-      const pwd = pwdInput.value;
+    function simpleHash(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return hash.toString(16);
+    }
 
-      errorDiv.style.display = 'none';
-
-      try {
-        // Call Netlify Function for authentication
-        const response = await fetch('/.netlify/functions/auth', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ password: pwd })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          // Store authentication token
-          localStorage.setItem(AUTH_KEY, 'true');
-          localStorage.setItem(AUTH_TOKEN_KEY, result.token);
-          document.getElementById('auth-screen').style.display = 'none';
-        } else {
-          errorDiv.textContent = result.message || 'Неверный пароль';
-          errorDiv.style.display = 'block';
-        }
-      } catch (error) {
-        console.error('Authentication error:', error);
-        errorDiv.textContent = 'Ошибка подключения к серверу';
-        errorDiv.style.display = 'block';
+    function checkAuth() {
+      const pwd = document.getElementById('auth-password').value;
+      // Simple password check - "2525"
+      if (pwd === '2525' || localStorage.getItem(AUTH_KEY) === 'true') {
+        localStorage.setItem(AUTH_KEY, 'true');
+        document.getElementById('auth-screen').style.display = 'none';
+      } else {
+        document.getElementById('auth-error').style.display = 'block';
       }
     }
 
@@ -1659,12 +1479,7 @@
             <circle cx="18" cy="28" r="2.5" fill="#ef4444"/>
           </svg>
         </div>
-        <div class="logo-text">KazarianWEBINAR<span>Studio</span></div>
-      </div>
-      <div class="header-legal-links">
-        <a href="#" id="link-privacy-header">Договір конфіденційності</a>
-        <a href="#" id="link-offer-header">Договір оферти</a>
-        <a href="#" id="link-disclaimer-header">Відмова від відповідальності</a>
+        <div class="logo-text">Kazarian<span>WEBINAR</span>Studio</div>
       </div>
     </div>
     <div class="header-center">
@@ -1676,6 +1491,11 @@
       <div class="rec-indicator" id="rec-indicator">
         <div class="rec-dot"></div>
         <span id="rec-time">00:00</span>
+      </div>
+      <div class="header-legal-links">
+        <a href="#" id="link-privacy-header">Політика конфіденційності</a>
+        <a href="#" id="link-offer-header">Договір публічної оферти</a>
+        <a href="#" id="link-disclaimer-header">Відмова від відповідальності</a>
       </div>
       <div class="header-social">
         <a href="https://www.facebook.com/Psihodoc" target="_blank" title="Facebook">
@@ -1700,105 +1520,6 @@
       </button>
     </div>
   </header>
-
-  <!-- Emotion Recognition Panel - Host only, NOT recorded -->
-  <div id="emotion-panel">
-    <div class="emotion-header">
-      <h4>▸ АНАЛИЗ ЭМОЦИЙ</h4>
-      <button class="emotion-close" id="emotion-close">X</button>
-    </div>
-    <div class="emotion-status" id="emotion-status">ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ...</div>
-    <div class="emotion-current" id="emotion-current" style="display:none;">
-      <div class="emotion-emoji" id="emotion-emoji">─</div>
-      <div class="emotion-label" id="emotion-label">Нейтрально</div>
-      <div class="emotion-confidence" id="emotion-confidence">95%</div>
-    </div>
-    <div class="emotion-bars" id="emotion-bars" style="display:none;">
-      <div class="emotion-bar-row">
-        <span class="emotion-bar-label">▲ Радость</span>
-        <div class="emotion-bar-track"><div class="emotion-bar-fill happy" id="bar-happy" style="width:0%"></div></div>
-      </div>
-      <div class="emotion-bar-row">
-        <span class="emotion-bar-label">▼ Грусть</span>
-        <div class="emotion-bar-track"><div class="emotion-bar-fill sad" id="bar-sad" style="width:0%"></div></div>
-      </div>
-      <div class="emotion-bar-row">
-        <span class="emotion-bar-label">■ Злость</span>
-        <div class="emotion-bar-track"><div class="emotion-bar-fill angry" id="bar-angry" style="width:0%"></div></div>
-      </div>
-      <div class="emotion-bar-row">
-        <span class="emotion-bar-label">◆ Страх</span>
-        <div class="emotion-bar-track"><div class="emotion-bar-fill fearful" id="bar-fearful" style="width:0%"></div></div>
-      </div>
-      <div class="emotion-bar-row">
-        <span class="emotion-bar-label">✦ Удивление</span>
-        <div class="emotion-bar-track"><div class="emotion-bar-fill surprised" id="bar-surprised" style="width:0%"></div></div>
-      </div>
-      <div class="emotion-bar-row">
-        <span class="emotion-bar-label">─ Нейтрально</span>
-        <div class="emotion-bar-track"><div class="emotion-bar-fill neutral" id="bar-neutral" style="width:0%"></div></div>
-      </div>
-    </div>
-    <div class="emotion-timeline" id="emotion-timeline" style="display:none;">
-      <div class="emotion-timeline-title">▸ КЛЮЧЕВЫЕ МОМЕНТЫ</div>
-      <div id="emotion-events"></div>
-    </div>
-    <div class="eye-tracking-section" id="eye-tracking-section" style="display:none;">
-      <div class="eye-tracking-title">▸ АНАЛИЗ ВЗГЛЯДА</div>
-      <div class="eye-metric">
-        <span class="eye-metric-label">Активность</span>
-        <span class="eye-metric-value" id="eye-activity">0%</span>
-      </div>
-      <div class="eye-metric">
-        <span class="eye-metric-label">Фиксаций/мин</span>
-        <span class="eye-metric-value" id="eye-fixations">0</span>
-      </div>
-      <div class="eye-metric">
-        <span class="eye-metric-label">Зона внимания</span>
-        <span class="eye-metric-value" id="eye-zone">─</span>
-      </div>
-      <div class="eye-direction" id="eye-direction-grid">
-        <div class="eye-direction-cell" data-zone="top-left">◤</div>
-        <div class="eye-direction-cell" data-zone="top">▲</div>
-        <div class="eye-direction-cell" data-zone="top-right">◥</div>
-        <div class="eye-direction-cell" data-zone="left">◀</div>
-        <div class="eye-direction-cell active" data-zone="center">●</div>
-        <div class="eye-direction-cell" data-zone="right">▶</div>
-        <div class="eye-direction-cell" data-zone="bottom-left">◣</div>
-        <div class="eye-direction-cell" data-zone="bottom">▼</div>
-        <div class="eye-direction-cell" data-zone="bottom-right">◢</div>
-      </div>
-      <button id="btn-profiling" class="profiling-btn" style="width:100%;margin-top:12px;padding:10px;background:linear-gradient(135deg,#00ffaa,#00cc88);border:none;border-radius:2px;color:#0a0f19;font-family:'Courier New',monospace;font-weight:bold;font-size:10px;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">
-        ▸ Получить профайлинг
-      </button>
-      <div id="profiling-result" class="profiling-result" style="display:none;margin-top:12px;padding:10px;background:rgba(0,0,0,0.4);border:1px solid rgba(0,255,170,0.2);border-radius:2px;font-size:9px;color:#e2e8f0;font-family:'Courier New',monospace;max-height:300px;overflow-y:auto;white-space:pre-wrap;line-height:1.4;"></div>
-    </div>
-  </div>
-
-  <!-- Teleprompter - Host only, NOT recorded -->
-  <div id="teleprompter-panel" style="display:none;">
-    <div class="emotion-header" id="teleprompter-header">
-      <h4>📜 Телесуфлёр</h4>
-      <button class="emotion-close" id="teleprompter-close">✕</button>
-    </div>
-    <div id="teleprompter-body">
-      <div id="teleprompter-content" contenteditable="true">Введите текст для телесуфлёра...
-
-Это пример длинного текста для демонстрации автопрокрутки.
-
-Можно вводить свой текст и он будет плавно прокручиваться снизу вверх.
-
-Скорость регулируется ползунком внизу.
-
-Двойной клик - сброс на начало.</div>
-    </div>
-    <div id="teleprompter-controls">
-      <button class="overlay-btn overlay-btn-primary" id="teleprompter-scroll" style="flex:1;">▶ Старт</button>
-      <label style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:4px;">
-        Скорость: <input type="range" id="teleprompter-speed" min="20" max="200" value="50" style="flex:1;">
-      </label>
-    </div>
-  </div>
 
   <div id="thumbnails"></div>
 
@@ -1851,8 +1572,7 @@
 
     <!-- Ticker / Running text -->
     <div class="ticker-container pos-bottom" id="ticker">
-      <div class="ticker-text" id="ticker-text">Добро пожаловать, друзья. С вами психолог-психотерапевт Павел Казарьян. Подписывайтесь, пожалуйста, на мой канал, ставьте лайк и делитесь этим видео с близкими. Давайте делать мир лучше.</div>
-      <div class="ticker-text" id="ticker-text-2" aria-hidden="true">Добро пожаловать, друзья. С вами психолог-психотерапевт Павел Казарьян. Подписывайтесь, пожалуйста, на мой канал, ставьте лайк и делитесь этим видео с близкими. Давайте делать мир лучше.</div>
+      <div class="ticker-text" id="ticker-text">Добро пожаловать на вебинар! Подписывайтесь на наш канал.</div>
     </div>
 
     <!-- Name plates -->
@@ -1968,6 +1688,19 @@
       </svg>
       <span id="load-text">Загрузить</span>
     </button>
+    <button class="btn" id="btn-clear-content" style="background: rgba(239,68,68,0.2); color: #ef4444; display: none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+      Очистить
+    </button>
+    <button class="btn" id="btn-consultation" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
+        <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+      </svg>
+      🔗 Консультация
+    </button>
 
     <div class="divider"></div>
 
@@ -2008,18 +1741,6 @@
     <div class="mic-level" id="mic-level" style="display:none;">
       <div class="mic-bar"><div class="mic-bar-fill" id="mic-bar-fill"></div></div>
     </div>
-
-    <div class="divider"></div>
-
-    <button class="btn btn-primary" id="btn-consultation" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-        <circle cx="9" cy="7" r="4"></circle>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-      </svg>
-      🔗 Консультация
-    </button>
 
     <!-- Circle position (only in circle mode) -->
     <div class="control-group" id="circle-controls">
@@ -2066,13 +1787,6 @@
         <circle cx="12" cy="12" r="8"></circle>
       </svg>
       Запись MP4
-    </button>
-
-    <button class="btn btn-secondary" id="btn-support" onclick="window.open('https://t.me/KazarianAIstudio', '_blank')">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-      </svg>
-      Техподдержка
     </button>
   </div>
 
@@ -2155,6 +1869,101 @@
         <input type="text" class="modal-input" id="join-code" placeholder="Введите код комнаты" maxlength="6">
         <button class="modal-btn modal-btn-primary" id="btn-join">Подключиться</button>
         <button class="modal-btn modal-btn-secondary" id="btn-close-join">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teleprompter panel -->
+  <div id="teleprompter-panel" style="display:none;">
+    <div class="panel-header" id="teleprompter-header">
+      <h4>📜 Телесуфлёр</h4>
+      <button class="panel-close" id="teleprompter-close">✕</button>
+    </div>
+    <div id="teleprompter-body">
+      <div id="teleprompter-content" contenteditable="true">Введите текст для телесуфлёра...
+
+Это пример длинного текста для демонстрации автопрокрутки.
+
+Можно вводить свой текст и он будет плавно прокручиваться снизу вверх.
+
+Скорость регулируется ползунком внизу.
+
+Двойной клик - сброс на начало.</div>
+    </div>
+    <div id="teleprompter-controls">
+      <button class="overlay-btn overlay-btn-primary" id="teleprompter-scroll" style="flex:1;">▶ Старт</button>
+      <label style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:4px;">
+        Скорость: <input type="range" id="teleprompter-speed" min="20" max="200" value="50" style="flex:1;">
+      </label>
+    </div>
+  </div>
+
+  <!-- Emotion Panel - Host only, private -->
+  <div id="emotion-panel">
+    <div class="emotion-header">
+      <h4>▸ АНАЛИЗ ЭМОЦИЙ</h4>
+      <button class="emotion-close" id="emotion-close">X</button>
+    </div>
+    <div class="emotion-status" id="emotion-status">ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ...</div>
+    <div class="emotion-current" id="emotion-current" style="display:none;">
+      <div class="emotion-emoji" id="emotion-emoji">─</div>
+      <div class="emotion-label" id="emotion-label">Нейтрально</div>
+      <div class="emotion-confidence" id="emotion-confidence">95%</div>
+    </div>
+    <div class="emotion-bars" id="emotion-bars" style="display:none;">
+      <div class="emotion-bar-row">
+        <span class="emotion-bar-label">▲ Радость</span>
+        <div class="emotion-bar-track"><div class="emotion-bar-fill happy" id="bar-happy" style="width:0%"></div></div>
+      </div>
+      <div class="emotion-bar-row">
+        <span class="emotion-bar-label">▼ Грусть</span>
+        <div class="emotion-bar-track"><div class="emotion-bar-fill sad" id="bar-sad" style="width:0%"></div></div>
+      </div>
+      <div class="emotion-bar-row">
+        <span class="emotion-bar-label">■ Злость</span>
+        <div class="emotion-bar-track"><div class="emotion-bar-fill angry" id="bar-angry" style="width:0%"></div></div>
+      </div>
+      <div class="emotion-bar-row">
+        <span class="emotion-bar-label">◆ Страх</span>
+        <div class="emotion-bar-track"><div class="emotion-bar-fill fearful" id="bar-fearful" style="width:0%"></div></div>
+      </div>
+      <div class="emotion-bar-row">
+        <span class="emotion-bar-label">✦ Удивление</span>
+        <div class="emotion-bar-track"><div class="emotion-bar-fill surprised" id="bar-surprised" style="width:0%"></div></div>
+      </div>
+      <div class="emotion-bar-row">
+        <span class="emotion-bar-label">─ Нейтрально</span>
+        <div class="emotion-bar-track"><div class="emotion-bar-fill neutral" id="bar-neutral" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="emotion-timeline" id="emotion-timeline" style="display:none;">
+      <div class="emotion-timeline-title">▸ КЛЮЧЕВЫЕ МОМЕНТЫ</div>
+      <div id="emotion-events"></div>
+    </div>
+    <div class="eye-tracking-section" id="eye-tracking-section" style="display:none;">
+      <div class="eye-tracking-title">▸ АНАЛИЗ ВЗГЛЯДА</div>
+      <div class="eye-metric">
+        <span class="eye-metric-label">Активность</span>
+        <span class="eye-metric-value" id="eye-activity">0%</span>
+      </div>
+      <div class="eye-metric">
+        <span class="eye-metric-label">Фиксаций/мин</span>
+        <span class="eye-metric-value" id="eye-fixations">0</span>
+      </div>
+      <div class="eye-metric">
+        <span class="eye-metric-label">Зона внимания</span>
+        <span class="eye-metric-value" id="eye-zone">─</span>
+      </div>
+      <div class="eye-direction" id="eye-direction-grid">
+        <div class="eye-direction-cell" data-zone="top-left">◤</div>
+        <div class="eye-direction-cell" data-zone="top">▲</div>
+        <div class="eye-direction-cell" data-zone="top-right">◥</div>
+        <div class="eye-direction-cell" data-zone="left">◀</div>
+        <div class="eye-direction-cell active" data-zone="center">●</div>
+        <div class="eye-direction-cell" data-zone="right">▶</div>
+        <div class="eye-direction-cell" data-zone="bottom-left">◣</div>
+        <div class="eye-direction-cell" data-zone="bottom">▼</div>
+        <div class="eye-direction-cell" data-zone="bottom-right">◢</div>
       </div>
     </div>
   </div>
@@ -2403,6 +2212,15 @@
       📜 Телесуфлёр
     </button>
     <button class="overlay-btn overlay-btn-secondary" id="btn-hide-all-overlays">Скрыть все оверлеи</button>
+
+    <h4 style="margin-top: 20px;">🔑 API Ключи</h4>
+    <p style="font-size:10px;color:#64748b;margin-bottom:10px;">Ключи сохраняются локально в браузере</p>
+    <label>OpenAI API Key</label>
+    <input type="password" id="openai-api-key" placeholder="sk-proj-..." style="width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; font-size: 14px; margin-bottom: 10px;">
+    <label>Gemini API Key</label>
+    <input type="password" id="gemini-api-key" placeholder="AIzaSy..." style="width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; font-size: 14px; margin-bottom: 10px;">
+    <button class="overlay-btn overlay-btn-primary" id="btn-save-api-keys" style="width: 100%;">💾 Сохранить ключи</button>
+    <div id="api-keys-status" style="font-size: 11px; color: #10b981; margin-top: 8px; display: none;">✓ Ключи сохранены</div>
   </div>
 
   <script>
@@ -2413,67 +2231,32 @@
 
     if (isClientMode && sessionId) {
       // CLIENT MODE - Minimal UI for consultation
-      // Insert HTML (without scripts - they don't execute via innerHTML)
       document.body.innerHTML = `
         <style>
           .client-container {
-            position: fixed;
-            inset: 0;
-            background: #0f172a;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            position: fixed; inset: 0; background: #0f172a;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
           }
           .client-video-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            max-width: 1400px;
-            width: 100%;
-            height: 80vh;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            max-width: 1400px; width: 100%; height: 80vh;
+          }
+          @media (max-width: 768px) {
+            .client-video-grid { grid-template-columns: 1fr; height: auto; }
           }
           .client-video-box {
-            background: #1e293b;
-            border-radius: 16px;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #1e293b; border-radius: 16px; overflow: hidden;
+            position: relative; display: flex; align-items: center; justify-content: center; min-height: 300px;
           }
-          .client-video-box video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
+          .client-video-box video { width: 100%; height: 100%; object-fit: cover; }
           .client-video-label {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            background: rgba(0,0,0,0.7);
-            padding: 8px 16px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
+            position: absolute; top: 16px; left: 16px;
+            background: rgba(0,0,0,0.7); padding: 8px 16px; border-radius: 8px; color: white; font-weight: 600;
           }
-          .client-controls {
-            margin-top: 20px;
-            display: flex;
-            gap: 16px;
-          }
+          .client-controls { margin-top: 20px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
           .client-btn {
-            padding: 14px 32px;
-            border-radius: 12px;
-            border: none;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
+            padding: 14px 32px; border-radius: 12px; border: none; font-size: 16px; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
           }
           .client-btn:hover { transform: scale(1.05); }
           .client-btn-camera { background: #3b82f6; color: white; }
@@ -2481,11 +2264,7 @@
           .client-btn-mic { background: #10b981; color: white; }
           .client-btn-mic.off { background: #64748b; }
           .client-btn-leave { background: #ef4444; color: white; }
-          .client-status {
-            margin-top: 20px;
-            color: #94a3b8;
-            text-align: center;
-          }
+          .client-status { margin-top: 20px; color: #94a3b8; text-align: center; font-size: 18px; }
         </style>
         <div class="client-container">
           <div class="client-video-grid">
@@ -2499,26 +2278,16 @@
             </div>
           </div>
           <div class="client-controls">
-            <button class="client-btn client-btn-camera" id="client-camera-btn">
-              📹 Камера
-            </button>
-            <button class="client-btn client-btn-mic" id="client-mic-btn">
-              🎤 Микрофон
-            </button>
-            <button class="client-btn client-btn-leave" id="client-leave-btn">
-              ❌ Выйти
-            </button>
+            <button class="client-btn client-btn-camera" id="client-camera-btn">📹 Камера</button>
+            <button class="client-btn client-btn-mic" id="client-mic-btn">🎤 Микрофон</button>
+            <button class="client-btn client-btn-leave" id="client-leave-btn">❌ Выйти</button>
           </div>
           <div class="client-status" id="client-status">Загрузка...</div>
         </div>
       `;
 
-      // PeerJS already loaded in <head>, init client mode directly
-      console.log('✅ PeerJS already available');
-      initClientMode();
-
       // Client mode logic
-      function initClientMode() {
+      (function initClientMode() {
         let myStream = null;
         let peer = null;
         let call = null;
@@ -2531,103 +2300,97 @@
 
         async function startConsultation() {
           try {
-            console.log('🔵 Client: Starting consultation, session:', sessionId);
             statusEl.textContent = 'Запрос доступа к камере...';
-
             myStream = await navigator.mediaDevices.getUserMedia({
               video: { width: { ideal: 1280 }, height: { ideal: 720 } },
               audio: { echoCancellation: true, noiseSuppression: true }
             });
             myVideo.srcObject = myStream;
-            myVideo.play().catch(e => console.error('❌ Client: My video play error:', e));
-            console.log('✅ Client: Camera obtained');
+            myVideo.play().catch(e => console.error('Video play error:', e));
 
             statusEl.textContent = 'Подключение к серверу...';
-            peer = new Peer(); // Create peer with random ID
+            peer = new Peer(undefined, { debug: 2 });
 
-            peer.on('open', (id) => {
-              console.log('✅ Client: Peer opened with ID:', id);
-              statusEl.textContent = 'Подключение к психологу...';
+            let retryCount = 0;
+            const maxRetries = 5;
 
-              // Call host using sessionId from URL
-              console.log('📞 Client: Calling host at', sessionId);
+            function tryCall() {
+              statusEl.textContent = 'Подключение к психологу... (попытка ' + (retryCount + 1) + ')';
               call = peer.call(sessionId, myStream);
 
               if (call) {
-                console.log('✅ Client: Call initiated');
-
                 call.on('stream', (remoteStream) => {
-                  console.log('✅ Client: Host stream received');
                   hostVideo.srcObject = remoteStream;
-                  hostVideo.play().catch(e => console.error('❌ Client: Host video play error:', e));
+                  hostVideo.play().catch(e => console.error('Host video error:', e));
                   statusEl.textContent = 'Подключено ✅';
                 });
 
-                call.on('close', () => {
-                  console.log('🔴 Client: Call closed');
-                  statusEl.textContent = 'Звонок завершен';
-                });
+                call.on('close', () => { statusEl.textContent = 'Звонок завершен'; });
 
                 call.on('error', (err) => {
-                  console.error('❌ Client: Call error:', err);
-                  statusEl.textContent = 'Ошибка звонка: ' + err.type;
-                  if (err.type === 'peer-unavailable') {
-                    statusEl.textContent = 'Психолог не в сети. Попробуйте позже.';
+                  if (err.type === 'peer-unavailable' && retryCount < maxRetries) {
+                    retryCount++;
+                    setTimeout(tryCall, 2000);
+                  } else if (err.type === 'peer-unavailable') {
+                    statusEl.textContent = 'Психолог не в сети. Обновите страницу.';
+                  } else {
+                    statusEl.textContent = 'Ошибка: ' + err.type;
                   }
                 });
+              } else if (retryCount < maxRetries) {
+                retryCount++;
+                setTimeout(tryCall, 2000);
               } else {
-                console.error('❌ Client: Call returned null');
                 statusEl.textContent = 'Ошибка: психолог не в сети';
               }
-            });
+            }
 
+            peer.on('open', () => tryCall());
             peer.on('error', (err) => {
-              console.error('❌ Client: Peer error:', err);
-              statusEl.textContent = 'Ошибка подключения: ' + err.type;
+              if (err.type === 'peer-unavailable' && retryCount < maxRetries) {
+                retryCount++;
+                setTimeout(tryCall, 2000);
+              } else {
+                statusEl.textContent = 'Ошибка: ' + err.type;
+              }
             });
           } catch (err) {
-            console.error('❌ Client: Media error:', err);
-            alert('Нет доступа к камере/микрофону: ' + err.message);
+            alert('Нет доступа к камере: ' + err.message);
             statusEl.textContent = 'Ошибка доступа к камере';
           }
         }
 
         cameraBtn.onclick = () => {
-          console.log('🔵 Client: Camera button clicked');
           if (!myStream) return;
-          const videoTrack = myStream.getVideoTracks()[0];
-          if (!videoTrack) return;
-          videoTrack.enabled = !videoTrack.enabled;
+          const track = myStream.getVideoTracks()[0];
+          if (!track) return;
+          track.enabled = !track.enabled;
           cameraBtn.classList.toggle('off');
-          cameraBtn.textContent = videoTrack.enabled ? '📹 Камера' : '📹 Камера выкл';
-          console.log('✅ Client: Camera toggled:', videoTrack.enabled);
+          cameraBtn.textContent = track.enabled ? '📹 Камера' : '📹 Камера выкл';
         };
 
         micBtn.onclick = () => {
-          console.log('🔵 Client: Mic button clicked');
           if (!myStream) return;
-          const audioTrack = myStream.getAudioTracks()[0];
-          if (!audioTrack) return;
-          audioTrack.enabled = !audioTrack.enabled;
+          const track = myStream.getAudioTracks()[0];
+          if (!track) return;
+          track.enabled = !track.enabled;
           micBtn.classList.toggle('off');
-          micBtn.textContent = audioTrack.enabled ? '🎤 Микрофон' : '🎤 Микрофон выкл';
-          console.log('✅ Client: Mic toggled:', audioTrack.enabled);
+          micBtn.textContent = track.enabled ? '🎤 Микрофон' : '🎤 Микрофон выкл';
         };
 
         leaveBtn.onclick = () => {
-          console.log('🔵 Client: Leave button clicked');
           if (confirm('Завершить консультацию?')) {
             if (myStream) myStream.getTracks().forEach(t => t.stop());
             if (call) call.close();
             if (peer) peer.destroy();
-            window.close();
+            statusEl.textContent = 'Консультация завершена';
           }
         };
 
         startConsultation();
-      }
+      })();
     } else {
-      // NORMAL MODE - Full application
+    // NORMAL MODE - Full application
 
     // PDF.js worker
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -2642,7 +2405,8 @@
     let guestStream = null;
     let peer = null;
     let peerConnection = null;
-    let peerLocalStream = null; // Stream sent to peer - for toggling camera/mic
+    let mediaRecorder = null;
+    let recordedChunks = [];
     let recordingTimer = null;
     let recordingSeconds = 0;
     let audioContext = null;
@@ -2682,6 +2446,7 @@
     const btnPrev = document.getElementById('btn-prev');
     const btnNext = document.getElementById('btn-next');
     const btnLoad = document.getElementById('btn-load');
+    const btnClearContent = document.getElementById('btn-clear-content');
     const loadText = document.getElementById('load-text');
     const btnCamera = document.getElementById('btn-camera');
     const btnMic = document.getElementById('btn-mic');
@@ -2704,10 +2469,11 @@
     const convertingProgress = document.getElementById('converting-progress');
     const guestModal = document.getElementById('guest-modal');
     const roomCodeEl = document.getElementById('room-code');
+    const hostStatusDot = document.getElementById('host-status-dot');
+    const hostStatusText = document.getElementById('host-status-text');
     const overlaySettings = document.getElementById('overlay-settings');
     const ticker = document.getElementById('ticker');
     const tickerTextEl = document.getElementById('ticker-text');
-    const tickerTextEl2 = document.getElementById('ticker-text-2');
     const hostPlate = document.getElementById('host-plate');
     const guestPlate = document.getElementById('guest-plate');
     const ctaButton = document.getElementById('cta-button');
@@ -2723,6 +2489,7 @@
     let isIntroPlaying = false;
     let outroImageLoaded = null; // For outro image
     let isOutroPlaying = false;
+    let micWasMuted = false; // Track mic state before splash/intro
 
     // Cleanup localStorage on load - remove large data that causes QuotaExceededError
     (function cleanupLocalStorage() {
@@ -2745,24 +2512,11 @@
 
     // Overlay state
     const savedOverlaySettings = JSON.parse(localStorage.getItem('overlaySettings') || '{}');
-
-    // Migration: Update old ticker text to new default
-    const newTickerText = 'Добро пожаловать, друзья. С вами психолог-психотерапевт Павел Казарьян. Подписывайтесь, пожалуйста, на мой канал, ставьте лайк и делитесь этим видео с близкими. Давайте делать мир лучше.';
-    const oldTickerTexts = [
-      'Добро пожаловать на вебинар! Подписывайтесь на наш канал.',
-      'Добро пожаловать на вебинар'
-    ];
-    if (savedOverlaySettings.tickerText && oldTickerTexts.some(old => savedOverlaySettings.tickerText.includes(old.substring(0, 20)))) {
-      console.log('🔄 Migrating ticker text to new default');
-      savedOverlaySettings.tickerText = newTickerText;
-      localStorage.setItem('overlaySettings', JSON.stringify(savedOverlaySettings));
-    }
-
     let overlayState = {
       tickerEnabled: savedOverlaySettings.tickerEnabled || false,
-      tickerText: savedOverlaySettings.tickerText || 'Добро пожаловать, друзья. С вами психолог-психотерапевт Павел Казарьян. Подписывайтесь, пожалуйста, на мой канал, ставьте лайк и делитесь этим видео с близкими. Давайте делать мир лучше.',
+      tickerText: savedOverlaySettings.tickerText || 'Добро пожаловать на вебинар! Подписывайтесь на наш канал.',
       tickerPosition: savedOverlaySettings.tickerPosition || 'bottom',
-      tickerSpeed: savedOverlaySettings.tickerSpeed || 30,
+      tickerSpeed: savedOverlaySettings.tickerSpeed || 15,
       tickerWidth: savedOverlaySettings.tickerWidth || 100,
       hostName: savedOverlaySettings.hostName || 'Павел Казарьян',
       hostTitle: savedOverlaySettings.hostTitle || 'психолог-психотерапевт',
@@ -2774,7 +2528,7 @@
       guestName: savedOverlaySettings.guestName || 'Гость',
       guestTitle: savedOverlaySettings.guestTitle || 'эксперт',
       guestPosition: savedOverlaySettings.guestPosition || 'bottom',
-      guestDuration: savedOverlaySettings.guestDuration !== undefined ? savedOverlaySettings.guestDuration : 0,
+      guestDuration: savedOverlaySettings.guestDuration || 5,
       guestEnabled: savedOverlaySettings.guestEnabled || false,
       ctaText: savedOverlaySettings.ctaText || 'Ссылка в описании',
       ctaUrl: savedOverlaySettings.ctaUrl || '',
@@ -2805,9 +2559,7 @@
       try {
         // Don't save large data like video/images to avoid QuotaExceededError
         const saveState = { ...overlayState };
-        delete saveState.introVideoData; // Never save intro video to localStorage (too large)
-        delete saveState.splashImageData; // Never save splash image to localStorage (too large)
-        delete saveState.outroImageData; // Never save outro image to localStorage (too large)
+        delete saveState.introVideoData; // Never save video to localStorage
         localStorage.setItem('overlaySettings', JSON.stringify(saveState));
       } catch (e) {
         console.warn('Could not save settings to localStorage:', e.message);
@@ -2838,11 +2590,7 @@
       document.getElementById('ticker-width').value = overlayState.tickerWidth;
       document.getElementById('ticker-width-value').textContent = overlayState.tickerWidth + '%';
       tickerTextEl.textContent = overlayState.tickerText;
-      tickerTextEl2.textContent = overlayState.tickerText;
-      const duration = overlayState.tickerSpeed + 's';
-      tickerTextEl.style.animationDuration = duration;
-      tickerTextEl2.style.animationDuration = duration;
-      ticker.style.setProperty('--ticker-duration', duration);
+      tickerTextEl.style.animationDuration = overlayState.tickerSpeed + 's';
       ticker.style.width = overlayState.tickerWidth + '%';
       ticker.style.left = ((100 - overlayState.tickerWidth) / 2) + '%';
 
@@ -3156,7 +2904,9 @@
       try {
         screenStream = await navigator.mediaDevices.getDisplayMedia({
           video: { cursor: 'always' },
-          audio: false
+          audio: false,
+          selfBrowserSurface: 'exclude', // Don't show current tab in picker
+          preferCurrentTab: false // Don't switch to shared tab
         });
 
         placeholder.style.display = 'none';
@@ -3180,6 +2930,7 @@
 
         screenStream.getVideoTracks()[0].onended = stopScreenShare;
         updateViewMode();
+        updateClearButton();
       } catch (err) {
         console.error('Screen share error:', err);
       }
@@ -3199,7 +2950,47 @@
         placeholder.style.display = 'block';
         slideContainer.classList.remove('active');
       }
+      updateClearButton();
     }
+
+    // Clear all content (slides, screen share)
+    function clearContent() {
+      // Clear slides
+      slides = [];
+      thumbnails.innerHTML = '';
+      currentSlide = 0;
+      slideCanvas.style.display = 'none';
+      slideImage.style.display = 'none';
+      splitSlideCanvas.style.display = 'none';
+      splitSlideImage.style.display = 'none';
+      thumbnails.style.display = 'none';
+      slideCounter.style.display = 'none';
+      slideContainer.classList.remove('with-thumbs');
+      splitView.classList.remove('with-thumbs');
+
+      // Stop screen share
+      stopScreenShare();
+
+      // Show placeholder if no guest
+      if (!guestStream) {
+        placeholder.style.display = 'block';
+        slideContainer.classList.remove('active');
+      }
+
+      updateClearButton();
+    }
+
+    // Show/hide clear button based on content
+    function updateClearButton() {
+      if (slides.length > 0 || screenStream) {
+        btnClearContent.style.display = 'flex';
+      } else {
+        btnClearContent.style.display = 'none';
+      }
+    }
+
+    // Clear button click handler
+    btnClearContent.addEventListener('click', clearContent);
 
     // Guest connection via PeerJS
     function generateRoomCode() {
@@ -3217,18 +3008,145 @@
       document.getElementById('tab-join').classList.remove('active');
       document.getElementById('modal-host').style.display = 'block';
       document.getElementById('modal-join').style.display = 'none';
-
-      // Generate and display room code
-      const roomCode = generateRoomCode();
-      roomCodeEl.textContent = roomCode;
-
-      initHostPeer(roomCode);
+      initHostPeer();
     }
 
     function closeGuestModal() {
       guestModal.classList.remove('active');
     }
 
+    // Consultation peer initialization (separate from guest modal)
+    let consultationPeer = null;
+
+    function initConsultationPeer(sessionId) {
+      if (!sessionId) return;
+
+      // Destroy existing consultation peer
+      if (consultationPeer && !consultationPeer.destroyed) {
+        consultationPeer.destroy();
+      }
+
+      console.log('🔵 Creating consultation peer with ID:', sessionId);
+      consultationPeer = new Peer(sessionId, { debug: 2 });
+
+      consultationPeer.on('open', (id) => {
+        console.log('✅ Consultation peer ready:', id);
+      });
+
+      consultationPeer.on('call', async (incomingCall) => {
+        console.log('📞 Consultation: Incoming call from client');
+
+        try {
+          // Get stream with BOTH video and audio for consultation
+          let consultStream;
+
+          // Always create a new stream with audio for consultation
+          consultStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+            audio: { echoCancellation: true, noiseSuppression: true }
+          });
+
+          // Update cameraStream if not set
+          if (!cameraStream) {
+            cameraStream = consultStream;
+            if (viewMode === 'circle') {
+              cameraVideo.srcObject = cameraStream;
+              cameraCircle.style.display = 'block';
+            } else {
+              splitCamera.srcObject = cameraStream;
+            }
+            btnCamera.classList.add('active');
+          } else {
+            // Use the new stream with audio for consultation
+            // but keep camera stream for recording
+          }
+
+          // Answer with stream that has audio
+          incomingCall.answer(consultStream);
+          console.log('📞 Consultation: Answering with video+audio stream');
+
+          incomingCall.on('stream', (remoteStream) => {
+            console.log('✅ Consultation: Client stream received');
+            guestStream = remoteStream;
+            showGuestVideo(remoteStream);
+          });
+
+          incomingCall.on('close', () => {
+            console.log('🔴 Consultation: Call closed');
+            stopGuestConnection();
+          });
+
+          peerConnection = incomingCall;
+        } catch (err) {
+          console.error('❌ Consultation: Error answering call:', err);
+        }
+      });
+
+      consultationPeer.on('error', (err) => {
+        console.error('❌ Consultation peer error:', err);
+      });
+
+      return consultationPeer;
+    }
+
+    async function initHostPeer() {
+      const roomCode = generateRoomCode();
+      roomCodeEl.textContent = roomCode;
+      hostStatusText.textContent = 'Создание комнаты...';
+      hostStatusDot.classList.remove('connected', 'error');
+
+      try {
+        // Get local camera for sending to guest
+        const localStream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false,
+            sampleRate: 48000
+          }
+        });
+
+        peer = new Peer('kazarian-' + roomCode, {
+          debug: 1
+        });
+
+        peer.on('open', (id) => {
+          hostStatusText.textContent = 'Ожидание гостя...';
+          hostStatusDot.classList.remove('error');
+        });
+
+        peer.on('call', (call) => {
+          hostStatusText.textContent = 'Гость подключается...';
+          call.answer(localStream);
+
+          call.on('stream', (remoteStream) => {
+            guestStream = remoteStream;
+            showGuestVideo(remoteStream);
+            hostStatusText.textContent = 'Гость подключен!';
+            hostStatusDot.classList.add('connected');
+            closeGuestModal();
+          });
+
+          call.on('close', () => {
+            stopGuestConnection();
+          });
+
+          peerConnection = call;
+        });
+
+        peer.on('error', (err) => {
+          console.error('Peer error:', err);
+          hostStatusText.textContent = 'Ошибка: ' + err.type;
+          hostStatusDot.classList.add('error');
+        });
+
+      } catch (err) {
+        console.error('Camera error:', err);
+        hostStatusText.textContent = 'Нет доступа к камере';
+        hostStatusDot.classList.add('error');
+      }
+    }
 
     async function joinRoom(code) {
       const joinBtn = document.getElementById('btn-join');
@@ -3245,7 +3163,6 @@
             sampleRate: 48000
           }
         });
-        peerLocalStream = localStream; // Store for camera/mic toggle
 
         peer = new Peer();
 
@@ -3253,7 +3170,6 @@
           const call = peer.call('kazarian-' + code.toUpperCase(), localStream);
 
           call.on('stream', (remoteStream) => {
-            console.log('🔵 joinRoom: Received host stream (outgoing call)');
             guestStream = remoteStream;
             showGuestVideo(remoteStream);
             closeGuestModal();
@@ -3286,12 +3202,6 @@
     }
 
     function showGuestVideo(stream) {
-      console.log('✅ Host: Showing guest video');
-      console.log('   Stream:', stream);
-      console.log('   Stream active:', stream.active);
-      console.log('   Video tracks:', stream.getVideoTracks());
-      console.log('   ViewMode:', viewMode);
-
       placeholder.style.display = 'none';
       slideContainer.classList.add('active');
       slideCanvas.style.display = 'none';
@@ -3300,32 +3210,12 @@
       guestVideo.style.display = 'block';
       guestVideo.srcObject = stream;
 
-      console.log('   Guest video element:', guestVideo);
-      console.log('   Guest video srcObject set:', guestVideo.srcObject);
-
-      guestVideo.onloadeddata = () => {
-        console.log('✅ Guest video loaded, playing...');
-        guestVideo.play()
-          .then(() => console.log('✅ Guest video playing'))
-          .catch(e => console.error('❌ Guest video play error:', e));
-      };
-
       if (viewMode === 'split') {
         splitSlideCanvas.style.display = 'none';
         splitSlideImage.style.display = 'none';
         splitScreenVideo.style.display = 'none';
         splitGuestVideo.style.display = 'block';
         splitGuestVideo.srcObject = stream;
-
-        console.log('   Split guest video element:', splitGuestVideo);
-        console.log('   Split guest video srcObject set:', splitGuestVideo.srcObject);
-
-        splitGuestVideo.onloadeddata = () => {
-          console.log('✅ Split guest video loaded, playing...');
-          splitGuestVideo.play()
-            .then(() => console.log('✅ Split guest video playing'))
-            .catch(e => console.error('❌ Split guest video play error:', e));
-        };
       }
 
       thumbnails.style.display = 'none';
@@ -3343,10 +3233,6 @@
       if (peer) {
         peer.destroy();
         peer = null;
-      }
-      if (peerLocalStream) {
-        peerLocalStream.getTracks().forEach(t => t.stop());
-        peerLocalStream = null;
       }
       if (guestStream) {
         guestStream.getTracks().forEach(t => t.stop());
@@ -3464,7 +3350,6 @@
     document.getElementById('ticker-text-input').addEventListener('input', (e) => {
       overlayState.tickerText = e.target.value;
       tickerTextEl.textContent = e.target.value;
-      tickerTextEl2.textContent = e.target.value;
       saveOverlaySettings();
     });
 
@@ -3489,10 +3374,7 @@
     document.getElementById('ticker-speed').addEventListener('input', (e) => {
       overlayState.tickerSpeed = parseInt(e.target.value);
       document.getElementById('ticker-speed-value').textContent = e.target.value + ' сек';
-      const duration = e.target.value + 's';
-      tickerTextEl.style.animationDuration = duration;
-      tickerTextEl2.style.animationDuration = duration;
-      ticker.style.setProperty('--ticker-duration', duration);
+      tickerTextEl.style.animationDuration = e.target.value + 's';
       saveOverlaySettings();
     });
 
@@ -3768,118 +3650,47 @@
       }
     });
 
-    // Emotion panel toggle
-    document.getElementById('btn-emotion-panel').addEventListener('click', () => {
-      document.getElementById('emotion-panel').classList.toggle('active');
-    });
-
-    // Teleprompter toggle
-    document.getElementById('btn-teleprompter').addEventListener('click', () => {
-      const panel = document.getElementById('teleprompter-panel');
-      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-    });
-
-    // Initialize host peer for consultations (always available)
-    function initHostPeer(roomCode) {
-      const peerId = roomCode || 'kazarian-host';
-
-      // If roomCode is provided, destroy existing peer and create new one with sessionId
-      if (roomCode && peer && !peer.destroyed) {
-        console.log('🔄 Host: Destroying old peer and creating new one with ID:', peerId);
-        peer.destroy();
-        peer = null;
-      }
-
-      // Don't recreate if already exists with same ID
-      if (peer && !peer.destroyed) return;
-
-      peer = new Peer(peerId);
-
-      peer.on('open', (id) => {
-        console.log('✅ Host: Peer ready with ID:', id);
-      });
-
-      peer.on('call', async (incomingCall) => {
-        console.log('📞 Host: Incoming call from client');
-
-        try {
-          // Ensure camera is on
-          if (!cameraStream) {
-            cameraStream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
-              audio: { echoCancellation: true, noiseSuppression: true }
-            });
-            if (viewMode === 'circle') {
-              cameraVideo.srcObject = cameraStream;
-              cameraCircle.style.display = 'block';
-            } else {
-              splitCamera.srcObject = cameraStream;
-            }
-            btnCamera.classList.add('active');
-          }
-
-          // Answer the call with host stream
-          peerConnection = incomingCall;
-          incomingCall.answer(cameraStream);
-          console.log('✅ Host: Answered call with stream');
-
-          // Receive client stream
-          incomingCall.on('stream', (remoteStream) => {
-            console.log('✅ Host: Received client stream');
-            guestStream = remoteStream;
-            showGuestVideo(remoteStream);
-          });
-
-          incomingCall.on('close', () => {
-            console.log('🔴 Host: Call closed');
-            stopGuestConnection();
-          });
-
-          incomingCall.on('error', (err) => {
-            console.error('❌ Host: Call error:', err);
-          });
-
-        } catch (err) {
-          console.error('❌ Host: Error answering call:', err);
-          alert('Ошибка подключения камеры: ' + err.message);
-        }
-      });
-
-      peer.on('error', (err) => {
-        console.error('❌ Host: Peer error:', err);
-        if (err.type !== 'unavailable-id') {
-          alert('Ошибка peer: ' + err.type);
-        }
-      });
-    }
-
-    // Initialize peer on page load
-    initHostPeer();
-
-    // Consultation link generation - creates link AND registers host peer
+    // Consultation button - creates link and registers host peer
     document.getElementById('btn-consultation').addEventListener('click', () => {
-      const sessionId = 'cons-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-      const consultationLink = window.location.origin + window.location.pathname + '?mode=client&session=' + sessionId;
+      const consultSessionId = 'cons-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+      const consultationLink = window.location.origin + window.location.pathname + '?mode=client&session=' + consultSessionId;
 
-      // Copy to clipboard
-      navigator.clipboard.writeText(consultationLink).then(() => {
-        alert('✅ Ссылка скопирована!\n\n' + consultationLink + '\n\nОтправь эту ссылку клиенту.\n\nКогда клиент откроет ссылку и подключится, его видео появится автоматически.');
-      }).catch(() => {
-        prompt('Ссылка для клиента (скопируй):', consultationLink);
-      });
+      const btn = document.getElementById('btn-consultation');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Подключение...';
+      btn.disabled = true;
 
-      // Store session in localStorage
-      const sessions = JSON.parse(localStorage.getItem('consultationSessions') || '{}');
-      sessions[sessionId] = {
-        created: Date.now(),
-        host: true
-      };
-      localStorage.setItem('consultationSessions', JSON.stringify(sessions));
+      console.log('🔵 Consultation: Creating session', consultSessionId);
 
-      // IMPORTANT: Register host peer with this sessionId
-      initHostPeer(sessionId);
+      // Initialize consultation peer
+      const consultPeer = initConsultationPeer(consultSessionId);
 
-      console.log('🔵 Host: Consultation link created and peer registered with ID:', sessionId);
+      // Wait for peer to be ready
+      const checkReady = setInterval(() => {
+        if (consultPeer && !consultPeer.destroyed && consultPeer.id === consultSessionId) {
+          clearInterval(checkReady);
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+
+          navigator.clipboard.writeText(consultationLink).then(() => {
+            alert('✅ Ссылка скопирована!\\n\\n' + consultationLink + '\\n\\n⚠️ Отправь ссылку клиенту.');
+          }).catch(() => {
+            prompt('Ссылка для клиента:', consultationLink);
+          });
+
+          console.log('✅ Consultation ready:', consultSessionId);
+        }
+      }, 100);
+
+      // Timeout
+      setTimeout(() => {
+        clearInterval(checkReady);
+        if (btn.disabled) {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          alert('❌ Не удалось создать комнату. Проверьте интернет.');
+        }
+      }, 10000);
     });
 
     // Hide all overlays
@@ -4035,15 +3846,7 @@
         protocolResult.innerHTML = '<div style="text-align:center;padding:20px;">⏳ Генерация протокола...</div>';
 
         try {
-          // Include emotion data if available
-          let enhancedTranscription = currentTranscription;
-          if (typeof getEmotionReport === 'function') {
-            const emotionReport = getEmotionReport();
-            if (emotionReport && !emotionReport.includes('не зафиксированы')) {
-              enhancedTranscription += '\n\n---\n' + emotionReport;
-            }
-          }
-          const result = await generateProtocol(enhancedTranscription, format);
+          const result = await generateProtocol(currentTranscription, format);
           protocolResult.innerHTML = `<pre style="white-space:pre-wrap;font-family:inherit;margin:0;">${result}</pre>`;
         } catch (err) {
           console.error('Protocol generation error:', err);
@@ -4070,55 +3873,59 @@
       if (text) {
         const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
         const a = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        a.href = url;
+        a.href = URL.createObjectURL(blob);
         a.download = `protocol-${Date.now()}.txt`;
         a.click();
-        URL.revokeObjectURL(url);
       }
     });
 
     // Whisper API transcription
     async function transcribeAudio(audioBlob) {
-      // Convert blob to base64
-      const reader = new FileReader();
-      const base64Audio = await new Promise((resolve) => {
-        reader.onloadend = () => {
-          const base64 = reader.result.split(',')[1];
-          resolve(base64);
-        };
-        reader.readAsDataURL(audioBlob);
-      });
+      if (!getOpenAIApiKey()) {
+        throw new Error('OpenAI API ключ не настроен. Добавьте его в Настройках → API Ключи');
+      }
+      const formData = new FormData();
+      formData.append('file', audioBlob, 'recording.webm');
+      formData.append('model', 'whisper-1');
+      formData.append('language', 'ru');
+      formData.append('response_format', 'verbose_json');
 
-      // Call Netlify Function
-      const response = await fetch('/.netlify/functions/openai-transcribe', {
+      const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Authorization': `Bearer ${getOpenAIApiKey()}`
         },
-        body: JSON.stringify({
-          audioBase64: base64Audio,
-          language: 'ru'
-        })
+        body: formData
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Transcription error');
+        throw new Error(error.error?.message || 'Whisper API error');
       }
 
-      const result = await response.json();
-      return { text: result.text };
+      return await response.json();
     }
 
     // GPT protocol generation
     async function generateProtocol(transcription, format) {
+      if (!getOpenAIApiKey()) {
+        throw new Error('OpenAI API ключ не настроен. Добавьте его в Настройках → API Ключи');
+      }
       const hostName = overlayState.transcribeHostName || 'Ведущий';
-      const guestName = overlayState.transcribeGuestName || 'Гость';
+      // Use guest name from plate (priority) or transcription settings
+      const guestName = overlayState.guestName || overlayState.transcribeGuestName || 'Гость';
+
+      // Current date and time
+      const now = new Date();
+      const currentDate = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const currentTime = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      const currentDateTime = `${currentDate} ${currentTime}`;
 
       const prompts = {
         protocol: `Ты — ассистент профессионального психолога. Создай детальный, структурированный Протокол психологической сессии на основе транскрипции.
 Текст должен быть написан в спокойном, профессиональном, эмпатичном тоне — на русском языке, с клинической точностью и лёгким терапевтическим теплом.
+
+ВАЖНО: Сегодняшняя дата: ${currentDate}, время: ${currentTime}. Имя клиента: ${guestName}.
 
 СТРУКТУРА ВЫВОДА:
 
@@ -4127,7 +3934,7 @@
 **Терапевт:** Павел Казарьян
 **Клиент:** ${guestName}
 **Формат:** индивидуальная консультация
-**Дата:** [сегодняшняя дата]
+**Дата:** ${currentDate}
 **Тема:** [основная тема или фокус сессии]
 
 🌿 **Краткий обзор**
@@ -4166,6 +3973,8 @@
 ${transcription}`,
 
         youtube: `Ты — контент-стратег YouTube-канала практикующего психолога с 20+ годами опыта. Твоя задача: на основе транскрипта видео создать описание и заголовок, которые бьют точно в боль аудитории.
+
+КОНТЕКСТ: Сегодня ${currentDate}. Гость/клиент: ${guestName}.
 
 ВВОДНЫЕ ДАННЫЕ:
 Канал: @psiholog_pavlokazarian
@@ -4216,6 +4025,8 @@ ${transcription}`,
 
         summary: `Ты — контент-аналитик и стратег психологического бренда.
 Твоя задача: сделать глубокий профессиональный разбор материала и выдать структурированный конспект для автора.
+
+КОНТЕКСТ: Сегодня ${currentDate}. Гость/клиент (если есть): ${guestName}.
 
 Автор: Павел Казарьян — клинический психолог, НЛП-тренер, эриксоновский гипнотерапевт, профайлер, 20+ лет практики.
 Стиль: циничный психолог — провокационно, честно, без мотивашек.
@@ -4269,6 +4080,8 @@ ${transcription}`,
         social: `Ты — контент-стратег психолога-практика с провокационным стилем.
 Твоя задача: на основе транскрипта создать пост для соцсетей, который останавливает скролл, бьёт в боль и вызывает реакцию.
 
+КОНТЕКСТ: Сегодня ${currentDate}. Гость/клиент (если есть): ${guestName}.
+
 ВВОДНЫЕ ДАННЫЕ:
 Автор: Павел Казарьян — клинический психолог, НЛП-тренер, эриксоновский гипнотерапевт, профайлер
 Стиль: циничный психолог — говорит правду без прикрас, провокационно, но с глубиной. Без сюсюканья и мотивашек.
@@ -4310,47 +4123,82 @@ ${transcription}`,
 ${transcription}`
       };
 
-      // Call Netlify Function
-      const response = await fetch('/.netlify/functions/openai-generate', {
+      // Log what we're sending to GPT
+      const promptText = prompts[format];
+      const transcriptionLength = transcription ? transcription.length : 0;
+      console.log(`📝 GPT: Sending prompt for format "${format}"`);
+      console.log(`📝 GPT: Transcription length: ${transcriptionLength} chars`);
+      console.log(`📝 GPT: Full prompt length: ${promptText.length} chars`);
+      console.log(`📝 GPT: Transcription preview (first 500 chars):`, transcription ? transcription.substring(0, 500) : 'EMPTY!');
+
+      // Warning if transcription is missing or too short
+      if (!transcription || transcription.length < 50) {
+        console.error('❌ GPT: Transcription is empty or too short!');
+      }
+
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getOpenAIApiKey()}`
         },
         body: JSON.stringify({
-          prompt: prompts[format]
+          model: 'gpt-4o',
+          messages: [
+            { role: 'system', content: `Ты — профессиональный редактор контента Павла Казарьяна. Отвечай только на русском языке.
+
+ГЛАВНОЕ ПРАВИЛО: Весь твой контент должен быть ОСНОВАН на транскрипции, которую тебе дают. Транскрипция — это ПЕРВОИСТОЧНИК. Ты можешь:
+- Красиво переформулировать мысли из транскрипции
+- Структурировать и организовать сказанное
+- Добавлять связки и переходы
+- Развивать темы, которые БЫЛИ озвучены
+
+НО ты НЕ можешь:
+- Придумывать темы, которых НЕ БЫЛО в транскрипции
+- Игнорировать то, что сказал спикер
+- Писать общие фразы, не связанные с конкретным содержанием записи
+
+Если транскрипция короткая или неполная — работай с тем что есть, не додумывай.` },
+            { role: 'user', content: promptText }
+          ],
+          max_tokens: 4000,
+          temperature: 0.3
         })
       });
 
       if (!response.ok) {
-        // Check if response is JSON or HTML
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          const error = await response.json();
-          throw new Error(error.error || 'Generation error');
-        } else {
-          // Server returned HTML (timeout or other error)
-          if (response.status === 504) {
-            throw new Error('Превышен лимит времени генерации. Попробуйте сократить текст или повторите позже.');
-          }
-          throw new Error(`Ошибка сервера: ${response.status}`);
-        }
+        const error = await response.json();
+        throw new Error(error.error?.message || 'GPT API error');
       }
 
-      const result = await response.json();
-      return result.text;
+      const data = await response.json();
+      return data.choices[0].message.content;
     }
 
     // Process recording for transcription
     async function processTranscription(audioBlob) {
       transcriptionModal.classList.add('active');
-      transcriptionStatus.textContent = '⏳ Загрузка аудио в Whisper...';
       transcriptionText.textContent = '';
       protocolResult.innerHTML = '';
       currentTranscription = '';
 
+      // Log audio blob info for debugging
+      const blobSizeKB = Math.round(audioBlob.size / 1024);
+      const blobSizeMB = (audioBlob.size / (1024 * 1024)).toFixed(2);
+      console.log(`🎤 TRANSCRIPTION: Audio blob size: ${blobSizeKB} KB (${blobSizeMB} MB)`);
+      transcriptionStatus.textContent = `⏳ Загрузка аудио (${blobSizeKB} KB) в Whisper...`;
+
+      // Warning if audio is too small
+      if (audioBlob.size < 10000) {
+        console.warn('⚠️ TRANSCRIPTION: Audio blob is very small! Check microphone.');
+        transcriptionStatus.textContent = '⚠️ Аудио очень маленькое! Проверьте микрофон.';
+        return;
+      }
+
       try {
         // Transcribe with Whisper
         const result = await transcribeAudio(audioBlob);
+        console.log('🎤 TRANSCRIPTION: Whisper result:', result);
 
         // Format with timestamps if available
         let formattedText = '';
@@ -4374,20 +4222,46 @@ ${transcription}`
     }
 
     function formatTime(seconds) {
-      const h = Math.floor(seconds / 3600);
-      const m = Math.floor((seconds % 3600) / 60);
-      const s = seconds % 60;
-      if (h > 0) {
-        return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-      }
-      return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 
     // AI Content Generation from presentation
-    // AI API calls handled by Netlify Functions for security
+    // API keys are loaded from localStorage (set in Settings panel)
+    function getGeminiApiKey() {
+      return localStorage.getItem('gemini_api_key') || '';
+    }
+    function getOpenAIApiKey() {
+      return localStorage.getItem('openai_api_key') || '';
+    }
+
+    // Initialize API key inputs from localStorage
+    document.addEventListener('DOMContentLoaded', () => {
+      const openaiInput = document.getElementById('openai-api-key');
+      const geminiInput = document.getElementById('gemini-api-key');
+      if (openaiInput) openaiInput.value = getOpenAIApiKey();
+      if (geminiInput) geminiInput.value = getGeminiApiKey();
+    });
+
+    // Save API keys button handler
+    document.getElementById('btn-save-api-keys')?.addEventListener('click', () => {
+      const openaiKey = document.getElementById('openai-api-key').value.trim();
+      const geminiKey = document.getElementById('gemini-api-key').value.trim();
+      localStorage.setItem('openai_api_key', openaiKey);
+      localStorage.setItem('gemini_api_key', geminiKey);
+      const status = document.getElementById('api-keys-status');
+      status.style.display = 'block';
+      setTimeout(() => { status.style.display = 'none'; }, 3000);
+    });
+
     const aiStatus = document.getElementById('ai-status');
 
     document.getElementById('btn-ai-generate').addEventListener('click', async () => {
+      if (!getGeminiApiKey()) {
+        alert('Gemini API ключ не настроен. Добавьте его в Настройках → API Ключи');
+        return;
+      }
       if (slides.length === 0) {
         alert('Сначала загрузите презентацию');
         return;
@@ -4506,8 +4380,8 @@ ${presentationText.slice(0, 8000)}
           };
         }
 
-        // Call Gemini API via Netlify Function
-        const response = await fetch('/.netlify/functions/gemini-generate', {
+        // Call Gemini API
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${getGeminiApiKey()}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(requestBody)
@@ -4772,11 +4646,7 @@ ${presentationText.slice(0, 8000)}
       introVideo._audioSourceCreated = false;
       introVideo._audioGain = null;
       if (introVideo._audioContext) {
-        try {
-          introVideo._audioContext.close();
-        } catch(e) {
-          console.error('Error closing intro video audio context:', e);
-        }
+        try { introVideo._audioContext.close(); } catch(e) {}
         introVideo._audioContext = null;
       }
       document.getElementById('intro-preview').style.display = 'none';
@@ -4880,6 +4750,7 @@ ${presentationText.slice(0, 8000)}
         renderSlide(0);
         updateNavButtons();
         updateViewMode();
+        updateClearButton();
       }
     });
 
@@ -5059,33 +4930,20 @@ ${presentationText.slice(0, 8000)}
         splitCamera.srcObject = null;
         cameraCircle.style.display = 'none';
         btnCamera.classList.remove('active');
-        // Also disable video for peer connection
-        if (peerLocalStream) {
-          peerLocalStream.getVideoTracks().forEach(t => t.enabled = false);
-        }
       } else {
         try {
           cameraStream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
           });
-          console.log('✅ Camera stream obtained:', cameraStream);
           if (viewMode === 'circle') {
             cameraVideo.srcObject = cameraStream;
-            cameraVideo.play().catch(e => console.error('❌ Circle video play error:', e));
             cameraCircle.style.display = 'block';
           } else {
             splitCamera.srcObject = cameraStream;
-            splitCamera.play().catch(e => console.error('❌ Split video play error:', e));
-            console.log('✅ Split camera set, viewMode:', viewMode, 'element:', splitCamera);
           }
           btnCamera.classList.add('active');
-          // Also enable video for peer connection
-          if (peerLocalStream) {
-            peerLocalStream.getVideoTracks().forEach(t => t.enabled = true);
-          }
         } catch (err) {
-          console.error('❌ Camera error:', err);
-          alert('Не удалось получить доступ к камере: ' + err.message);
+          alert('Не удалось получить доступ к камере');
         }
       }
     });
@@ -5098,10 +4956,6 @@ ${presentationText.slice(0, 8000)}
         if (audioContext) { audioContext.close(); audioContext = null; }
         micLevel.style.display = 'none';
         btnMic.classList.remove('active');
-        // Also disable audio for peer connection
-        if (peerLocalStream) {
-          peerLocalStream.getAudioTracks().forEach(t => t.enabled = false);
-        }
       } else {
         try {
           micStream = await navigator.mediaDevices.getUserMedia({
@@ -5116,10 +4970,6 @@ ${presentationText.slice(0, 8000)}
           source.connect(analyser);
           analyser.fftSize = 256;
           visualizeMic();
-          // Also enable audio for peer connection
-          if (peerLocalStream) {
-            peerLocalStream.getAudioTracks().forEach(t => t.enabled = true);
-          }
         } catch (err) {
           alert('Не удалось получить доступ к микрофону');
         }
@@ -5235,35 +5085,22 @@ ${presentationText.slice(0, 8000)}
       }
 
       // Show splash at start if we have an image
-      console.log('SPLASH CHECK:', {
-        hasSplashImage: !!overlayState.splashImageData,
-        hasIntroVideo: !!introVideoUrl,
-        splashDuration: overlayState.splashDuration
-      });
-
       if (overlayState.splashImageData) {
-        console.log('SPLASH: Showing splash screen');
         showSplash();
         splashAutoShown = true;
 
-        // Hide splash after 3-5 seconds and play intro if available
+        // Hide splash after duration and play intro if available
         setTimeout(() => {
           if (introVideoUrl) {
-            // Play intro video
-            console.log('SPLASH: Hiding splash, playing intro');
             playIntro();
           } else {
-            // No intro, just hide splash
-            console.log('SPLASH: Hiding splash, no intro');
             hideSplash();
           }
-        }, overlayState.splashDuration * 1000 || 3000);
+        }, (overlayState.splashDuration || 3) * 1000);
       } else if (introVideoUrl) {
         // No splash but have intro - play it immediately
-        console.log('SPLASH: No splash image, playing intro directly');
+        showSplash();
         setTimeout(() => playIntro(), 100);
-      } else {
-        console.log('SPLASH: No splash image and no intro video');
       }
 
       recordingCanvas = document.createElement('canvas');
@@ -5285,6 +5122,7 @@ ${presentationText.slice(0, 8000)}
 
       // Create MP4 muxer - include audio track if mic OR intro video available
       const hasAnyAudioSource = micStream || introVideoUrl || guestStream;
+      const mp4Chunks = [];
       muxer = new Mp4Muxer.Muxer({
         target: new Mp4Muxer.ArrayBufferTarget(),
         video: {
@@ -6125,11 +5963,11 @@ ${presentationText.slice(0, 8000)}
         }
 
         // Flush encoders
-        if (videoEncoder && videoEncoder.state !== 'closed') {
+        if (videoEncoder) {
           await videoEncoder.flush();
           videoEncoder.close();
         }
-        if (audioEncoder && audioEncoder.state !== 'closed') {
+        if (audioEncoder) {
           await audioEncoder.flush();
           audioEncoder.close();
         }
@@ -6146,11 +5984,9 @@ ${presentationText.slice(0, 8000)}
         const blob = new Blob([buffer], { type: 'video/mp4' });
 
         const a = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        a.href = url;
+        a.href = URL.createObjectURL(blob);
         a.download = `presentation-${Date.now()}.mp4`;
         a.click();
-        URL.revokeObjectURL(url);
 
         convertingProgress.style.width = '100%';
       } catch (err) {
@@ -6165,14 +6001,21 @@ ${presentationText.slice(0, 8000)}
 
       // Stop audio recorder and process transcription
       if (audioMediaRecorder && audioMediaRecorder.state !== 'inactive') {
-        // Wait for onstop event to complete
-        await new Promise((resolve) => {
-          const originalOnStop = audioMediaRecorder.onstop;
-          audioMediaRecorder.onstop = () => {
-            if (originalOnStop) originalOnStop();
+        audioMediaRecorder.stop();
+
+        // Wait for the blob to be ready
+        await new Promise(resolve => {
+          const checkBlob = setInterval(() => {
+            if (audioBlob) {
+              clearInterval(checkBlob);
+              resolve();
+            }
+          }, 100);
+          // Timeout after 5 seconds
+          setTimeout(() => {
+            clearInterval(checkBlob);
             resolve();
-          };
-          audioMediaRecorder.stop();
+          }, 5000);
         });
 
         // Save audio file if enabled
@@ -6182,16 +6025,10 @@ ${presentationText.slice(0, 8000)}
           audioLink.href = audioUrl;
           audioLink.download = `recording-audio-${Date.now()}.webm`;
           audioLink.click();
-          URL.revokeObjectURL(audioUrl);
         }
 
         // Process transcription if enabled
         if (overlayState.transcribeEnabled && audioBlob) {
-          // Show transcription panel automatically
-          const transcriptionTab = document.getElementById('transcription-tab');
-          if (transcriptionTab) {
-            transcriptionTab.click();
-          }
           processTranscription(audioBlob);
         }
 
@@ -6199,10 +6036,6 @@ ${presentationText.slice(0, 8000)}
         audioMediaRecorder = null;
         audioChunks = [];
       }
-
-      // Show success notification
-      alert('✅ Запись завершена! Файл сохранён.' +
-            (overlayState.transcribeEnabled ? '\n\nПротокол генерируется...' : ''));
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -6329,9 +6162,7 @@ ${presentationText.slice(0, 8000)}
         if (saved) {
           try {
             Object.assign(this.settings, JSON.parse(saved));
-          } catch (e) {
-            console.error('Error loading live audience settings from localStorage:', e);
-          }
+          } catch (e) {}
         }
       },
 
@@ -6767,7 +6598,109 @@ ${presentationText.slice(0, 8000)}
     })();
 
     // ============================================
-    // EMOTION RECOGNITION - Host only, not recorded
+    // TELEPROMPTER
+    // ============================================
+    const teleprompterPanel = document.getElementById('teleprompter-panel');
+    const teleprompterContent = document.getElementById('teleprompter-content');
+    const teleprompterScroll = document.getElementById('teleprompter-scroll');
+    const teleprompterSpeed = document.getElementById('teleprompter-speed');
+    const teleprompterHeader = document.getElementById('teleprompter-header');
+    let teleprompterScrolling = false;
+    let teleprompterAnimationId = null;
+
+    // Make teleprompter draggable
+    (function() {
+      let isDragging = false;
+      let initialX, initialY;
+
+      teleprompterHeader.addEventListener('mousedown', (e) => {
+        if (e.target.tagName === 'BUTTON') return;
+        isDragging = true;
+        initialX = e.clientX - (parseInt(teleprompterPanel.style.left) || teleprompterPanel.offsetLeft);
+        initialY = e.clientY - (parseInt(teleprompterPanel.style.top) || teleprompterPanel.offsetTop);
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        teleprompterPanel.style.left = (e.clientX - initialX) + 'px';
+        teleprompterPanel.style.top = (e.clientY - initialY) + 'px';
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+    })();
+
+    // Open teleprompter button
+    document.getElementById('btn-teleprompter').addEventListener('click', () => {
+      teleprompterPanel.style.display = teleprompterPanel.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Close teleprompter
+    document.getElementById('teleprompter-close').addEventListener('click', () => {
+      teleprompterPanel.style.display = 'none';
+      stopTeleprompterScroll();
+    });
+
+    // Start/stop scroll
+    teleprompterScroll.addEventListener('click', () => {
+      if (teleprompterScrolling) {
+        stopTeleprompterScroll();
+      } else {
+        startTeleprompterScroll();
+      }
+    });
+
+    function startTeleprompterScroll() {
+      teleprompterScrolling = true;
+      teleprompterScroll.textContent = '⏸ Пауза';
+
+      const pixelsPerSecond = parseInt(teleprompterSpeed.value);
+      let lastTimestamp = performance.now();
+      let accumulatedScroll = 0;
+
+      function scroll(timestamp) {
+        if (!teleprompterScrolling) return;
+
+        const deltaTime = (timestamp - lastTimestamp) / 1000;
+        lastTimestamp = timestamp;
+
+        accumulatedScroll += pixelsPerSecond * deltaTime;
+
+        const pixelsToScroll = Math.floor(accumulatedScroll);
+        if (pixelsToScroll > 0) {
+          teleprompterContent.scrollTop += pixelsToScroll;
+          accumulatedScroll -= pixelsToScroll;
+        }
+
+        if (teleprompterContent.scrollTop >= teleprompterContent.scrollHeight - teleprompterContent.clientHeight) {
+          stopTeleprompterScroll();
+          return;
+        }
+
+        teleprompterAnimationId = requestAnimationFrame(scroll);
+      }
+
+      teleprompterAnimationId = requestAnimationFrame(scroll);
+    }
+
+    function stopTeleprompterScroll() {
+      teleprompterScrolling = false;
+      teleprompterScroll.textContent = '▶ Старт';
+      if (teleprompterAnimationId) {
+        cancelAnimationFrame(teleprompterAnimationId);
+        teleprompterAnimationId = null;
+      }
+    }
+
+    // Double-click to reset
+    teleprompterContent.addEventListener('dblclick', () => {
+      teleprompterContent.scrollTop = 0;
+    });
+
+    // ============================================
+    // EMOTION DETECTION - Host only, private
     // ============================================
     const emotionPanel = document.getElementById('emotion-panel');
     const emotionStatus = document.getElementById('emotion-status');
@@ -6781,9 +6714,9 @@ ${presentationText.slice(0, 8000)}
 
     let emotionDetectionActive = false;
     let emotionDetectionInterval = null;
-    let emotionHistory = []; // For AI report
+    let emotionHistory = [];
     let lastSignificantEmotion = null;
-    let sessionStartTime = null;
+    let emotionSessionStartTime = null;
 
     const emotionTranslations = {
       happy: { label: 'Радость', emoji: '▲' },
@@ -6795,31 +6728,82 @@ ${presentationText.slice(0, 8000)}
       neutral: { label: 'Нейтрально', emoji: '─' }
     };
 
-    // Load face-api models
+    // Emotion panel toggle
+    document.getElementById('btn-emotion-panel').addEventListener('click', () => {
+      emotionPanel.classList.toggle('active');
+    });
+
+    document.getElementById('emotion-close').addEventListener('click', () => {
+      emotionPanel.classList.remove('active');
+    });
+
+    // Make emotion panel draggable
+    function makeDraggable(panel, handle) {
+      let isDragging = false;
+      let currentX, currentY, initialX, initialY;
+
+      handle.addEventListener('mousedown', (e) => {
+        if (e.target.tagName === 'BUTTON') return;
+        isDragging = true;
+        initialX = e.clientX - (parseInt(panel.style.left) || panel.offsetLeft);
+        initialY = e.clientY - (parseInt(panel.style.top) || panel.offsetTop);
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+        panel.style.left = currentX + 'px';
+        panel.style.top = currentY + 'px';
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+    }
+
+    const emotionPanelHeader = document.querySelector('#emotion-panel .emotion-header');
+    if (emotionPanelHeader) {
+      makeDraggable(emotionPanel, emotionPanelHeader);
+    }
+
+    // Make teleprompter draggable (teleprompterHeader already declared above)
+    if (teleprompterHeader) {
+      makeDraggable(teleprompterPanel, teleprompterHeader);
+    }
+
+    // Load face-api models - using MORE ACCURATE ssdMobilenetv1
     async function loadEmotionModels() {
       if (typeof faceapi === 'undefined') {
         console.log('face-api.js not loaded yet, waiting...');
         return false;
       }
       try {
-        emotionStatus.textContent = 'Загрузка моделей...';
+        emotionStatus.textContent = 'ЗАГРУЗКА ТОЧНЫХ МОДЕЛЕЙ...';
         emotionStatus.className = 'emotion-status loading';
 
         const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/model';
         await Promise.all([
-          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+          faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL), // More accurate than tinyFaceDetector
+          faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL), // For better face alignment
           faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
         ]);
 
-        emotionStatus.textContent = 'Модели загружены. Ожидание клиента...';
+        emotionStatus.textContent = 'МОДЕЛИ ЗАГРУЖЕНЫ. ОЖИДАНИЕ КЛИЕНТА...';
         return true;
       } catch (err) {
         console.error('Error loading emotion models:', err);
-        emotionStatus.textContent = 'Ошибка загрузки моделей';
+        emotionStatus.textContent = 'ОШИБКА ЗАГРУЗКИ МОДЕЛЕЙ';
         emotionStatus.className = 'emotion-status error';
         return false;
       }
     }
+
+    // Smoothing buffer for emotion averaging
+    const emotionBuffer = [];
+    const BUFFER_SIZE = 5; // Average over 5 frames
+    const MIN_CONFIDENCE = 0.5; // Minimum confidence threshold
 
     // Start emotion detection on guest video
     async function startEmotionDetection(videoElement) {
@@ -6829,8 +6813,9 @@ ${presentationText.slice(0, 8000)}
       if (!modelsLoaded) return;
 
       emotionDetectionActive = true;
-      sessionStartTime = Date.now();
+      emotionSessionStartTime = Date.now();
       emotionHistory = [];
+      emotionBuffer.length = 0;
 
       emotionStatus.style.display = 'none';
       emotionCurrent.style.display = 'block';
@@ -6842,21 +6827,44 @@ ${presentationText.slice(0, 8000)}
         if (!videoElement || videoElement.paused || videoElement.ended) return;
 
         try {
+          // Use ssdMobilenetv1 with landmarks for better accuracy
           const detections = await faceapi
-            .detectSingleFace(videoElement, new faceapi.TinyFaceDetectorOptions())
+            .detectSingleFace(videoElement, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
+            .withFaceLandmarks()
             .withFaceExpressions();
 
-          if (detections) {
-            updateEmotionDisplay(detections.expressions);
+          if (detections && detections.expressions) {
+            // Add to buffer for smoothing
+            emotionBuffer.push(detections.expressions);
+            if (emotionBuffer.length > BUFFER_SIZE) {
+              emotionBuffer.shift();
+            }
+            // Average the buffer for stability
+            const smoothed = averageExpressions(emotionBuffer);
+            updateEmotionDisplay(smoothed);
           }
         } catch (err) {
           console.error('Emotion detection error:', err);
         }
-      }, 500); // Check every 500ms
+      }, 400);
+    }
+
+    // Average expressions over buffer for smoothing
+    function averageExpressions(buffer) {
+      if (buffer.length === 0) return null;
+      const avg = { neutral: 0, happy: 0, sad: 0, angry: 0, fearful: 0, disgusted: 0, surprised: 0 };
+      for (const expr of buffer) {
+        for (const key in avg) {
+          avg[key] += expr[key] || 0;
+        }
+      }
+      for (const key in avg) {
+        avg[key] /= buffer.length;
+      }
+      return avg;
     }
 
     function updateEmotionDisplay(expressions) {
-      // Find dominant emotion
       let maxEmotion = 'neutral';
       let maxValue = 0;
 
@@ -6866,20 +6874,17 @@ ${presentationText.slice(0, 8000)}
           maxEmotion = emotion;
         }
 
-        // Update bars
         const bar = document.getElementById('bar-' + emotion);
         if (bar) {
           bar.style.width = (value * 100) + '%';
         }
       }
 
-      // Update main display
-      const translation = emotionTranslations[maxEmotion] || { label: maxEmotion, emoji: '😐' };
+      const translation = emotionTranslations[maxEmotion] || { label: maxEmotion, emoji: '─' };
       emotionEmoji.textContent = translation.emoji;
       emotionLabel.textContent = translation.label;
       emotionConfidence.textContent = Math.round(maxValue * 100) + '%';
 
-      // Record significant emotion changes
       if (maxValue > 0.5 && maxEmotion !== 'neutral' && maxEmotion !== lastSignificantEmotion) {
         recordEmotionEvent(maxEmotion, maxValue);
         lastSignificantEmotion = maxEmotion;
@@ -6889,9 +6894,9 @@ ${presentationText.slice(0, 8000)}
     }
 
     function recordEmotionEvent(emotion, confidence) {
-      const elapsed = Date.now() - sessionStartTime;
+      const elapsed = Date.now() - emotionSessionStartTime;
       const timeStr = formatTime(Math.floor(elapsed / 1000));
-      const translation = emotionTranslations[emotion] || { label: emotion, emoji: '😐' };
+      const translation = emotionTranslations[emotion] || { label: emotion, emoji: '─' };
 
       const event = {
         time: elapsed,
@@ -6904,7 +6909,6 @@ ${presentationText.slice(0, 8000)}
 
       emotionHistory.push(event);
 
-      // Add to timeline display
       const eventEl = document.createElement('div');
       eventEl.className = 'emotion-event';
       eventEl.innerHTML = `
@@ -6914,7 +6918,6 @@ ${presentationText.slice(0, 8000)}
       `;
       emotionEvents.insertBefore(eventEl, emotionEvents.firstChild);
 
-      // Keep only last 20 events in display
       while (emotionEvents.children.length > 20) {
         emotionEvents.removeChild(emotionEvents.lastChild);
       }
@@ -6928,35 +6931,31 @@ ${presentationText.slice(0, 8000)}
       emotionDetectionActive = false;
     }
 
-    // Get emotion report for AI
-    function getEmotionReport() {
-      if (emotionHistory.length === 0) {
-        return 'Данные об эмоциях клиента не зафиксированы.';
-      }
+    // Auto-start emotion detection when guest connects
+    const originalShowGuestVideoForEmotion = showGuestVideo;
+    showGuestVideo = function(stream) {
+      originalShowGuestVideoForEmotion(stream);
+      // Start emotion detection after a short delay
+      setTimeout(() => {
+        const videoEl = viewMode === 'split'
+          ? document.getElementById('split-guest-video')
+          : document.getElementById('guest-video');
+        if (videoEl && videoEl.srcObject) {
+          startEmotionDetection(videoEl);
+        }
+      }, 1000);
+    };
 
-      let report = 'ЭМОЦИОНАЛЬНЫЙ ПРОФИЛЬ КЛИЕНТА ВО ВРЕМЯ СЕССИИ:\n\n';
-      report += 'Ключевые эмоциональные моменты:\n';
-
-      emotionHistory.forEach(event => {
-        report += `- ${event.timeStr}: ${event.label} (уверенность ${event.confidence}%)\n`;
-      });
-
-      // Summary statistics
-      const emotionCounts = {};
-      emotionHistory.forEach(e => {
-        emotionCounts[e.label] = (emotionCounts[e.label] || 0) + 1;
-      });
-
-      report += '\nСтатистика эмоций:\n';
-      for (const [label, count] of Object.entries(emotionCounts)) {
-        report += `- ${label}: ${count} раз(а)\n`;
-      }
-
-      return report;
-    }
+    // Stop emotion detection when guest disconnects
+    const originalStopGuestConnectionForEmotion = stopGuestConnection;
+    stopGuestConnection = function() {
+      stopEmotionDetection();
+      stopEyeTracking();
+      originalStopGuestConnectionForEmotion();
+    };
 
     // ============================================
-    // EYE TRACKING - WebGazer integration
+    // EYE TRACKING - WebGazer integration (host only)
     // ============================================
     const eyeTrackingSection = document.getElementById('eye-tracking-section');
     const eyeActivity = document.getElementById('eye-activity');
@@ -6969,62 +6968,72 @@ ${presentationText.slice(0, 8000)}
     let gazeZoneCounts = {};
     let lastGazeTime = 0;
     let fixationCount = 0;
-    let fixationStartTime = null;
+    let eyeTrackingAvailable = true;
+    let eyeTrackingInterval = null;
 
     async function startEyeTracking() {
       if (eyeTrackingActive) return;
+      if (!eyeTrackingAvailable) {
+        console.log('Eye tracking unavailable');
+        return;
+      }
       if (typeof webgazer === 'undefined') {
-        console.log('WebGazer not loaded yet');
+        console.log('WebGazer not loaded - eye tracking disabled');
+        eyeTrackingAvailable = false;
         return;
       }
 
-      console.log('▸ Starting eye tracking...');
-      eyeTrackingActive = true;
-      eyeTrackingSection.style.display = 'block';
+      try {
+        console.log('▸ Starting eye tracking...');
+        eyeTrackingActive = true;
+        eyeTrackingSection.style.display = 'block';
 
-      // Initialize WebGazer
-      webgazer.setGazeListener((data, timestamp) => {
-        if (!data || !eyeTrackingActive) return;
+        await webgazer.setGazeListener((data, timestamp) => {
+          if (!data || !eyeTrackingActive) return;
 
-        const x = data.x;
-        const y = data.y;
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
+          const x = data.x;
+          const y = data.y;
+          const screenWidth = window.innerWidth;
+          const screenHeight = window.innerHeight;
 
-        // Determine zone
-        const zone = getGazeZone(x, y, screenWidth, screenHeight);
+          const zone = getGazeZone(x, y, screenWidth, screenHeight);
+          gazeZoneCounts[zone] = (gazeZoneCounts[zone] || 0) + 1;
+          gazeData.push({ x, y, zone, timestamp });
+          if (gazeData.length > 1000) gazeData.shift();
 
-        // Update zone counts
-        gazeZoneCounts[zone] = (gazeZoneCounts[zone] || 0) + 1;
+          updateEyeTrackingUI(zone);
+          lastGazeTime = timestamp;
+        }).begin();
 
-        // Track gaze data
-        gazeData.push({ x, y, zone, timestamp });
-        if (gazeData.length > 1000) gazeData.shift(); // Keep last 1000 points
+        webgazer.showVideoPreview(false);
+        webgazer.showPredictionPoints(false);
 
-        // Update UI
-        updateEyeTrackingUI(zone);
-
-        lastGazeTime = timestamp;
-      }).begin();
-
-      // Hide WebGazer video preview
-      webgazer.showVideoPreview(false);
-      webgazer.showPredictionPoints(false);
-
-      // Update metrics every second
-      setInterval(() => {
-        if (!eyeTrackingActive) return;
-        updateEyeMetrics();
-      }, 1000);
+        if (eyeTrackingInterval) clearInterval(eyeTrackingInterval);
+        eyeTrackingInterval = setInterval(() => {
+          if (!eyeTrackingActive) return;
+          updateEyeMetrics();
+        }, 1000);
+      } catch (err) {
+        console.log('Eye tracking unavailable:', err.message || err);
+        eyeTrackingAvailable = false;
+        eyeTrackingActive = false;
+        eyeTrackingSection.style.display = 'none';
+      }
     }
 
     function stopEyeTracking() {
       if (!eyeTrackingActive) return;
       console.log('▸ Stopping eye tracking...');
       eyeTrackingActive = false;
-      if (typeof webgazer !== 'undefined') {
-        webgazer.end();
+      if (eyeTrackingInterval) {
+        clearInterval(eyeTrackingInterval);
+        eyeTrackingInterval = null;
       }
+      try {
+        if (typeof webgazer !== 'undefined') {
+          webgazer.end();
+        }
+      } catch (e) {}
       eyeTrackingSection.style.display = 'none';
     }
 
@@ -7048,7 +7057,6 @@ ${presentationText.slice(0, 8000)}
     }
 
     function updateEyeTrackingUI(currentZone) {
-      // Update direction grid
       const cells = eyeDirectionGrid.querySelectorAll('.eye-direction-cell');
       cells.forEach(cell => {
         const zone = cell.getAttribute('data-zone');
@@ -7059,7 +7067,6 @@ ${presentationText.slice(0, 8000)}
         }
       });
 
-      // Update zone label
       const zoneLabels = {
         'top-left': '◤ ВЕРХ-ЛЕВО',
         'top': '▲ ВЕРХ',
@@ -7075,544 +7082,34 @@ ${presentationText.slice(0, 8000)}
     }
 
     function updateEyeMetrics() {
-      // Calculate activity (% of time with valid gaze data)
       const now = Date.now();
-      const recentData = gazeData.filter(d => now - d.timestamp < 5000);
-      const activity = Math.min(100, Math.round((recentData.length / 50) * 100));
+      const recentData = gazeData.filter(d => now - d.timestamp < 60000);
+      const activity = recentData.length > 0 ? Math.min(100, Math.round(recentData.length / 120 * 100)) : 0;
       eyeActivity.textContent = activity + '%';
-
-      // Calculate fixations per minute
-      const fixationsPerMin = Math.round((gazeData.length / (now - (gazeData[0]?.timestamp || now))) * 60000);
-      eyeFixations.textContent = Math.min(999, fixationsPerMin);
+      eyeFixations.textContent = Math.round(recentData.length / 60);
     }
 
-    function getEyeTrackingReport() {
-      if (gazeData.length === 0) {
-        return 'Данные отслеживания взгляда не зафиксированы.';
-      }
-
-      let report = '\n\nАНАЛИЗ ВЗГЛЯДА КЛИЕНТА:\n\n';
-      report += 'Распределение внимания по зонам:\n';
-
-      const total = Object.values(gazeZoneCounts).reduce((a, b) => a + b, 0);
-      for (const [zone, count] of Object.entries(gazeZoneCounts).sort((a, b) => b[1] - a[1])) {
-        const percentage = Math.round((count / total) * 100);
-        report += `- ${zone}: ${percentage}%\n`;
-      }
-
-      report += `\nОбщее количество точек фиксации: ${gazeData.length}\n`;
-
-      return report;
-    }
-
-    // ============================================
-    // AI PROFILING - Professional behavioral analysis
-    // ============================================
-    async function generateProfiling() {
-      const profilingBtn = document.getElementById('btn-profiling');
-      const profilingResult = document.getElementById('profiling-result');
-
-      profilingBtn.disabled = true;
-      profilingBtn.textContent = '▸ Анализ...';
-
-      try {
-        // Collect all data
-        const emotionData = getEmotionReport();
-        const eyeData = getEyeTrackingReport();
-
-        // Professional profiler system prompt
-        const systemPrompt = `You are an expert profiler, behavioral analyst, and lie detection specialist with 20+ years of practical experience.
-You have deep knowledge of:
-- NLP eye accessing cues
-- Microexpressions (Ekman method)
-- Body language and kinesics
-- Voice stress analysis
-- Verbal pattern analysis (SCAN, statement analysis)
-- Physiological indicators of deception and altered states
-
-CRITICAL LANGUAGE RULE: YOUR PROMPT LANGUAGE: English. ALL REPORTS, ANSWERS, ANALYSIS, AND OUTPUT: RUSSIAN ONLY.
-
-When producing analysis, structure as follows:
-
-1. ОБЩАЯ ОЦЕНКА - Краткий вывод в 2-3 предложениях
-2. ЭМОЦИОНАЛЬНЫЕ ПАТТЕРНЫ - Что наблюдалось
-3. ПАТТЕРНЫ ВЗГЛЯДА - Направление, зоны, активность
-4. ФИЗИОЛОГИЧЕСКИЕ ИНДИКАТОРЫ - Зрачки, моргание
-5. ЗОНЫ РИСКА - Темы, вызвавшие наибольшую реакцию
-6. РЕКОМЕНДАЦИИ - Дополнительные вопросы, проверки
-7. УРОВЕНЬ ДОСТОВЕРНОСТИ АНАЛИЗА - Высокий/Средний/Низкий с обоснованием`;
-
-        const userPrompt = `Проанализируй следующие данные консультации и создай профессиональный профайлинг-отчет:
-
-${emotionData}
-
-${eyeData}
-
-Применяя знания NLP eye accessing cues, микровыражений, и физиологических индикаторов, создай структурированный анализ. Обрати особое внимание на зоны внимания клиента, частоту изменений эмоций, и любые аномальные паттерны.`;
-
-        // Call OpenAI API via Netlify Function
-        const response = await fetch('/.netlify/functions/openai-generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prompt: userPrompt,
-            systemPrompt: systemPrompt
-          })
-        });
-
-        if (!response.ok) {
-          // Check if response is JSON or HTML
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            const error = await response.json();
-            throw new Error(error.error || 'API error');
-          } else {
-            // Server returned HTML (timeout or other error)
-            if (response.status === 504) {
-              throw new Error('Превышен лимит времени генерации. Данных слишком много, попробуйте короткую сессию.');
-            }
-            throw new Error(`Ошибка сервера: ${response.status}`);
-          }
-        }
-
-        const result = await response.json();
-        const analysis = result.text;
-
-        // Display result
-        profilingResult.textContent = analysis;
-        profilingResult.style.display = 'block';
-
-        profilingBtn.disabled = false;
-        profilingBtn.textContent = '▸ Обновить профайлинг';
-
-      } catch (error) {
-        console.error('Profiling error:', error);
-        profilingResult.textContent = 'Ошибка генерации профайлинга: ' + error.message;
-        profilingResult.style.display = 'block';
-        profilingBtn.disabled = false;
-        profilingBtn.textContent = '▸ Получить профайлинг';
-      }
-    }
-
-    // Profiling button handler
-    document.getElementById('btn-profiling').addEventListener('click', generateProfiling);
-
-    // Show/hide emotion panel
-    document.getElementById('emotion-close').addEventListener('click', () => {
-      emotionPanel.classList.remove('active');
-    });
-
-    // Start emotion detection when guest connects
-    const originalShowGuestVideo = showGuestVideo;
+    // Auto-start eye tracking with emotion detection
+    const originalShowGuestVideoForEye = showGuestVideo;
     showGuestVideo = function(stream) {
-      originalShowGuestVideo(stream);
-
-      // Show emotion panel and start detection
-      emotionPanel.classList.add('active');
-
-      // Wait for video to be ready
+      originalShowGuestVideoForEye(stream);
       setTimeout(() => {
-        const videoEl = document.getElementById('guest-video');
-        if (videoEl && videoEl.srcObject) {
-          startEmotionDetection(videoEl);
-          startEyeTracking(); // Start eye tracking too
-        }
-      }, 1000);
+        startEyeTracking();
+      }, 2000);
     };
 
-    // Stop emotion detection when guest disconnects
-    const originalStopGuestConnection = stopGuestConnection;
-    stopGuestConnection = function() {
-      stopEmotionDetection();
-      stopEyeTracking(); // Stop eye tracking too
-      originalStopGuestConnection();
-    };
+    } // End of NORMAL MODE else block
 
     // ============================================
-    // DRAGGABLE PANELS - Make emotion & teleprompter draggable
+    // LEGAL MODALS - Open/Close
     // ============================================
-    function makeDraggable(panel, handle) {
-      let isDragging = false;
-      let currentX, currentY, initialX, initialY;
-
-      handle.addEventListener('mousedown', (e) => {
-        if (e.target.tagName === 'BUTTON') return; // Don't drag when clicking buttons
-        isDragging = true;
-        initialX = e.clientX - (parseInt(panel.style.left) || panel.offsetLeft);
-        initialY = e.clientY - (parseInt(panel.style.top) || panel.offsetTop);
-      });
-
-      document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        e.preventDefault();
-        currentX = e.clientX - initialX;
-        currentY = e.clientY - initialY;
-        panel.style.left = currentX + 'px';
-        panel.style.top = currentY + 'px';
-      });
-
-      document.addEventListener('mouseup', () => {
-        isDragging = false;
-      });
-    }
-
-    // Make emotion panel draggable
-    const emotionPanelHeader = document.querySelector('#emotion-panel .emotion-header');
-    if (emotionPanelHeader) {
-      makeDraggable(emotionPanel, emotionPanelHeader);
-    }
-
-    // ============================================
-    // TELEPROMPTER - Host only, not recorded
-    // ============================================
-    const teleprompterPanel = document.getElementById('teleprompter-panel');
-    const teleprompterContent = document.getElementById('teleprompter-content');
-    const teleprompterScroll = document.getElementById('teleprompter-scroll');
-    const teleprompterSpeed = document.getElementById('teleprompter-speed');
-    const teleprompterHeader = document.getElementById('teleprompter-header');
-    let teleprompterScrolling = false;
-    let teleprompterInterval = null;
-
-    // Make teleprompter draggable
-    makeDraggable(teleprompterPanel, teleprompterHeader);
-
-    document.getElementById('teleprompter-close').addEventListener('click', () => {
-      teleprompterPanel.style.display = 'none';
-      stopTeleprompterScroll();
-    });
-
-    teleprompterScroll.addEventListener('click', () => {
-      if (teleprompterScrolling) {
-        stopTeleprompterScroll();
-      } else {
-        startTeleprompterScroll();
-      }
-    });
-
-    function startTeleprompterScroll() {
-      teleprompterScrolling = true;
-      teleprompterScroll.textContent = '⏸ Пауза';
-
-      const pixelsPerSecond = parseInt(teleprompterSpeed.value);
-      let lastTimestamp = performance.now();
-      let accumulatedScroll = 0;
-
-      function scroll(timestamp) {
-        if (!teleprompterScrolling) return;
-
-        const deltaTime = (timestamp - lastTimestamp) / 1000; // Convert to seconds
-        lastTimestamp = timestamp;
-
-        accumulatedScroll += pixelsPerSecond * deltaTime;
-
-        // Only apply integer pixels to avoid sub-pixel rendering issues
-        const pixelsToScroll = Math.floor(accumulatedScroll);
-        if (pixelsToScroll > 0) {
-          teleprompterContent.scrollTop += pixelsToScroll;
-          accumulatedScroll -= pixelsToScroll;
-        }
-
-        // Check if reached end
-        if (teleprompterContent.scrollTop >= teleprompterContent.scrollHeight - teleprompterContent.clientHeight) {
-          stopTeleprompterScroll();
-          return;
-        }
-
-        teleprompterInterval = requestAnimationFrame(scroll);
-      }
-
-      teleprompterInterval = requestAnimationFrame(scroll);
-    }
-
-    function stopTeleprompterScroll() {
-      teleprompterScrolling = false;
-      teleprompterScroll.textContent = '▶ Старт';
-      if (teleprompterInterval) {
-        cancelAnimationFrame(teleprompterInterval);
-        teleprompterInterval = null;
-      }
-    }
-
-    // Double-click to reset
-    teleprompterContent.addEventListener('dblclick', () => {
-      teleprompterContent.scrollTop = 0;
-    });
-
-    // Pause on manual scroll
-    teleprompterContent.addEventListener('wheel', () => {
-      if (teleprompterScrolling) {
-        stopTeleprompterScroll();
-      }
-    });
-
-    } // End of else block (normal mode)
-  </script>
-
-  <!-- Footer -->
-  <div id="footer">
-    <div class="footer-legal">
-      <a href="#" id="link-privacy">Конфіденційність</a>
-      <a href="#" id="link-offer">Оферта</a>
-      <a href="#" id="link-disclaimer">Disclaimer</a>
-    </div>
-    <div class="footer-center">
-      <div class="footer-logo">KazarianWEBINAR<span style="color:#00ffaa;">Studio</span></div>
-      <div class="footer-copyright">© 2026 Всі права захищені</div>
-    </div>
-    <div class="footer-social">
-      <a href="https://www.facebook.com/Psihodoc" target="_blank" title="Facebook">
-        <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-      </a>
-      <a href="https://www.instagram.com/psiholog_pavlokazarian" target="_blank" title="Instagram">
-        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-      </a>
-      <a href="https://www.youtube.com/@psiholog_pavlokazarian" target="_blank" title="YouTube">
-        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-      </a>
-      <a href="https://t.me/psihodoctor" target="_blank" title="Telegram">
-        <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-      </a>
-    </div>
-  </div>
-
-  <!-- Legal Modals -->
-  <!-- Offer Agreement Modal -->
-  <div id="modal-offer" class="legal-modal">
-    <div class="legal-modal-content">
-      <div class="legal-modal-header">
-        <div class="legal-modal-title">▸ ДОГОВОР ОФЕРТЫ</div>
-        <button class="legal-modal-close" onclick="closeLegalModal('modal-offer')">X</button>
-      </div>
-      <div class="legal-modal-body">
-        <h2>ДОГОВІР ПУБЛІЧНОЇ ОФЕРТИ</h2>
-        <p><strong>Дата публікації:</strong> 12.03.2026</p>
-
-        <h3>1. ЗАГАЛЬНІ ПОЛОЖЕННЯ</h3>
-        <p>Цей Договір публічної оферти (далі — «Договір») є офіційною пропозицією Індивідуального підприємця Казар'яна Павла Ашотовича (далі — «Виконавець») укласти договір на надання послуг з будь-якою фізичною або юридичною особою (далі — «Замовник») на умовах, викладених нижче.</p>
-
-        <h3>2. РЕКВІЗИТИ ВИКОНАВЦЯ</h3>
-        <p><strong>Найменування:</strong> ФОП Казар'ян Павло Ашотович<br>
-        <strong>РНОКПП:</strong> 2847814635<br>
-        <strong>Реєстраційний номер:</strong> 25220000000055755<br>
-        <strong>Дата реєстрації:</strong> 28.04.2011<br>
-        <strong>Адреса:</strong> 57508, Україна, Миколаївська обл., місто Очаків, вул. Потьомкіна, буд. 4, кв. 74<br>
-        <strong>Email:</strong> pavel.kazarjan@gmail.com</p>
-
-        <h3>3. ПРЕДМЕТ ДОГОВОРУ</h3>
-        <p>3.1. Виконавець зобов'язується надати Замовнику послуги психологічного консультування через онлайн-платформу KazarianWEBINARStudio.</p>
-        <p>3.2. Перелік послуг:</p>
-        <ul>
-          <li>Індивідуальне психологічне консультування</li>
-          <li>Групові вебінари та тренінги</li>
-          <li>Онлайн-сесії з використанням AI-аналітики</li>
-          <li>Професійний профайлінг</li>
-        </ul>
-
-        <h3>4. ВАРТІСТЬ ТА ПОРЯДОК ОПЛАТИ</h3>
-        <p>4.1. Вартість послуг визначається діючим прайс-листом на сайті.</p>
-        <p>4.2. Оплата здійснюється на розрахунковий рахунок Виконавця або іншим способом, вказаним на платформі.</p>
-
-        <h3>5. ПРАВА ТА ОБОВ'ЯЗКИ СТОРІН</h3>
-        <p>5.1. Виконавець зобов'язується:</p>
-        <ul>
-          <li>Надавати послуги належної якості</li>
-          <li>Зберігати конфіденційність отриманої інформації</li>
-          <li>Забезпечити функціонування платформи</li>
-        </ul>
-        <p>5.2. Замовник зобов'язується:</p>
-        <ul>
-          <li>Своєчасно оплачувати послуги</li>
-          <li>Надавати достовірну інформацію</li>
-          <li>Дотримуватися правил користування платформою</li>
-        </ul>
-
-        <h3>6. ВІДПОВІДАЛЬНІСТЬ СТОРІН</h3>
-        <p>6.1. За невиконання або неналежне виконання зобов'язань Сторони несуть відповідальність відповідно до чинного законодавства України.</p>
-
-        <h3>7. ВИРІШЕННЯ СПОРІВ</h3>
-        <p>7.1. Всі спори вирішуються шляхом переговорів. У разі недосягнення згоди — у судовому порядку за місцем знаходження Виконавця.</p>
-
-        <h3>8. ПРИКІНЦЕВІ ПОЛОЖЕННЯ</h3>
-        <p>8.1. Акцептом даної оферти є оплата послуг Замовником.</p>
-        <p>8.2. Договір набуває чинності з моменту акцепту та діє до повного виконання зобов'язань.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Privacy Policy Modal -->
-  <div id="modal-privacy" class="legal-modal">
-    <div class="legal-modal-content">
-      <div class="legal-modal-header">
-        <div class="legal-modal-title">▸ ПОЛІТИКА КОНФІДЕНЦІЙНОСТІ</div>
-        <button class="legal-modal-close" onclick="closeLegalModal('modal-privacy')">X</button>
-      </div>
-      <div class="legal-modal-body">
-        <h2>ПОЛІТИКА КОНФІДЕНЦІЙНОСТІ</h2>
-        <p><strong>Дата публікації:</strong> 12.03.2026</p>
-        <p><strong>Оператор персональних даних:</strong> ФОП Казар'ян Павло Ашотович<br>
-        <strong>РНОКПП:</strong> 2847814635<br>
-        <strong>Адреса:</strong> 57508, Україна, Миколаївська обл., місто Очаків, вул. Потьомкіна, буд. 4, кв. 74</p>
-
-        <h3>1. ЗАГАЛЬНІ ПОЛОЖЕННЯ</h3>
-        <p>1.1. Ця Політика конфіденційності регулює порядок обробки та захисту персональних даних користувачів платформи KazarianWEBINARStudio.</p>
-        <p>1.2. Використовуючи платформу, Користувач погоджується з умовами цієї Політики.</p>
-
-        <h3>2. ЗБІР ПЕРСОНАЛЬНИХ ДАНИХ</h3>
-        <p>2.1. Ми збираємо наступну інформацію:</p>
-        <ul>
-          <li>ПІБ, email, номер телефону</li>
-          <li>Дані для оплати (через захищені платіжні системи)</li>
-          <li>Технічні дані: IP-адреса, браузер, операційна система</li>
-          <li>Дані консультацій (із згоди Користувача)</li>
-        </ul>
-
-        <h3>3. ВИКОРИСТАННЯ ПЕРСОНАЛЬНИХ ДАНИХ</h3>
-        <p>3.1. Персональні дані використовуються для:</p>
-        <ul>
-          <li>Надання психологічних послуг</li>
-          <li>Зв'язку з Користувачем</li>
-          <li>Покращення якості сервісу</li>
-          <li>Виконання законодавчих вимог</li>
-        </ul>
-
-        <h3>4. ЗАХИСТ ПЕРСОНАЛЬНИХ ДАНИХ</h3>
-        <p>4.1. Ми використовуємо сучасні технології шифрування та захисту даних.</p>
-        <p>4.2. Доступ до персональних даних мають лише уповноважені співробітники.</p>
-        <p>4.3. Відеозаписи сесій зберігаються в зашифрованому вигляді та не передаються третім особам без згоди Користувача.</p>
-
-        <h3>5. ВИКОРИСТАННЯ AI-ТЕХНОЛОГІЙ</h3>
-        <p>5.1. На платформі використовується штучний інтелект для:</p>
-        <ul>
-          <li>Аналізу емоцій (face-api.js)</li>
-          <li>Відстеження погляду (WebGazer.js)</li>
-          <li>Генерації аналітичних звітів (OpenAI API)</li>
-        </ul>
-        <p>5.2. Всі дані AI-аналізу зберігаються конфіденційно та використовуються виключно для професійної роботи психолога.</p>
-        <p>5.3. Дані не передаються сторонім AI-сервісам без анонімізації.</p>
-
-        <h3>6. ФАЙЛИ COOKIES</h3>
-        <p>6.1. Платформа використовує cookies для покращення роботи сайту та збереження налаштувань користувача.</p>
-
-        <h3>7. ПРАВА КОРИСТУВАЧА</h3>
-        <p>7.1. Користувач має право:</p>
-        <ul>
-          <li>Отримати доступ до своїх персональних даних</li>
-          <li>Вимагати видалення даних</li>
-          <li>Відкликати згоду на обробку даних</li>
-          <li>Оскаржити порушення своїх прав</li>
-        </ul>
-
-        <h3>8. ЗМІНИ В ПОЛІТИЦІ КОНФІДЕНЦІЙНОСТІ</h3>
-        <p>8.1. Ми залишаємо за собою право вносити зміни до цієї Політики. Актуальна версія завжди доступна на сайті.</p>
-
-        <h3>9. КОНТАКТИ</h3>
-        <p>З питань конфіденційності звертайтесь:<br>
-        ФОП Казар'ян Павло Ашотович<br>
-        Email: pavel.kazarjan@gmail.com<br>
-        Адреса: 57508, Україна, Миколаївська обл., місто Очаків, вул. Потьомкіна, буд. 4, кв. 74</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Disclaimer Modal -->
-  <div id="modal-disclaimer" class="legal-modal">
-    <div class="legal-modal-content">
-      <div class="legal-modal-header">
-        <div class="legal-modal-title">▸ ВІДМОВА ВІД ВІДПОВІДАЛЬНОСТІ</div>
-        <button class="legal-modal-close" onclick="closeLegalModal('modal-disclaimer')">X</button>
-      </div>
-      <div class="legal-modal-body">
-        <h2>ВІДМОВА ВІД ВІДПОВІДАЛЬНОСТІ</h2>
-        <p><strong>Дата публікації:</strong> 12.03.2026</p>
-        <p><strong>Виконавець послуг:</strong> ФОП Казар'ян Павло Ашотович<br>
-        <strong>РНОКПП:</strong> 2847814635</p>
-
-        <h3>1. ЗАГАЛЬНІ ПОЛОЖЕННЯ</h3>
-        <p>1.1. Використовуючи платформу KazarianWEBINARStudio, Користувач підтверджує, що ознайомлений з цією Відмовою від відповідальності та приймає її умови.</p>
-
-        <h3>2. ОБМЕЖЕННЯ ВІДПОВІДАЛЬНОСТІ</h3>
-        <p>2.1. Послуги психологічного консультування не є медичними послугами та не замінюють професійної медичної допомоги.</p>
-        <p>2.2. У разі серйозних психічних розладів або кризових станів Користувач повинен звернутися до кваліфікованого лікаря-психіатра або служби екстреної психологічної допомоги.</p>
-
-        <h3>3. ТЕХНІЧНІ ОБМЕЖЕННЯ</h3>
-        <p>3.1. Виконавець не несе відповідальності за:</p>
-        <ul>
-          <li>Технічні збої платформи через проблеми з інтернет-з'єднанням Користувача</li>
-          <li>Перебої в роботі сторонніх сервісів (PeerJS, OpenAI, WebGazer)</li>
-          <li>Недоступність платформи через технічне обслуговування</li>
-        </ul>
-
-        <h3>4. ВИКОРИСТАННЯ AI-АНАЛІЗУ</h3>
-        <p>4.1. AI-інструменти (аналіз емоцій, відстеження погляду, профайлінг) є допоміжними засобами для професійної роботи психолога.</p>
-        <p>4.2. Результати AI-аналізу НЕ Є діагнозом і НЕ замінюють професійної оцінки психолога.</p>
-        <p>4.3. Точність AI-інструментів може залежати від якості відео, освітлення та інших технічних факторів.</p>
-
-        <h3>5. ПРОФАЙЛІНГ ТА ДЕТЕКЦІЯ ОБМАНУ</h3>
-        <p>5.1. Функція профайлінгу та аналізу поведінки є експериментальною та використовується виключно як додатковий інструмент для психолога.</p>
-        <p>5.2. Виконавець не гарантує 100% точність визначення обману або емоційних станів.</p>
-        <p>5.3. Результати профайлінгу НЕ МОЖУТЬ використовуватися як доказ у судових справах або інших офіційних процедурах без додаткової професійної експертизи.</p>
-
-        <h3>6. КОНФІДЕНЦІЙНІСТЬ ЗАПИСІВ</h3>
-        <p>6.1. Відеозаписи сесій зберігаються в зашифрованому вигляді.</p>
-        <p>6.2. Виконавець докладає максимум зусиль для захисту даних, але не може гарантувати абсолютну безпеку через загрози кібербезпеки.</p>
-
-        <h3>7. РЕКОМЕНДАЦІЇ КОРИСТУВАЧУ</h3>
-        <p>7.1. Не використовуйте платформу для:</p>
-        <ul>
-          <li>Самодіагностики серйозних психічних розладів</li>
-          <li>Заміни психіатричного лікування</li>
-          <li>Прийняття життєво важливих рішень без консультації з відповідними фахівцями</li>
-        </ul>
-
-        <h3>8. ФОРС-МАЖОР</h3>
-        <p>8.1. Виконавець не несе відповідальності за невиконання зобов'язань внаслідок форс-мажорних обставин: війна, стихійні лиха, епідемії, кібератаки тощо.</p>
-
-        <h3>9. ПРИКІНЦЕВІ ПОЛОЖЕННЯ</h3>
-        <p>9.1. Використовуючи платформу, Користувач підтверджує, що він є повнолітнім дієздатним громадянином.</p>
-        <p>9.2. Для неповнолітніх необхідна згода батьків або законних представників.</p>
-
-        <h3>10. КОНТАКТИ</h3>
-        <p>З питань звертайтесь:<br>
-        ФОП Казар'ян Павло Ашотович<br>
-        Email: pavel.kazarjan@gmail.com<br>
-        Адреса: 57508, Україна, Миколаївська обл., місто Очаків, вул. Потьомкіна, буд. 4, кв. 74</p>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Legal modals control
     function openLegalModal(modalId) {
-      document.getElementById(modalId).classList.add('active');
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.add('active');
     }
-
     function closeLegalModal(modalId) {
-      document.getElementById(modalId).classList.remove('active');
-    }
-
-    // Event listeners for footer links (only if elements exist)
-    const linkOffer = document.getElementById('link-offer');
-    if (linkOffer) {
-      linkOffer.addEventListener('click', (e) => {
-        e.preventDefault();
-        openLegalModal('modal-offer');
-      });
-    }
-
-    const linkPrivacy = document.getElementById('link-privacy');
-    if (linkPrivacy) {
-      linkPrivacy.addEventListener('click', (e) => {
-        e.preventDefault();
-        openLegalModal('modal-privacy');
-      });
-    }
-
-    const linkDisclaimer = document.getElementById('link-disclaimer');
-    if (linkDisclaimer) {
-      linkDisclaimer.addEventListener('click', (e) => {
-        e.preventDefault();
-        openLegalModal('modal-disclaimer');
-      });
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.remove('active');
     }
 
     // Header legal links
@@ -7623,7 +7120,6 @@ ${eyeData}
         openLegalModal('modal-privacy');
       });
     }
-
     const linkOfferHeader = document.getElementById('link-offer-header');
     if (linkOfferHeader) {
       linkOfferHeader.addEventListener('click', (e) => {
@@ -7631,7 +7127,6 @@ ${eyeData}
         openLegalModal('modal-offer');
       });
     }
-
     const linkDisclaimerHeader = document.getElementById('link-disclaimer-header');
     if (linkDisclaimerHeader) {
       linkDisclaimerHeader.addEventListener('click', (e) => {
@@ -7639,16 +7134,291 @@ ${eyeData}
         openLegalModal('modal-disclaimer');
       });
     }
-
-    // Close modals on background click
-    document.querySelectorAll('.legal-modal').forEach(modal => {
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          modal.classList.remove('active');
-        }
-      });
-    });
   </script>
 
+  <!-- Legal Modals -->
+  <div id="modal-offer" class="legal-modal">
+    <div class="legal-modal-content">
+      <div class="legal-modal-header">
+        <div class="legal-modal-title">▸ ДОГОВІР ПУБЛІЧНОЇ ОФЕРТИ</div>
+        <button class="legal-modal-close" onclick="closeLegalModal('modal-offer')">X</button>
+      </div>
+      <div class="legal-modal-body">
+        <h2>ДОГОВІР ПУБЛІЧНОЇ ОФЕРТИ</h2>
+        <p>про надання інформаційно-консультаційних послуг у сфері психології</p>
+        <p><strong>Редакція від:</strong> 12 березня 2026 року</p>
+
+        <h3>1. ЗАГАЛЬНІ ПОЛОЖЕННЯ</h3>
+        <p>1.1. Цей Договір публічної оферти (далі - Договір) є офіційною пропозицією Фізичної особи-підприємця Казар'яна Павла Ашотовича (далі - Виконавець) укласти договір про надання інформаційно-консультаційних послуг у сфері психології на умовах, викладених у цьому Договорі.</p>
+        <p>1.2. Відповідно до статей 633, 641 Цивільного кодексу України, цей документ є публічною офертою, і в разі прийняття викладених нижче умов особа, яка здійснює акцепт цієї оферти, стає Замовником.</p>
+        <p>1.3. Акцептом (прийняттям) оферти є здійснення оплати послуг Виконавця у будь-який спосіб, передбачений цим Договором.</p>
+        <p>1.4. Укладаючи цей Договір, Замовник автоматично погоджується з повним та безумовним прийняттям положень цього Договору, Політики конфіденційності та Відмови від відповідальності.</p>
+
+        <h3>2. РЕКВІЗИТИ ВИКОНАВЦЯ</h3>
+        <p><strong>Найменування:</strong> ФОП Казар'ян Павло Ашотович<br>
+        <strong>РНОКПП:</strong> 2847814635<br>
+        <strong>Номер запису в ЄДР:</strong> 25220000000055755<br>
+        <strong>Дата державної реєстрації:</strong> 28.04.2011<br>
+        <strong>Юридична адреса:</strong> 57508, Україна, Миколаївська область, місто Очаків, вулиця Потьомкіна, будинок 4, квартира 74<br>
+        <strong>Email:</strong> pavel.kazarjan@gmail.com<br>
+        <strong>Платник єдиного податку:</strong> 3 група</p>
+
+        <h3>3. ПРЕДМЕТ ДОГОВОРУ</h3>
+        <p>3.1. Виконавець зобов'язується надати Замовнику інформаційно-консультаційні послуги у сфері психології через онлайн-платформу KazarianWEBINARStudio, а Замовник зобов'язується прийняти та оплатити такі послуги.</p>
+        <p>3.2. Перелік послуг, що надаються:</p>
+        <ul>
+          <li>Індивідуальні психологічні консультації онлайн</li>
+          <li>Групові вебінари та тренінги з психології</li>
+          <li>Онлайн-курси з особистісного розвитку</li>
+          <li>Психологічний супровід та коучинг</li>
+          <li>Консультації з НЛП та еріксонівського гіпнозу</li>
+        </ul>
+        <p>3.3. Послуги надаються дистанційно через відеозв'язок на платформі KazarianWEBINARStudio.</p>
+
+        <h3>4. ВАРТІСТЬ ПОСЛУГ ТА ПОРЯДОК ОПЛАТИ</h3>
+        <p>4.1. Вартість послуг визначається Виконавцем та публікується на офіційному веб-сайті або повідомляється Замовнику індивідуально.</p>
+        <p>4.2. Оплата здійснюється у національній валюті України (гривня) у безготівковій формі шляхом перерахування коштів на розрахунковий рахунок Виконавця або через електронні платіжні системи.</p>
+        <p>4.3. Оплата здійснюється на умовах 100% передоплати до початку надання послуг, якщо інше не погоджено сторонами.</p>
+        <p>4.4. Послуга вважається оплаченою з моменту зарахування коштів на рахунок Виконавця.</p>
+
+        <h3>5. ПРАВА ТА ОБОВ'ЯЗКИ СТОРІН</h3>
+        <p><strong>5.1. Виконавець зобов'язується:</strong></p>
+        <ul>
+          <li>Надавати послуги якісно та у погоджені строки</li>
+          <li>Забезпечити конфіденційність інформації, отриманої від Замовника</li>
+          <li>Інформувати Замовника про особливості та обмеження послуг</li>
+          <li>Дотримуватися етичних принципів психологічної практики</li>
+        </ul>
+        <p><strong>5.2. Замовник зобов'язується:</strong></p>
+        <ul>
+          <li>Своєчасно оплатити послуги Виконавця</li>
+          <li>Надавати достовірну інформацію, необхідну для надання послуг</li>
+          <li>Дотримуватися погодженого розкладу консультацій</li>
+          <li>Не записувати та не розповсюджувати матеріали консультацій без письмової згоди Виконавця</li>
+        </ul>
+
+        <h3>6. ПОРЯДОК НАДАННЯ ПОСЛУГ</h3>
+        <p>6.1. Після оплати Замовник отримує посилання для підключення до онлайн-консультації.</p>
+        <p>6.2. Тривалість однієї консультації становить 50-60 хвилин, якщо інше не погоджено сторонами.</p>
+        <p>6.3. Перенесення консультації можливе за умови повідомлення не пізніше ніж за 24 години до запланованого часу.</p>
+        <p>6.4. У разі неявки Замовника без попередження консультація вважається проведеною, кошти не повертаються.</p>
+
+        <h3>7. ПОВЕРНЕННЯ КОШТІВ</h3>
+        <p>7.1. Повернення коштів можливе у разі скасування консультації Замовником не пізніше ніж за 48 годин до її початку.</p>
+        <p>7.2. При скасуванні менш ніж за 48 годин повертається 50% вартості послуги.</p>
+        <p>7.3. Повернення коштів здійснюється протягом 14 робочих днів на рахунок, з якого була здійснена оплата.</p>
+
+        <h3>8. ВІДПОВІДАЛЬНІСТЬ СТОРІН</h3>
+        <p>8.1. Сторони несуть відповідальність за невиконання або неналежне виконання своїх зобов'язань згідно з чинним законодавством України.</p>
+        <p>8.2. Виконавець не несе відповідальності за технічні збої, що виникли з вини інтернет-провайдерів або інших третіх осіб.</p>
+        <p>8.3. Виконавець не несе відповідальності за результати застосування Замовником отриманих рекомендацій.</p>
+
+        <h3>9. ФОРС-МАЖОР</h3>
+        <p>9.1. Сторони звільняються від відповідальності за часткове або повне невиконання зобов'язань, якщо це невиконання стало наслідком обставин непереборної сили (форс-мажор).</p>
+
+        <h3>10. ВИРІШЕННЯ СПОРІВ</h3>
+        <p>10.1. Усі спори вирішуються шляхом переговорів.</p>
+        <p>10.2. У разі недосягнення згоди спір передається на розгляд суду за місцезнаходженням Виконавця відповідно до чинного законодавства України.</p>
+
+        <h3>11. ПРИКІНЦЕВІ ПОЛОЖЕННЯ</h3>
+        <p>11.1. Цей Договір набуває чинності з моменту акцепту і діє до повного виконання сторонами своїх зобов'язань.</p>
+        <p>11.2. Виконавець залишає за собою право вносити зміни до цього Договору з повідомленням на веб-сайті.</p>
+        <p>11.3. Продовження користування послугами після внесення змін означає згоду Замовника з новою редакцією Договору.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-privacy" class="legal-modal">
+    <div class="legal-modal-content">
+      <div class="legal-modal-header">
+        <div class="legal-modal-title">▸ ПОЛІТИКА КОНФІДЕНЦІЙНОСТІ</div>
+        <button class="legal-modal-close" onclick="closeLegalModal('modal-privacy')">X</button>
+      </div>
+      <div class="legal-modal-body">
+        <h2>ПОЛІТИКА КОНФІДЕНЦІЙНОСТІ</h2>
+        <p>щодо обробки та захисту персональних даних</p>
+        <p><strong>Редакція від:</strong> 12 березня 2026 року</p>
+
+        <h3>1. ЗАГАЛЬНІ ПОЛОЖЕННЯ</h3>
+        <p>1.1. Ця Політика конфіденційності (далі - Політика) розроблена відповідно до Закону України "Про захист персональних даних" та регулює порядок обробки і захисту персональних даних користувачів платформи KazarianWEBINARStudio.</p>
+        <p>1.2. Оператором персональних даних є ФОП Казар'ян Павло Ашотович (РНОКПП: 2847814635).</p>
+        <p>1.3. Використовуючи платформу та/або надаючи свої персональні дані, Користувач надає згоду на обробку своїх персональних даних відповідно до умов цієї Політики.</p>
+
+        <h3>2. ПЕРСОНАЛЬНІ ДАНІ, ЩО ЗБИРАЮТЬСЯ</h3>
+        <p>2.1. Ми збираємо наступні категорії персональних даних:</p>
+        <ul>
+          <li><strong>Ідентифікаційні дані:</strong> прізвище, ім'я, по батькові</li>
+          <li><strong>Контактні дані:</strong> електронна адреса, номер телефону</li>
+          <li><strong>Платіжні дані:</strong> інформація про платіжні операції (без зберігання даних платіжних карток)</li>
+          <li><strong>Технічні дані:</strong> IP-адреса, тип браузера, дані про пристрій</li>
+          <li><strong>Дані сесій:</strong> записи консультацій (за окремою згодою)</li>
+        </ul>
+        <p>2.2. Особливі категорії даних (дані про здоров'я, психологічний стан) обробляються виключно з метою надання психологічних послуг та за явною згодою суб'єкта даних.</p>
+
+        <h3>3. МЕТА ОБРОБКИ ПЕРСОНАЛЬНИХ ДАНИХ</h3>
+        <p>3.1. Персональні дані обробляються з метою:</p>
+        <ul>
+          <li>Надання інформаційно-консультаційних послуг у сфері психології</li>
+          <li>Ідентифікації Користувача</li>
+          <li>Зв'язку з Користувачем (повідомлення, нагадування)</li>
+          <li>Обробки платежів та ведення бухгалтерського обліку</li>
+          <li>Покращення якості послуг та роботи платформи</li>
+          <li>Виконання вимог чинного законодавства</li>
+        </ul>
+
+        <h3>4. ПРАВОВІ ПІДСТАВИ ОБРОБКИ</h3>
+        <p>4.1. Обробка персональних даних здійснюється на підставі:</p>
+        <ul>
+          <li>Згоди суб'єкта персональних даних</li>
+          <li>Виконання договору, стороною якого є суб'єкт даних</li>
+          <li>Виконання законних зобов'язань Оператора</li>
+          <li>Законних інтересів Оператора</li>
+        </ul>
+
+        <h3>5. ЗБЕРІГАННЯ ТА ЗАХИСТ ДАНИХ</h3>
+        <p>5.1. Персональні дані зберігаються протягом строку, необхідного для досягнення мети обробки, але не менше строків, встановлених законодавством.</p>
+        <p>5.2. Для захисту персональних даних застосовуються:</p>
+        <ul>
+          <li>Шифрування даних при передачі (SSL/TLS)</li>
+          <li>Обмеження доступу до персональних даних</li>
+          <li>Регулярне резервне копіювання</li>
+          <li>Захист від несанкціонованого доступу</li>
+        </ul>
+        <p>5.3. Записи психологічних консультацій (відео/аудіо) зберігаються виключно локально у Виконавця та не передаються третім особам без письмової згоди Замовника.</p>
+
+        <h3>6. ПЕРЕДАЧА ДАНИХ ТРЕТІМ ОСОБАМ</h3>
+        <p>6.1. Персональні дані можуть передаватися:</p>
+        <ul>
+          <li>Платіжним системам - для обробки платежів</li>
+          <li>Державним органам - на підставі законних вимог</li>
+          <li>Технічним провайдерам - для забезпечення роботи платформи (з дотриманням конфіденційності)</li>
+        </ul>
+        <p>6.2. Ми не продаємо та не передаємо персональні дані третім особам з комерційною метою.</p>
+
+        <h3>7. ПРАВА СУБ'ЄКТІВ ПЕРСОНАЛЬНИХ ДАНИХ</h3>
+        <p>7.1. Відповідно до Закону України "Про захист персональних даних", Ви маєте право:</p>
+        <ul>
+          <li>Знати про джерела збору та місцезнаходження своїх персональних даних</li>
+          <li>Отримувати інформацію про умови надання доступу до персональних даних</li>
+          <li>На доступ до своїх персональних даних</li>
+          <li>Вимагати виправлення неточних або неповних даних</li>
+          <li>Вимагати видалення персональних даних</li>
+          <li>Відкликати згоду на обробку персональних даних</li>
+          <li>Оскаржити дії Оператора до Уповноваженого ВРУ з прав людини або до суду</li>
+        </ul>
+        <p>7.2. Для реалізації своїх прав зверніться на email: pavel.kazarjan@gmail.com</p>
+
+        <h3>8. ФАЙЛИ COOKIE</h3>
+        <p>8.1. Платформа використовує файли cookie для:</p>
+        <ul>
+          <li>Забезпечення функціонування платформи</li>
+          <li>Збереження налаштувань користувача</li>
+          <li>Аналітики використання платформи</li>
+        </ul>
+        <p>8.2. Ви можете відключити cookie у налаштуваннях браузера, проте це може вплинути на функціональність платформи.</p>
+
+        <h3>9. ЗМІНИ ДО ПОЛІТИКИ</h3>
+        <p>9.1. Оператор залишає за собою право вносити зміни до цієї Політики.</p>
+        <p>9.2. Актуальна версія Політики завжди доступна на платформі.</p>
+        <p>9.3. Продовження використання платформи після внесення змін означає згоду з новою редакцією Політики.</p>
+
+        <h3>10. КОНТАКТНА ІНФОРМАЦІЯ</h3>
+        <p>10.1. З питань обробки персональних даних звертайтесь:</p>
+        <p><strong>ФОП Казар'ян Павло Ашотович</strong><br>
+        Email: pavel.kazarjan@gmail.com<br>
+        Адреса: 57508, Україна, Миколаївська область, м. Очаків, вул. Потьомкіна, 4, кв. 74</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-disclaimer" class="legal-modal">
+    <div class="legal-modal-content">
+      <div class="legal-modal-header">
+        <div class="legal-modal-title">▸ ВІДМОВА ВІД ВІДПОВІДАЛЬНОСТІ</div>
+        <button class="legal-modal-close" onclick="closeLegalModal('modal-disclaimer')">X</button>
+      </div>
+      <div class="legal-modal-body">
+        <h2>ВІДМОВА ВІД ВІДПОВІДАЛЬНОСТІ</h2>
+        <p>(Disclaimer)</p>
+        <p><strong>Редакція від:</strong> 12 березня 2026 року</p>
+
+        <h3>1. ХАРАКТЕР ПОСЛУГ</h3>
+        <p>1.1. Послуги, що надаються через платформу KazarianWEBINARStudio Фізичною особою-підприємцем Казар'яном Павлом Ашотовичем, мають <strong>інформаційно-консультаційний та освітній характер</strong> у сфері психології.</p>
+        <p>1.2. Виконавець є практикуючим психологом з вищою освітою та має право надавати психологічні консультації відповідно до чинного законодавства України.</p>
+        <p>1.3. Методи роботи включають: психологічне консультування, НЛП (нейролінгвістичне програмування), еріксонівський гіпноз, коучинг.</p>
+
+        <h3>2. ОБМЕЖЕННЯ ВІДПОВІДАЛЬНОСТІ</h3>
+        <p>2.1. <strong>Психологічні консультації НЕ є медичними послугами</strong> та не можуть замінити:</p>
+        <ul>
+          <li>Консультацію лікаря-психіатра</li>
+          <li>Медикаментозне лікування психічних розладів</li>
+          <li>Стаціонарне психіатричне лікування</li>
+          <li>Послуги швидкої медичної допомоги</li>
+        </ul>
+        <p>2.2. Виконавець <strong>не ставить медичних діагнозів</strong> та не призначає медикаментозного лікування.</p>
+        <p>2.3. Результати психологічних консультацій є <strong>індивідуальними</strong> та залежать від багатьох факторів, включаючи особистість клієнта, його мотивацію, регулярність роботи та інші обставини.</p>
+        <p>2.4. Виконавець <strong>не гарантує</strong> конкретних результатів та не несе відповідальності за рішення, прийняті клієнтом на основі отриманих консультацій.</p>
+
+        <h3>3. ВАЖЛИВІ ЗАСТЕРЕЖЕННЯ</h3>
+        <p>3.1. <strong>У разі наявності наступних станів негайно зверніться до лікаря-психіатра або викличте швидку допомогу:</strong></p>
+        <ul>
+          <li>Суїцидальні думки або наміри</li>
+          <li>Думки про заподіяння шкоди собі або іншим</li>
+          <li>Гострі психотичні стани (галюцинації, марення)</li>
+          <li>Тяжка депресія з неможливістю виконувати повсякденні дії</li>
+          <li>Панічні атаки з порушенням дихання та серцебиття</li>
+          <li>Зловживання психоактивними речовинами</li>
+        </ul>
+        <p>3.2. Телефон екстреної психологічної допомоги в Україні: <strong>7333</strong> (безкоштовно з мобільного)</p>
+        <p>3.3. Швидка медична допомога: <strong>103</strong></p>
+
+        <h3>4. КОНФІДЕНЦІЙНІСТЬ ТА ЇЇ МЕЖІ</h3>
+        <p>4.1. Виконавець дотримується принципу конфіденційності та не розголошує інформацію, отриману під час консультацій.</p>
+        <p>4.2. <strong>Виключення з принципу конфіденційності</strong> (коли Виконавець зобов'язаний повідомити відповідні органи):</p>
+        <ul>
+          <li>Реальна загроза життю та здоров'ю клієнта або третіх осіб</li>
+          <li>Інформація про вчинені або плановані тяжкі злочини</li>
+          <li>Інформація про насильство щодо дітей або недієздатних осіб</li>
+          <li>Законні вимоги правоохоронних органів або суду</li>
+        </ul>
+
+        <h3>5. АВТОРСЬКІ ПРАВА</h3>
+        <p>5.1. Усі матеріали платформи KazarianWEBINARStudio (тексти, відео, аудіо, графіка, методики) є об'єктами авторського права та захищені Законом України "Про авторське право і суміжні права".</p>
+        <p>5.2. <strong>Заборонено</strong> без письмової згоди Виконавця:</p>
+        <ul>
+          <li>Копіювати та розповсюджувати матеріали</li>
+          <li>Записувати консультації (аудіо/відео)</li>
+          <li>Використовувати матеріали в комерційних цілях</li>
+          <li>Модифікувати або створювати похідні твори</li>
+        </ul>
+        <p>5.3. За порушення авторських прав передбачена цивільна, адміністративна та кримінальна відповідальність.</p>
+
+        <h3>6. ТЕХНІЧНІ ОБМЕЖЕННЯ</h3>
+        <p>6.1. Виконавець не несе відповідальності за:</p>
+        <ul>
+          <li>Технічні збої інтернет-з'єднання</li>
+          <li>Несумісність обладнання клієнта з платформою</li>
+          <li>Дії шкідливого програмного забезпечення на пристрої клієнта</li>
+          <li>Перебої в роботі сторонніх сервісів</li>
+        </ul>
+
+        <h3>7. ПРИЙНЯТТЯ УМОВ</h3>
+        <p>7.1. Використовуючи послуги платформи KazarianWEBINARStudio, Ви підтверджуєте, що:</p>
+        <ul>
+          <li>Ознайомилися з цією Відмовою від відповідальності</li>
+          <li>Розумієте характер та обмеження психологічних послуг</li>
+          <li>Усвідомлюєте, що це не медична допомога</li>
+          <li>Приймаєте на себе відповідальність за застосування отриманих рекомендацій</li>
+          <li>Досягли 18 років або маєте згоду батьків/опікунів</li>
+        </ul>
+
+        <h3>8. КОНТАКТНА ІНФОРМАЦІЯ</h3>
+        <p><strong>ФОП Казар'ян Павло Ашотович</strong><br>
+        Клінічний психолог, НЛП-тренер, еріксонівський гіпнотерапевт<br>
+        Email: pavel.kazarjan@gmail.com<br>
+        Telegram: @psihodoctor</p>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
