@@ -4313,8 +4313,18 @@ ${transcription}`
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Generation error');
+        // Check if response is JSON or HTML
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const error = await response.json();
+          throw new Error(error.error || 'Generation error');
+        } else {
+          // Server returned HTML (timeout or other error)
+          if (response.status === 504) {
+            throw new Error('Превышен лимит времени генерации. Попробуйте сократить текст или повторите позже.');
+          }
+          throw new Error(`Ошибка сервера: ${response.status}`);
+        }
       }
 
       const result = await response.json();
@@ -7142,7 +7152,18 @@ ${eyeData}
         });
 
         if (!response.ok) {
-          throw new Error('API error: ' + response.status);
+          // Check if response is JSON or HTML
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const error = await response.json();
+            throw new Error(error.error || 'API error');
+          } else {
+            // Server returned HTML (timeout or other error)
+            if (response.status === 504) {
+              throw new Error('Превышен лимит времени генерации. Данных слишком много, попробуйте короткую сессию.');
+            }
+            throw new Error(`Ошибка сервера: ${response.status}`);
+          }
         }
 
         const result = await response.json();

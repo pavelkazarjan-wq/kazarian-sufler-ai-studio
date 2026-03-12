@@ -62,7 +62,7 @@ exports.handler = async (event, context) => {
             content: prompt
           }
         ],
-        max_tokens: 4000,
+        max_tokens: 2000,
         temperature: 0.7
       })
     });
