@@ -2519,15 +2519,15 @@
           .client-container {
             position: fixed; inset: 0; background: #0f172a;
             display: flex; flex-direction: column;
-            padding: 8px; overflow: hidden;
+            padding: 8px;
           }
           .client-video-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-            flex: 1; min-height: 0; width: 100%;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+            flex: 1; min-height: 0;
           }
           .client-video-box {
             background: #1e293b; border-radius: 12px; overflow: hidden;
-            position: relative; min-height: 0;
+            position: relative;
           }
           .client-video-box video {
             width: 100%; height: 100%; object-fit: cover;
@@ -2538,14 +2538,17 @@
             background: rgba(0,0,0,0.7); padding: 4px 10px; border-radius: 6px;
             color: white; font-weight: 600; font-size: 12px; z-index: 10;
           }
+          .client-bottom {
+            flex-shrink: 0;
+            padding-top: 8px;
+          }
           .client-controls {
-            display: flex; gap: 8px; justify-content: center; align-items: center;
-            padding: 10px 4px; flex-shrink: 0; flex-wrap: wrap;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
           }
           .client-btn {
-            padding: 10px 16px; border-radius: 10px; border: none; font-size: 13px; font-weight: 600;
+            padding: 12px 8px; border-radius: 10px; border: none; font-size: 12px; font-weight: 600;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            gap: 4px; transition: all 0.2s; white-space: nowrap;
+            gap: 4px; white-space: nowrap;
           }
           .client-btn:active { transform: scale(0.95); }
           .client-btn-camera { background: #3b82f6; color: white; }
@@ -2555,8 +2558,8 @@
           .client-btn-leave { background: #ef4444; color: white; }
           .client-btn-support { background: #6366f1; color: white; text-decoration: none; }
           .client-status {
-            color: #94a3b8; text-align: center; font-size: 13px;
-            padding: 6px; flex-shrink: 0;
+            color: #94a3b8; text-align: center; font-size: 12px;
+            padding: 6px 0 0 0;
           }
 
           /* Mobile portrait */
@@ -2567,44 +2570,34 @@
               gap: 8px;
             }
             .client-controls {
-              display: grid;
               grid-template-columns: 1fr 1fr;
-              gap: 6px;
-              padding: 8px;
-              width: 100%;
             }
-            .client-btn {
-              padding: 12px 8px; font-size: 12px;
-              justify-content: center; width: 100%;
-            }
-            .client-status { font-size: 12px; padding: 4px; }
+            .client-btn { padding: 14px 8px; font-size: 11px; }
           }
 
           /* Mobile landscape */
           @media (orientation: landscape) and (max-height: 500px) {
-            .client-container { padding: 4px; flex-direction: row; flex-wrap: wrap; }
+            .client-container { flex-direction: row; flex-wrap: wrap; gap: 8px; }
             .client-video-grid {
+              flex: 1; min-width: 0;
               grid-template-columns: 1fr 1fr;
               grid-template-rows: 1fr;
-              gap: 6px;
-              width: 70%;
+            }
+            .client-bottom {
+              width: 100px; padding-top: 0;
+              display: flex; flex-direction: column; justify-content: center;
             }
             .client-controls {
-              display: flex; flex-direction: column;
-              gap: 4px; padding: 4px; width: 28%;
+              grid-template-columns: 1fr;
+              gap: 4px;
             }
-            .client-btn { padding: 6px 8px; font-size: 10px; width: 100%; }
+            .client-btn { padding: 8px 4px; font-size: 9px; }
             .client-status { display: none; }
-          }
-
-          /* Very small screens */
-          @media (max-width: 400px) {
-            .client-btn { padding: 8px 8px; font-size: 10px; }
           }
 
           /* Safe area for notch phones */
           @supports (padding: env(safe-area-inset-bottom)) {
-            .client-controls { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+            .client-bottom { padding-bottom: env(safe-area-inset-bottom); }
           }
         </style>
         <div class="client-container">
@@ -2618,13 +2611,15 @@
               <video id="client-my-video" autoplay playsinline muted></video>
             </div>
           </div>
-          <div class="client-controls">
-            <button class="client-btn client-btn-camera" id="client-camera-btn">📹 Камера</button>
-            <button class="client-btn client-btn-mic" id="client-mic-btn">🎤 Микрофон</button>
-            <button class="client-btn client-btn-leave" id="client-leave-btn">📞 Положить трубку</button>
-            <a href="https://t.me/PavloKazarianBot" target="_blank" class="client-btn client-btn-support">💬 Поддержка</a>
+          <div class="client-bottom">
+            <div class="client-controls">
+              <button class="client-btn client-btn-camera" id="client-camera-btn">📹 Камера</button>
+              <button class="client-btn client-btn-mic" id="client-mic-btn">🎤 Микрофон</button>
+              <button class="client-btn client-btn-leave" id="client-leave-btn">📞 Трубку</button>
+              <a href="https://t.me/PavloKazarianBot" target="_blank" class="client-btn client-btn-support">💬 Помощь</a>
+            </div>
+            <div class="client-status" id="client-status">Загрузка...</div>
           </div>
-          <div class="client-status" id="client-status">Загрузка...</div>
         </div>
       `;
 
