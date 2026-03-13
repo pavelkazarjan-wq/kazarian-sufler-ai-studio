@@ -42,6 +42,7 @@ exports.handler = async (event, context) => {
     const {
       clientName = 'Клиент',
       validDays = 30,  // Default 30 days
+      scheduledTime = null,  // ISO string or timestamp for scheduled session
       clientPhone = '',
       clientEmail = '',
       notes = ''
@@ -53,12 +54,21 @@ exports.handler = async (event, context) => {
     // Calculate expiration date
     const expiresAt = Date.now() + (validDays * 24 * 60 * 60 * 1000);
 
+    // Parse scheduled time if provided
+    let startsAt = null;
+    if (scheduledTime) {
+      startsAt = typeof scheduledTime === 'string'
+        ? new Date(scheduledTime).getTime()
+        : scheduledTime;
+    }
+
     // Encode consultation data into URL-safe token
     const consultationData = {
       s: sessionId,           // session
       n: clientName,          // name
       e: expiresAt,           // expires
-      c: Date.now()           // created
+      c: Date.now(),          // created
+      t: startsAt             // scheduled time (null if not set)
     };
 
     // Simple encoding (base64)
@@ -78,7 +88,8 @@ exports.handler = async (event, context) => {
         sessionId: sessionId,
         clientName: clientName,
         expiresAt: new Date(expiresAt).toISOString(),
-        validDays: validDays
+        validDays: validDays,
+        scheduledTime: startsAt ? new Date(startsAt).toISOString() : null
       })
     };
 
