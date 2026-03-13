@@ -111,6 +111,104 @@
       fill: currentColor;
     }
 
+    /* Broadcast/Zoom Button */
+    .broadcast-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      border-radius: 20px;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .broadcast-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+    .broadcast-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Broadcast Mode - Clean screen for OBS/Zoom capture */
+    body.broadcast-mode {
+      background: #000;
+    }
+    body.broadcast-mode .header,
+    body.broadcast-mode .sidebar,
+    body.broadcast-mode #thumbnails,
+    body.broadcast-mode .placeholder,
+    body.broadcast-mode .mobile-menu-btn,
+    body.broadcast-mode .guest-modal,
+    body.broadcast-mode .overlay-settings,
+    body.broadcast-mode .footer-controls,
+    body.broadcast-mode .review-overlay,
+    body.broadcast-mode .transcription-modal,
+    body.broadcast-mode #teleprompter-panel,
+    body.broadcast-mode #ai-suggestions,
+    body.broadcast-mode #emotion-panel {
+      display: none !important;
+    }
+    body.broadcast-mode .canvas-area {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 0;
+      margin: 0;
+    }
+    body.broadcast-mode #main-canvas {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: none !important;
+      max-height: none !important;
+      border-radius: 0;
+    }
+    body.broadcast-mode .split-view {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: none !important;
+      max-height: none !important;
+      border-radius: 0;
+    }
+    body.broadcast-mode .broadcast-exit-hint {
+      display: block !important;
+    }
+    .broadcast-exit-hint {
+      display: none;
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 8px 16px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      font-size: 12px;
+      border-radius: 20px;
+      z-index: 99999;
+      cursor: pointer;
+      opacity: 0.3;
+      transition: opacity 0.3s;
+    }
+    .broadcast-exit-hint:hover {
+      opacity: 1;
+    }
+    body.broadcast-mode .broadcast-btn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 99999;
+      opacity: 0.3;
+    }
+    body.broadcast-mode .broadcast-btn:hover {
+      opacity: 1;
+    }
+
     /* Real-time Clock Overlay */
     #clock-overlay {
       position: absolute;
@@ -1423,6 +1521,11 @@
   </style>
 </head>
 <body>
+  <!-- Broadcast mode exit hint -->
+  <div class="broadcast-exit-hint" id="broadcast-exit-hint" onclick="document.getElementById('btn-broadcast').click()">
+    ESC — выход из режима трансляции
+  </div>
+
   <!-- Auth screen -->
   <div id="auth-screen" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#0f172a;display:flex;align-items:center;justify-content:center;z-index:10000;">
     <div style="text-align:center;padding:40px;">
@@ -1524,6 +1627,14 @@
         <div class="rec-dot"></div>
         <span id="rec-time">00:00</span>
       </div>
+      <button class="broadcast-btn" id="btn-broadcast" title="Открыть чистый экран для захвата в OBS/Zoom">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+        Зум
+      </button>
       <a href="https://t.me/PavloKazarianBot" target="_blank" class="support-btn" title="Техподдержка">
         <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
         Поддержка
@@ -2273,7 +2384,14 @@
   <script>
     // Check if this is a consultation client or host with pre-generated link
     const urlParams = new URLSearchParams(window.location.search);
+    const isBroadcastMode = urlParams.get('broadcast') === 'true';
     const isClientMode = urlParams.get('mode') === 'client';
+
+    // Broadcast mode - clean screen for OBS/Zoom capture
+    if (isBroadcastMode) {
+      document.body.classList.add('broadcast-mode');
+      document.title = 'KazarianStudio - Трансляция';
+    }
     const hostSessionId = urlParams.get('host'); // Host mode with pre-generated session
     let sessionId = urlParams.get('session');
     const token = urlParams.get('token');
@@ -3082,6 +3200,7 @@
     const btnClearContent = document.getElementById('btn-clear-content');
     const loadText = document.getElementById('load-text');
     const btnCamera = document.getElementById('btn-camera');
+    const btnBroadcast = document.getElementById('btn-broadcast');
     const btnMic = document.getElementById('btn-mic');
     const btnAudioRec = document.getElementById('btn-audio-rec');
     const audioRecLabel = document.getElementById('audio-rec-label');
@@ -5621,6 +5740,75 @@ ${presentationText.slice(0, 8000)}
 
     slideContainer.addEventListener('wheel', handleWheelNavigation, { passive: false });
     splitView.addEventListener('wheel', handleWheelNavigation, { passive: false });
+
+    // Broadcast button - toggle fullscreen clean mode for OBS/Zoom capture
+    let isBroadcastOverlayActive = false;
+
+    btnBroadcast.addEventListener('click', () => {
+      isBroadcastOverlayActive = !isBroadcastOverlayActive;
+
+      if (isBroadcastOverlayActive) {
+        document.body.classList.add('broadcast-mode');
+        btnBroadcast.classList.add('active');
+        btnBroadcast.querySelector('span') && (btnBroadcast.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Выход
+        `);
+
+        // Try to go fullscreen
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(e => console.log('Fullscreen not available'));
+        }
+
+        console.log('📺 Broadcast mode ON - захватывайте это окно в OBS/Zoom');
+      } else {
+        document.body.classList.remove('broadcast-mode');
+        btnBroadcast.classList.remove('active');
+        btnBroadcast.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          Зум
+        `;
+
+        // Exit fullscreen
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+
+        console.log('📺 Broadcast mode OFF');
+      }
+    });
+
+    // Exit broadcast mode on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isBroadcastOverlayActive) {
+        btnBroadcast.click();
+      }
+    });
+
+    // Also exit when fullscreen changes
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement && isBroadcastOverlayActive) {
+        // Fullscreen was exited externally, turn off broadcast mode
+        isBroadcastOverlayActive = false;
+        document.body.classList.remove('broadcast-mode');
+        btnBroadcast.classList.remove('active');
+        btnBroadcast.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          Зум
+        `;
+      }
+    });
 
     // Camera
     btnCamera.addEventListener('click', async () => {
