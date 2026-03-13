@@ -2478,7 +2478,7 @@
       `;
 
       // Start countdown
-      const scheduledTimeMs = ${scheduledTime || 0};
+      const scheduledTimeMs = scheduledTime || 0;
       function updateCountdown() {
         const now = Date.now();
         const diff = scheduledTimeMs - WAITING_ROOM_BUFFER - now;
