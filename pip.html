@@ -85,6 +85,31 @@
     }
     .header-legal-links a:hover { color: #00ffaa; }
 
+    .support-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border: none;
+      border-radius: 20px;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .support-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+    .support-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
     /* Real-time Clock Overlay */
     #clock-overlay {
       position: absolute;
@@ -1492,6 +1517,10 @@
         <div class="rec-dot"></div>
         <span id="rec-time">00:00</span>
       </div>
+      <a href="https://t.me/PavloKazarianBot" target="_blank" class="support-btn" title="Техподдержка">
+        <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Поддержка
+      </a>
       <div class="header-legal-links">
         <a href="#" id="link-privacy-header">Політика конфіденційності</a>
         <a href="#" id="link-offer-header">Договір публічної оферти</a>
@@ -1700,6 +1729,13 @@
         <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
       </svg>
       🔗 Консультация
+    </button>
+    <button class="btn" id="btn-hangup" style="background: #ef4444; display: none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
+        <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"></path>
+        <line x1="23" y1="1" x2="1" y2="23" stroke="#fff" stroke-width="2"></line>
+      </svg>
+      📞 Положить трубку
     </button>
 
     <div class="divider"></div>
@@ -2010,7 +2046,10 @@
     <label>Показывать (сек), 0 = постоянно</label>
     <input type="range" id="host-duration" min="0" max="30" value="5">
     <div class="range-value" id="host-duration-value">5 сек</div>
-    <button class="overlay-btn overlay-btn-primary" id="btn-show-host-plate">Показать плашку</button>
+    <div style="display: flex; gap: 8px;">
+      <button class="overlay-btn overlay-btn-primary" id="btn-show-host-plate" style="flex:1;">Показать</button>
+      <button class="overlay-btn overlay-btn-secondary" id="btn-hide-host-plate" style="flex:1;">Скрыть</button>
+    </div>
 
     <h4>Плашка гостя</h4>
     <div class="toggle-row">
@@ -2029,7 +2068,10 @@
     <label>Показывать (сек), 0 = постоянно</label>
     <input type="range" id="guest-duration" min="0" max="30" value="5">
     <div class="range-value" id="guest-duration-value">5 сек</div>
-    <button class="overlay-btn overlay-btn-primary" id="btn-show-guest-plate">Показать плашку</button>
+    <div style="display: flex; gap: 8px;">
+      <button class="overlay-btn overlay-btn-primary" id="btn-show-guest-plate" style="flex:1;">Показать</button>
+      <button class="overlay-btn overlay-btn-secondary" id="btn-hide-guest-plate" style="flex:1;">Скрыть</button>
+    </div>
 
     <h4>Кнопка-ссылка (CTA) с таймером</h4>
     <label>Текст кнопки</label>
@@ -2215,10 +2257,59 @@
   </div>
 
   <script>
-    // Check if this is a consultation client
+    // Check if this is a consultation client or host with pre-generated link
     const urlParams = new URLSearchParams(window.location.search);
     const isClientMode = urlParams.get('mode') === 'client';
-    const sessionId = urlParams.get('session');
+    const hostSessionId = urlParams.get('host'); // Host mode with pre-generated session
+    let sessionId = urlParams.get('session');
+    const token = urlParams.get('token');
+
+    // Parse token if present (new format with expiration)
+    let clientName = 'Клиент';
+    let tokenExpired = false;
+
+    if (token) {
+      try {
+        // Decode base64url token
+        const tokenData = JSON.parse(atob(token.replace(/-/g, '+').replace(/_/g, '/')));
+        sessionId = tokenData.s;
+        clientName = tokenData.n || 'Клиент';
+        const expiresAt = tokenData.e;
+
+        // Check if expired
+        if (expiresAt && Date.now() > expiresAt) {
+          tokenExpired = true;
+        }
+      } catch (e) {
+        console.error('Invalid consultation token:', e);
+        tokenExpired = true;
+      }
+    }
+
+    // Show expired message
+    if (isClientMode && tokenExpired) {
+      document.body.innerHTML = `
+        <style>
+          .expired-container {
+            position: fixed; inset: 0; background: #0f172a;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+            color: white; text-align: center;
+          }
+          .expired-icon { font-size: 72px; margin-bottom: 24px; }
+          .expired-title { font-size: 28px; font-weight: 700; margin-bottom: 16px; color: #f87171; }
+          .expired-text { font-size: 18px; color: #94a3b8; max-width: 400px; line-height: 1.6; }
+          .expired-contact { margin-top: 32px; padding: 16px 32px; background: #3b82f6; border-radius: 12px; color: white; text-decoration: none; font-weight: 600; }
+          .expired-contact:hover { background: #2563eb; }
+        </style>
+        <div class="expired-container">
+          <div class="expired-icon">⏰</div>
+          <div class="expired-title">Ссылка устарела</div>
+          <div class="expired-text">Срок действия этой ссылки истёк. Пожалуйста, свяжитесь с психологом для получения новой ссылки.</div>
+          <a href="https://t.me/PavloKazarianBot" class="expired-contact">📱 Написать в Telegram</a>
+        </div>
+      `;
+      throw new Error('Link expired');
+    }
 
     if (isClientMode && sessionId) {
       // CLIENT MODE - Minimal UI for consultation
@@ -2255,6 +2346,7 @@
           .client-btn-mic { background: #10b981; color: white; }
           .client-btn-mic.off { background: #64748b; }
           .client-btn-leave { background: #ef4444; color: white; }
+          .client-btn-support { background: #10b981; color: white; text-decoration: none; }
           .client-status { margin-top: 20px; color: #94a3b8; text-align: center; font-size: 18px; }
         </style>
         <div class="client-container">
@@ -2271,7 +2363,8 @@
           <div class="client-controls">
             <button class="client-btn client-btn-camera" id="client-camera-btn">📹 Камера</button>
             <button class="client-btn client-btn-mic" id="client-mic-btn">🎤 Микрофон</button>
-            <button class="client-btn client-btn-leave" id="client-leave-btn">❌ Выйти</button>
+            <button class="client-btn client-btn-leave" id="client-leave-btn">📞 Положить трубку</button>
+            <a href="https://t.me/PavloKazarianBot" target="_blank" class="client-btn client-btn-support">💬 Поддержка</a>
           </div>
           <div class="client-status" id="client-status">Загрузка...</div>
         </div>
@@ -3060,11 +3153,17 @@
             console.log('✅ Consultation: Client stream received');
             guestStream = remoteStream;
             showGuestVideo(remoteStream);
+            // Show hangup button, hide consultation button
+            document.getElementById('btn-hangup').style.display = 'flex';
+            document.getElementById('btn-consultation').style.display = 'none';
           });
 
           incomingCall.on('close', () => {
             console.log('🔴 Consultation: Call closed');
             stopGuestConnection();
+            // Hide hangup button, show consultation button
+            document.getElementById('btn-hangup').style.display = 'none';
+            document.getElementById('btn-consultation').style.display = 'flex';
           });
 
           peerConnection = incomingCall;
@@ -3436,6 +3535,14 @@
       }
     });
 
+    document.getElementById('btn-hide-host-plate').addEventListener('click', () => {
+      if (hostPlateTimeout) clearTimeout(hostPlateTimeout);
+      hostPlate.classList.add('hiding');
+      setTimeout(() => {
+        hostPlate.classList.remove('active', 'hiding');
+      }, 500);
+    });
+
     // Guest plate controls
     document.getElementById('guest-plate-toggle').addEventListener('click', function() {
       this.classList.toggle('active');
@@ -3493,6 +3600,14 @@
           }, 500);
         }, overlayState.guestDuration * 1000);
       }
+    });
+
+    document.getElementById('btn-hide-guest-plate').addEventListener('click', () => {
+      if (guestPlateTimeout) clearTimeout(guestPlateTimeout);
+      guestPlate.classList.add('hiding');
+      setTimeout(() => {
+        guestPlate.classList.remove('active', 'hiding');
+      }, 500);
     });
 
     // CTA button controls
@@ -3682,6 +3797,35 @@
           alert('❌ Не удалось создать комнату. Проверьте интернет.');
         }
       }, 10000);
+    });
+
+    // Hang up consultation call
+    document.getElementById('btn-hangup').addEventListener('click', () => {
+      if (confirm('Завершить консультацию?')) {
+        // Stop consultation peer
+        if (consultationPeer && !consultationPeer.destroyed) {
+          consultationPeer.destroy();
+          consultationPeer = null;
+        }
+        // Stop peer connection
+        if (peerConnection) {
+          peerConnection.close();
+          peerConnection = null;
+        }
+        // Hide hangup button, show consultation button
+        document.getElementById('btn-hangup').style.display = 'none';
+        document.getElementById('btn-consultation').style.display = 'flex';
+        // Stop guest stream if any
+        if (guestStream) {
+          guestStream.getTracks().forEach(t => t.stop());
+          guestStream = null;
+        }
+        guestVideo.srcObject = null;
+        guestVideo.style.display = 'none';
+        splitGuestVideo.srcObject = null;
+        splitGuestVideo.style.display = 'none';
+        console.log('📞 Consultation ended by host');
+      }
     });
 
     // Hide all overlays
@@ -5134,7 +5278,7 @@ ${presentationText.slice(0, 8000)}
           console.log('AUDIO: Created new AudioContext');
         }
         const masterGain = audioCtx.createGain();
-        const processor = audioCtx.createScriptProcessor(8192, 1, 1); // Larger buffer = cleaner audio
+        const processor = audioCtx.createScriptProcessor(4096, 1, 1); // Smaller buffer = better sync
 
         // Mic source with gain control
         let micGain = null;
@@ -5194,7 +5338,8 @@ ${presentationText.slice(0, 8000)}
         // Store references for controlling during recording
         window._recordingAudio = { micGain, guestGain, introGain, audioCtx };
 
-        let audioFrameCount = 0;
+        // Use shared recordingStartTime for both audio and video sync
+        let audioStarted = false;
         processor.onaudioprocess = (e) => {
           if (!isRecording || !audioEncoder) return;
 
@@ -5223,9 +5368,9 @@ ${presentationText.slice(0, 8000)}
 
           const inputData = e.inputBuffer.getChannelData(0);
 
-          audioFrameCount++;
-          const elapsedMs = performance.now() - recordingStartTime;
-          const timestamp = Math.round(elapsedMs * 1000);
+          // Use performance.now() with shared recordingStartTime for sync with video
+          // Both audio and video use same time source = perfect sync
+          const timestamp = Math.round((performance.now() - recordingStartTime) * 1000); // microseconds
 
           const audioData = new AudioData({
             format: 'f32',
@@ -5249,12 +5394,31 @@ ${presentationText.slice(0, 8000)}
         processor.connect(audioCtx.destination);
 
         // Audio recording for transcription (separate WebM file)
-        if (overlayState.transcribeEnabled || overlayState.saveAudioEnabled) {
+        // Read toggle state directly from DOM to ensure we have current values
+        const transcribeToggle = document.getElementById('transcribe-toggle');
+        const saveAudioToggle = document.getElementById('save-audio-toggle');
+        const isTranscribeEnabled = transcribeToggle?.classList.contains('active') || overlayState.transcribeEnabled;
+        const isSaveAudioEnabled = saveAudioToggle?.classList.contains('active') || overlayState.saveAudioEnabled;
+
+        console.log('AUDIO: Checking transcription settings:', {
+          transcribeEnabled: isTranscribeEnabled,
+          saveAudioEnabled: isSaveAudioEnabled,
+          fromOverlayState: { t: overlayState.transcribeEnabled, s: overlayState.saveAudioEnabled },
+          fromDOM: { t: transcribeToggle?.classList.contains('active'), s: saveAudioToggle?.classList.contains('active') }
+        });
+
+        // Sync overlayState with DOM
+        overlayState.transcribeEnabled = isTranscribeEnabled;
+        overlayState.saveAudioEnabled = isSaveAudioEnabled;
+
+        if (isTranscribeEnabled || isSaveAudioEnabled) {
           try {
             const audioDestination = audioCtx.createMediaStreamDestination();
             masterGain.connect(audioDestination);
 
             audioChunks = [];
+            audioBlob = null; // Reset blob
+
             audioMediaRecorder = new MediaRecorder(audioDestination.stream, {
               mimeType: 'audio/webm;codecs=opus'
             });
@@ -5262,19 +5426,31 @@ ${presentationText.slice(0, 8000)}
             audioMediaRecorder.ondataavailable = (e) => {
               if (e.data.size > 0) {
                 audioChunks.push(e.data);
+                console.log('AUDIO: Chunk received, size:', e.data.size, 'total chunks:', audioChunks.length);
               }
             };
 
             audioMediaRecorder.onstop = () => {
-              audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-              console.log('AUDIO: Audio blob created for transcription, size:', audioBlob.size);
+              console.log('AUDIO: MediaRecorder stopped, creating blob from', audioChunks.length, 'chunks');
+              if (audioChunks.length > 0) {
+                audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                console.log('AUDIO: Audio blob created for transcription, size:', audioBlob.size);
+              } else {
+                console.error('AUDIO: No audio chunks collected!');
+              }
+            };
+
+            audioMediaRecorder.onerror = (e) => {
+              console.error('AUDIO: MediaRecorder error:', e);
             };
 
             audioMediaRecorder.start(1000); // Capture every second
-            console.log('AUDIO: MediaRecorder started for transcription');
+            console.log('AUDIO: MediaRecorder started for transcription, state:', audioMediaRecorder.state);
           } catch (e) {
             console.error('Failed to start audio MediaRecorder:', e);
           }
+        } else {
+          console.log('AUDIO: Transcription/save audio not enabled, skipping MediaRecorder');
         }
       }
 
@@ -5827,7 +6003,8 @@ ${presentationText.slice(0, 8000)}
           // Draw overlays
           drawOverlaysOnRecording();
 
-          // Encode frame - use real elapsed time for sync with audio
+          // Encode frame - use performance.now() with shared recordingStartTime
+          // Same time source as audio = perfect sync
           const videoTimestamp = Math.round((performance.now() - recordingStartTime) * 1000); // microseconds
           const frame = new VideoFrame(recordingCanvas, {
             timestamp: videoTimestamp
@@ -5847,11 +6024,22 @@ ${presentationText.slice(0, 8000)}
       btnRecord.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg> Стоп';
       recIndicator.classList.add('active');
       recordingSeconds = 0;
+      const MAX_RECORDING_MINUTES = 60;
       recordingTimer = setInterval(() => {
         recordingSeconds++;
         const mins = Math.floor(recordingSeconds / 60).toString().padStart(2, '0');
         const secs = (recordingSeconds % 60).toString().padStart(2, '0');
         recTime.textContent = `${mins}:${secs}`;
+
+        // Auto-stop at 60 minutes
+        if (recordingSeconds >= MAX_RECORDING_MINUTES * 60) {
+          alert('⏱️ Достигнут лимит записи 60 минут. Запись остановлена.');
+          stopRecording();
+        }
+        // Warning at 55 minutes
+        else if (recordingSeconds === 55 * 60) {
+          console.log('⚠️ Recording: 5 minutes remaining');
+        }
       }, 1000);
 
       // Auto-hide splash after 2 seconds if it was auto-shown
@@ -5948,23 +6136,32 @@ ${presentationText.slice(0, 8000)}
       convertingOverlay.classList.remove('active');
 
       // Stop audio recorder and process transcription
+      console.log('AUDIO: Stopping recording, audioMediaRecorder state:', audioMediaRecorder?.state);
+
       if (audioMediaRecorder && audioMediaRecorder.state !== 'inactive') {
         audioMediaRecorder.stop();
+        console.log('AUDIO: MediaRecorder stop() called');
 
         // Wait for the blob to be ready
         await new Promise(resolve => {
+          let attempts = 0;
           const checkBlob = setInterval(() => {
+            attempts++;
+            console.log('AUDIO: Waiting for blob, attempt:', attempts, 'audioBlob:', !!audioBlob);
             if (audioBlob) {
               clearInterval(checkBlob);
               resolve();
             }
           }, 100);
-          // Timeout after 5 seconds
+          // Timeout after 10 seconds (increased)
           setTimeout(() => {
             clearInterval(checkBlob);
+            console.log('AUDIO: Timeout waiting for blob after 10s');
             resolve();
-          }, 5000);
+          }, 10000);
         });
+
+        console.log('AUDIO: Blob ready:', !!audioBlob, 'size:', audioBlob?.size);
 
         // Save audio file if enabled
         if (overlayState.saveAudioEnabled && audioBlob) {
@@ -5973,16 +6170,25 @@ ${presentationText.slice(0, 8000)}
           audioLink.href = audioUrl;
           audioLink.download = `recording-audio-${Date.now()}.webm`;
           audioLink.click();
+          console.log('AUDIO: Audio file download triggered');
         }
 
         // Process transcription if enabled
         if (overlayState.transcribeEnabled && audioBlob) {
+          console.log('AUDIO: Starting transcription process');
           processTranscription(audioBlob);
+        } else {
+          console.log('AUDIO: Transcription skipped:', {
+            transcribeEnabled: overlayState.transcribeEnabled,
+            hasBlob: !!audioBlob
+          });
         }
 
         // Reset
         audioMediaRecorder = null;
         audioChunks = [];
+      } else {
+        console.log('AUDIO: No active audioMediaRecorder to stop');
       }
     }
 

@@ -44,6 +44,16 @@ exports.handler = async (event, context) => {
     // Convert base64 to buffer
     const audioBuffer = Buffer.from(audioBase64, 'base64');
 
+    // Rate limit: Max 25MB (OpenAI limit)
+    const MAX_SIZE_MB = 25;
+    if (audioBuffer.length > MAX_SIZE_MB * 1024 * 1024) {
+      return {
+        statusCode: 413,
+        headers,
+        body: JSON.stringify({ error: `Audio file too large. Max ${MAX_SIZE_MB}MB allowed.` })
+      };
+    }
+
     // Create form data
     const formData = new FormData();
     formData.append('file', audioBuffer, {
