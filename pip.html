@@ -440,6 +440,12 @@
     .btn-record:disabled { opacity: 0.5; cursor: not-allowed; }
     @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } }
 
+    /* Audio Recording Toggle Button */
+    #btn-audio-rec { gap: 6px; min-width: 70px; }
+    #btn-audio-rec svg { width: 14px; height: 14px; }
+    #btn-audio-rec.recording { background: #ef4444; color: white; animation: pulse-red 1s infinite; }
+    #btn-audio-rec.enabled { background: rgba(239, 68, 68, 0.3); color: #fca5a5; border: 1px solid #ef4444; }
+
     .control-group { display: flex; align-items: center; gap: 6px; padding: 6px 10px; background: rgba(255,255,255,0.05); border-radius: 8px; }
     .control-group label { font-size: 11px; color: #94a3b8; white-space: nowrap; }
 
@@ -1779,6 +1785,13 @@
       <div class="mic-bar"><div class="mic-bar-fill" id="mic-bar-fill"></div></div>
     </div>
 
+    <button class="btn btn-secondary" id="btn-audio-rec" title="Запись аудио для анализа">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="12" r="6"></circle>
+      </svg>
+      <span id="audio-rec-label">REC</span>
+    </button>
+
     <!-- Circle position (only in circle mode) -->
     <div class="control-group" id="circle-controls">
       <label>Позиция</label>
@@ -2600,6 +2613,127 @@
           @supports (padding: env(safe-area-inset-bottom)) {
             .client-bottom { padding-bottom: env(safe-area-inset-bottom); }
           }
+
+          /* Review Modal Styles */
+          .review-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+          }
+          .review-modal {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+          }
+          .review-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #f1f5f9;
+          }
+          .review-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 24px;
+          }
+          .review-stars {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+          }
+          .review-star {
+            font-size: 36px;
+            cursor: pointer;
+            transition: transform 0.2s, filter 0.2s;
+            filter: grayscale(1) brightness(0.5);
+          }
+          .review-star:hover {
+            transform: scale(1.2);
+          }
+          .review-star.active {
+            filter: none;
+          }
+          .review-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            margin-bottom: 20px;
+          }
+          .review-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+          }
+          .review-textarea::placeholder {
+            color: #64748b;
+          }
+          .review-submit {
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+          }
+          .review-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99,102,241,0.4);
+          }
+          .review-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+          }
+          .review-skip {
+            margin-top: 16px;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 14px;
+            cursor: pointer;
+          }
+          .review-skip:hover {
+            color: #94a3b8;
+          }
+          .review-thanks {
+            padding: 40px 20px;
+          }
+          .review-thanks-icon {
+            font-size: 60px;
+            margin-bottom: 16px;
+          }
+          .review-thanks-text {
+            font-size: 18px;
+            color: #10b981;
+            font-weight: 500;
+          }
+          /* Mirror video styles */
+          .video-mirrored {
+            transform: scaleX(-1);
+          }
+          .client-btn-mirror { background: #f59e0b; color: white; }
+          .client-btn-mirror.active { background: #059669; }
         </style>
         <div class="client-container">
           <div class="client-video-grid">
@@ -2616,10 +2750,29 @@
             <div class="client-controls">
               <button class="client-btn client-btn-camera" id="client-camera-btn">📹 Камера</button>
               <button class="client-btn client-btn-mic" id="client-mic-btn">🎤 Микрофон</button>
+              <button class="client-btn client-btn-mirror" id="client-mirror-btn">🪞 Зеркало</button>
               <button class="client-btn client-btn-leave" id="client-leave-btn">📞 Трубку</button>
               <a href="https://t.me/PavloKazarianBot" target="_blank" class="client-btn client-btn-support">💬 Помощь</a>
             </div>
             <div class="client-status" id="client-status">Загрузка...</div>
+          </div>
+        </div>
+
+        <!-- Review Modal (hidden by default) -->
+        <div class="review-overlay" id="review-overlay" style="display:none;">
+          <div class="review-modal" id="review-modal">
+            <div class="review-title">Спасибо за консультацию!</div>
+            <div class="review-subtitle">Пожалуйста, оцените качество сессии</div>
+            <div class="review-stars" id="review-stars">
+              <span class="review-star" data-rating="1">⭐</span>
+              <span class="review-star" data-rating="2">⭐</span>
+              <span class="review-star" data-rating="3">⭐</span>
+              <span class="review-star" data-rating="4">⭐</span>
+              <span class="review-star" data-rating="5">⭐</span>
+            </div>
+            <textarea class="review-textarea" id="review-text" placeholder="Напишите ваш отзыв (необязательно)..."></textarea>
+            <button class="review-submit" id="review-submit" disabled>Отправить отзыв</button>
+            <button class="review-skip" id="review-skip">Пропустить</button>
           </div>
         </div>
       `;
@@ -2665,48 +2818,69 @@
             peer = new Peer(undefined, { debug: 2 });
 
             let retryCount = 0;
-            const maxRetries = 5;
+            let isConnected = false;
+            let waitingForHost = false;
+            const RETRY_INTERVAL = 5000; // 5 seconds between retries
+
+            function showWaitingForHost() {
+              if (waitingForHost) return;
+              waitingForHost = true;
+              statusEl.innerHTML = `
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+                  <div style="font-size:16px;">⏳ Ожидайте, психолог скоро подключится</div>
+                  <div style="font-size:12px;color:#64748b;">Автоматическое подключение при появлении</div>
+                </div>
+              `;
+            }
 
             function tryCall() {
-              statusEl.textContent = 'Подключение к психологу... (попытка ' + (retryCount + 1) + ')';
+              if (isConnected) return;
+
+              retryCount++;
+              if (retryCount <= 3) {
+                statusEl.textContent = 'Подключение к психологу...';
+              } else {
+                showWaitingForHost();
+              }
+
               call = peer.call(sessionId, myStream);
 
               if (call) {
                 call.on('stream', (remoteStream) => {
+                  isConnected = true;
+                  waitingForHost = false;
                   hostVideo.srcObject = remoteStream;
-                  hostVideo.setAttribute('playsinline', 'true');  // Important for iOS
+                  hostVideo.setAttribute('playsinline', 'true');
                   hostVideo.play().catch(e => console.error('Host video error:', e));
                   statusEl.textContent = 'Подключено ✅';
                   console.log('📹 Remote stream received, tracks:', remoteStream.getTracks().map(t => t.kind));
                 });
 
-                call.on('close', () => { statusEl.textContent = 'Звонок завершен'; });
+                call.on('close', () => {
+                  isConnected = false;
+                  statusEl.textContent = 'Звонок завершен';
+                });
 
                 call.on('error', (err) => {
-                  if (err.type === 'peer-unavailable' && retryCount < maxRetries) {
-                    retryCount++;
-                    setTimeout(tryCall, 2000);
-                  } else if (err.type === 'peer-unavailable') {
-                    statusEl.textContent = 'Психолог не в сети. Обновите страницу.';
+                  if (err.type === 'peer-unavailable') {
+                    // Host not available, keep trying
+                    setTimeout(tryCall, RETRY_INTERVAL);
                   } else {
                     statusEl.textContent = 'Ошибка: ' + err.type;
                   }
                 });
-              } else if (retryCount < maxRetries) {
-                retryCount++;
-                setTimeout(tryCall, 2000);
               } else {
-                statusEl.textContent = 'Ошибка: психолог не в сети';
+                // Call failed, retry
+                setTimeout(tryCall, RETRY_INTERVAL);
               }
             }
 
             peer.on('open', () => tryCall());
             peer.on('error', (err) => {
-              if (err.type === 'peer-unavailable' && retryCount < maxRetries) {
-                retryCount++;
-                setTimeout(tryCall, 2000);
-              } else {
-                statusEl.textContent = 'Ошибка: ' + err.type;
+              if (err.type === 'peer-unavailable') {
+                setTimeout(tryCall, RETRY_INTERVAL);
+              } else if (err.type !== 'unavailable-id') {
+                statusEl.textContent = 'Ошибка подключения: ' + err.type;
               }
             });
           } catch (err) {
@@ -2733,14 +2907,118 @@
           micBtn.textContent = track.enabled ? '🎤 Микрофон' : '🎤 Микрофон выкл';
         };
 
+        // Mirror toggle for client's own video
+        const mirrorBtn = document.getElementById('client-mirror-btn');
+        let isMirrored = true; // Start mirrored (default for selfie camera)
+        myVideo.classList.add('video-mirrored'); // Default mirror on
+
+        mirrorBtn.onclick = () => {
+          isMirrored = !isMirrored;
+          myVideo.classList.toggle('video-mirrored');
+          mirrorBtn.classList.toggle('active');
+          mirrorBtn.textContent = isMirrored ? '🪞 Зеркало' : '🪞 Обычно';
+        };
+
         leaveBtn.onclick = () => {
           if (confirm('Завершить консультацию?')) {
             if (myStream) myStream.getTracks().forEach(t => t.stop());
             if (call) call.close();
             if (peer) peer.destroy();
             statusEl.textContent = 'Консультация завершена';
+
+            // Show review modal
+            showReviewModal();
           }
         };
+
+        // Review functionality
+        function showReviewModal() {
+          const overlay = document.getElementById('review-overlay');
+          const stars = document.querySelectorAll('.review-star');
+          const submitBtn = document.getElementById('review-submit');
+          const skipBtn = document.getElementById('review-skip');
+          const textArea = document.getElementById('review-text');
+          const modal = document.getElementById('review-modal');
+          let selectedRating = 0;
+
+          overlay.style.display = 'flex';
+
+          // Star rating interaction
+          stars.forEach(star => {
+            star.onclick = () => {
+              selectedRating = parseInt(star.dataset.rating);
+              stars.forEach((s, idx) => {
+                s.classList.toggle('active', idx < selectedRating);
+              });
+              submitBtn.disabled = false;
+            };
+
+            star.onmouseenter = () => {
+              const hoverRating = parseInt(star.dataset.rating);
+              stars.forEach((s, idx) => {
+                s.style.transform = idx < hoverRating ? 'scale(1.1)' : 'scale(1)';
+              });
+            };
+
+            star.onmouseleave = () => {
+              stars.forEach(s => s.style.transform = 'scale(1)');
+            };
+          });
+
+          // Submit review
+          submitBtn.onclick = async () => {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправка...';
+
+            try {
+              const reviewData = {
+                sessionId: sessionId,
+                clientName: clientName,
+                rating: selectedRating,
+                comment: textArea.value.trim(),
+                timestamp: new Date().toISOString()
+              };
+
+              // Send review to backend
+              await fetch('/.netlify/functions/save-review', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(reviewData)
+              });
+
+              // Show thank you message
+              modal.innerHTML = `
+                <div class="review-thanks">
+                  <div class="review-thanks-icon">💚</div>
+                  <div class="review-thanks-text">Спасибо за ваш отзыв!</div>
+                </div>
+              `;
+
+              // Auto close after 3 seconds
+              setTimeout(() => {
+                overlay.style.display = 'none';
+              }, 3000);
+
+            } catch (err) {
+              console.error('Review submit error:', err);
+              // Still show thanks even if submission failed
+              modal.innerHTML = `
+                <div class="review-thanks">
+                  <div class="review-thanks-icon">💚</div>
+                  <div class="review-thanks-text">Спасибо за ваш отзыв!</div>
+                </div>
+              `;
+              setTimeout(() => {
+                overlay.style.display = 'none';
+              }, 3000);
+            }
+          };
+
+          // Skip review
+          skipBtn.onclick = () => {
+            overlay.style.display = 'none';
+          };
+        }
 
         startConsultation();
       })();
@@ -2805,6 +3083,9 @@
     const loadText = document.getElementById('load-text');
     const btnCamera = document.getElementById('btn-camera');
     const btnMic = document.getElementById('btn-mic');
+    const btnAudioRec = document.getElementById('btn-audio-rec');
+    const audioRecLabel = document.getElementById('audio-rec-label');
+    let audioRecEnabled = false; // Audio recording toggle state
     const btnRecord = document.getElementById('btn-record');
     const sizeSlider = document.getElementById('size-slider');
     const recIndicator = document.getElementById('rec-indicator');
@@ -3398,7 +3679,12 @@
           // Always create a new stream with audio for consultation
           consultStream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
-            audio: { echoCancellation: true, noiseSuppression: true }
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true,
+              sampleRate: 48000
+            }
           });
 
           // Update cameraStream if not set
@@ -4569,6 +4855,58 @@ ${transcription}`
       return data.text;
     }
 
+    // Auto-analyze audio with AI (transcription + analysis)
+    async function autoAnalyzeAudio(audioBlob, durationSec) {
+      console.log('🤖 Auto-analyze starting...');
+
+      // Show transcription modal with auto-analysis mode
+      transcriptionModal.classList.add('active');
+      transcriptionText.textContent = '';
+      protocolResult.innerHTML = '';
+      currentTranscription = '';
+
+      const sizeMB = (audioBlob.size / 1024 / 1024).toFixed(2);
+      const durationMin = Math.floor(durationSec / 60);
+      const durationSecRem = durationSec % 60;
+      transcriptionStatus.textContent = `🤖 Автоанализ: ${durationMin}:${durationSecRem.toString().padStart(2,'0')} (${sizeMB} MB) → Транскрибация...`;
+
+      try {
+        // Step 1: Transcribe
+        const result = await transcribeAudio(audioBlob);
+        console.log('🤖 Transcription complete, length:', result.text?.length);
+
+        let formattedText = result.text || '';
+        if (result.segments) {
+          formattedText = result.segments.map(seg => {
+            const min = Math.floor(seg.start / 60);
+            const sec = Math.floor(seg.start % 60);
+            return `[${min}:${sec.toString().padStart(2,'0')}] ${seg.text.trim()}`;
+          }).join('\n');
+        }
+
+        currentTranscription = formattedText;
+        transcriptionText.textContent = formattedText;
+
+        if (formattedText.length < 50) {
+          transcriptionStatus.textContent = '⚠️ Слишком мало текста для анализа';
+          return;
+        }
+
+        // Step 2: Auto-generate protocol
+        transcriptionStatus.textContent = '🧠 Генерация протокола с ИИ...';
+        const protocol = await generateProtocol(formattedText, 'protocol');
+
+        protocolResult.innerHTML = protocol.replace(/\n/g, '<br>');
+        transcriptionStatus.textContent = '✅ Автоанализ завершён!';
+
+        console.log('🤖 Auto-analysis complete');
+
+      } catch (err) {
+        console.error('Auto-analyze error:', err);
+        transcriptionStatus.textContent = '❌ Ошибка анализа: ' + err.message;
+      }
+    }
+
     // Process recording for transcription
     async function processTranscription(audioBlob) {
       transcriptionModal.classList.add('active');
@@ -5312,8 +5650,19 @@ ${presentationText.slice(0, 8000)}
     });
 
     // Microphone
+    // Standalone audio recording (independent from video)
+    let standaloneAudioRecorder = null;
+    let standaloneAudioChunks = [];
+    let standaloneAudioStartTime = null;
+
     btnMic.addEventListener('click', async () => {
       if (micStream) {
+        // Stopping mic - save standalone audio if not in video recording
+        if (standaloneAudioRecorder && standaloneAudioRecorder.state !== 'inactive') {
+          standaloneAudioRecorder.stop();
+          console.log('🎤 Standalone audio recording stopped');
+        }
+
         micStream.getTracks().forEach(t => t.stop());
         micStream = null;
         if (audioContext) { audioContext.close(); audioContext = null; }
@@ -5322,7 +5671,7 @@ ${presentationText.slice(0, 8000)}
       } else {
         try {
           micStream = await navigator.mediaDevices.getUserMedia({
-            audio: { echoCancellation: true, noiseSuppression: true }
+            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
           });
           btnMic.classList.add('active');
           micLevel.style.display = 'flex';
@@ -5333,8 +5682,131 @@ ${presentationText.slice(0, 8000)}
           source.connect(analyser);
           analyser.fftSize = 256;
           visualizeMic();
+
+          // Start standalone audio recording (only if toggle is ON)
+          if (!isRecording && audioRecEnabled) {
+            standaloneAudioChunks = [];
+            standaloneAudioStartTime = Date.now();
+
+            // Create audio destination for recording
+            const audioDestination = audioContext.createMediaStreamDestination();
+            source.connect(audioDestination);
+
+            standaloneAudioRecorder = new MediaRecorder(audioDestination.stream, {
+              mimeType: 'audio/webm;codecs=opus'
+            });
+
+            standaloneAudioRecorder.ondataavailable = (e) => {
+              if (e.data.size > 0) {
+                standaloneAudioChunks.push(e.data);
+              }
+            };
+
+            standaloneAudioRecorder.onstop = async () => {
+              btnAudioRec.classList.remove('recording');
+              if (standaloneAudioChunks.length > 0) {
+                const blob = new Blob(standaloneAudioChunks, { type: 'audio/webm' });
+                const duration = Math.round((Date.now() - standaloneAudioStartTime) / 1000);
+                const sizeMB = (blob.size / 1024 / 1024).toFixed(2);
+                console.log('🎤 Standalone audio saved:', sizeMB, 'MB,', duration, 'sec');
+
+                // Auto-download audio file
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `audio-${new Date().toISOString().slice(0,10)}-${Date.now()}.webm`;
+                a.click();
+
+                // Auto-analyze if audio is longer than 30 seconds
+                if (duration >= 30) {
+                  console.log('🤖 Starting auto-analysis...');
+                  autoAnalyzeAudio(blob, duration);
+                } else {
+                  console.log('🤖 Audio too short for analysis (<30 sec)');
+                  URL.revokeObjectURL(url);
+                }
+              }
+              standaloneAudioChunks = [];
+              standaloneAudioRecorder = null;
+            };
+
+            standaloneAudioRecorder.start(1000);
+            btnAudioRec.classList.add('recording');
+            console.log('🎤 Standalone audio recording started (mic only, no video)');
+          }
         } catch (err) {
           alert('Не удалось получить доступ к микрофону');
+        }
+      }
+    });
+
+    // Audio Recording Toggle Button
+    btnAudioRec.addEventListener('click', () => {
+      audioRecEnabled = !audioRecEnabled;
+
+      if (audioRecEnabled) {
+        btnAudioRec.classList.add('enabled');
+        audioRecLabel.textContent = 'REC ON';
+        console.log('🎙️ Audio recording enabled');
+
+        // If mic is already active, start recording immediately
+        if (micStream && !isRecording && !standaloneAudioRecorder) {
+          standaloneAudioChunks = [];
+          standaloneAudioStartTime = Date.now();
+
+          const audioDestination = audioContext.createMediaStreamDestination();
+          const source = audioContext.createMediaStreamSource(micStream);
+          source.connect(audioDestination);
+
+          standaloneAudioRecorder = new MediaRecorder(audioDestination.stream, {
+            mimeType: 'audio/webm;codecs=opus'
+          });
+
+          standaloneAudioRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+              standaloneAudioChunks.push(e.data);
+            }
+          };
+
+          standaloneAudioRecorder.onstop = async () => {
+            btnAudioRec.classList.remove('recording');
+            if (standaloneAudioChunks.length > 0) {
+              const blob = new Blob(standaloneAudioChunks, { type: 'audio/webm' });
+              const duration = Math.round((Date.now() - standaloneAudioStartTime) / 1000);
+              const sizeMB = (blob.size / 1024 / 1024).toFixed(2);
+              console.log('🎤 Standalone audio saved:', sizeMB, 'MB,', duration, 'sec');
+
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `audio-${new Date().toISOString().slice(0,10)}-${Date.now()}.webm`;
+              a.click();
+
+              if (duration >= 30) {
+                console.log('🤖 Starting auto-analysis...');
+                autoAnalyzeAudio(blob, duration);
+              } else {
+                console.log('🤖 Audio too short for analysis (<30 sec)');
+                URL.revokeObjectURL(url);
+              }
+            }
+            standaloneAudioChunks = [];
+            standaloneAudioRecorder = null;
+          };
+
+          standaloneAudioRecorder.start(1000);
+          btnAudioRec.classList.add('recording');
+          console.log('🎤 Standalone audio recording started (toggle enabled while mic active)');
+        }
+      } else {
+        btnAudioRec.classList.remove('enabled');
+        audioRecLabel.textContent = 'REC';
+        console.log('🎙️ Audio recording disabled');
+
+        // Stop recording if active
+        if (standaloneAudioRecorder && standaloneAudioRecorder.state !== 'inactive') {
+          standaloneAudioRecorder.stop();
+          console.log('🎤 Standalone audio recording stopped (toggle disabled)');
         }
       }
     });
@@ -5407,6 +5879,8 @@ ${presentationText.slice(0, 8000)}
     let isRecording = false;
     let frameCount = 0;
     let audioSampleCount = 0;
+    let fileWritableStream = null; // For direct file recording
+    let useStreamRecording = false; // Flag for stream vs memory recording
 
     btnRecord.addEventListener('click', () => {
       if (isRecording) {
@@ -5429,6 +5903,12 @@ ${presentationText.slice(0, 8000)}
       if (typeof VideoEncoder === 'undefined') {
         alert('Ваш браузер не поддерживает запись в MP4. Используйте Chrome или Edge.');
         return;
+      }
+
+      // Stop standalone audio recording - video recording has its own audio capture
+      if (standaloneAudioRecorder && standaloneAudioRecorder.state !== 'inactive') {
+        standaloneAudioRecorder.stop();
+        console.log('🎤 Standalone audio stopped (video recording starting)');
       }
 
       // Auto-enable microphone for recording audio
@@ -5485,22 +5965,76 @@ ${presentationText.slice(0, 8000)}
 
       // Create MP4 muxer - include audio track if mic OR intro video available
       const hasAnyAudioSource = micStream || introVideoUrl || guestStream;
-      const mp4Chunks = [];
-      muxer = new Mp4Muxer.Muxer({
-        target: new Mp4Muxer.ArrayBufferTarget(),
-        video: {
-          codec: 'avc',
-          width: 1920,
-          height: 1080
-        },
-        audio: hasAnyAudioSource ? {
-          codec: 'aac',
-          numberOfChannels: 1,
-          sampleRate: 48000
-        } : undefined,
-        fastStart: 'in-memory',
-        firstTimestampBehavior: 'offset'
-      });
+
+      // Try to use File System API for direct file recording (no memory limit)
+      useStreamRecording = false;
+      fileWritableStream = null;
+
+      if (window.showSaveFilePicker) {
+        try {
+          const fileHandle = await window.showSaveFilePicker({
+            suggestedName: `webinar-${new Date().toISOString().slice(0,10)}.mp4`,
+            types: [{
+              description: 'MP4 Video',
+              accept: { 'video/mp4': ['.mp4'] }
+            }]
+          });
+          fileWritableStream = await fileHandle.createWritable();
+          useStreamRecording = true;
+          console.log('📁 Recording directly to file (unlimited duration)');
+        } catch (e) {
+          if (e.name !== 'AbortError') {
+            console.warn('File System API failed, falling back to memory:', e);
+          }
+          // User cancelled or API failed - fall back to memory recording
+        }
+      }
+
+      if (useStreamRecording && fileWritableStream) {
+        // Stream target - writes directly to file, no memory limit
+        muxer = new Mp4Muxer.Muxer({
+          target: new Mp4Muxer.StreamTarget({
+            onData: (data, position) => {
+              // For streaming, we write chunks as they come
+              fileWritableStream.write({
+                type: 'write',
+                position: position,
+                data: data
+              });
+            }
+          }),
+          video: {
+            codec: 'avc',
+            width: 1920,
+            height: 1080
+          },
+          audio: hasAnyAudioSource ? {
+            codec: 'aac',
+            numberOfChannels: 1,
+            sampleRate: 48000
+          } : undefined,
+          fastStart: false, // Cannot use fastStart with streaming
+          firstTimestampBehavior: 'offset'
+        });
+      } else {
+        // Memory target - limited by browser RAM (max ~1 hour)
+        console.log('💾 Recording to memory (limited to ~55 min)');
+        muxer = new Mp4Muxer.Muxer({
+          target: new Mp4Muxer.ArrayBufferTarget(),
+          video: {
+            codec: 'avc',
+            width: 1920,
+            height: 1080
+          },
+          audio: hasAnyAudioSource ? {
+            codec: 'aac',
+            numberOfChannels: 1,
+            sampleRate: 48000
+          } : undefined,
+          fastStart: 'in-memory',
+          firstTimestampBehavior: 'offset'
+        });
+      }
 
       // Video encoder
       videoEncoder = new VideoEncoder({
@@ -5682,46 +6216,46 @@ ${presentationText.slice(0, 8000)}
         overlayState.transcribeEnabled = isTranscribeEnabled;
         overlayState.saveAudioEnabled = isSaveAudioEnabled;
 
-        if (isTranscribeEnabled || isSaveAudioEnabled) {
-          try {
-            const audioDestination = audioCtx.createMediaStreamDestination();
-            masterGain.connect(audioDestination);
+        // ALWAYS record audio separately (WebM) - no memory issues, useful for analysis
+        try {
+          const audioDestination = audioCtx.createMediaStreamDestination();
+          masterGain.connect(audioDestination);
 
-            audioChunks = [];
-            audioBlob = null; // Reset blob
+          audioChunks = [];
+          audioBlob = null; // Reset blob
 
-            audioMediaRecorder = new MediaRecorder(audioDestination.stream, {
-              mimeType: 'audio/webm;codecs=opus'
-            });
+          audioMediaRecorder = new MediaRecorder(audioDestination.stream, {
+            mimeType: 'audio/webm;codecs=opus'
+          });
 
-            audioMediaRecorder.ondataavailable = (e) => {
-              if (e.data.size > 0) {
-                audioChunks.push(e.data);
-                console.log('AUDIO: Chunk received, size:', e.data.size, 'total chunks:', audioChunks.length);
+          audioMediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+              audioChunks.push(e.data);
+              // Reduce logging frequency
+              if (audioChunks.length % 60 === 0) {
+                console.log('AUDIO: Recording...', audioChunks.length, 'chunks (~', Math.round(audioChunks.length / 60), 'min)');
               }
-            };
+            }
+          };
 
-            audioMediaRecorder.onstop = () => {
-              console.log('AUDIO: MediaRecorder stopped, creating blob from', audioChunks.length, 'chunks');
-              if (audioChunks.length > 0) {
-                audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                console.log('AUDIO: Audio blob created for transcription, size:', audioBlob.size);
-              } else {
-                console.error('AUDIO: No audio chunks collected!');
-              }
-            };
+          audioMediaRecorder.onstop = () => {
+            console.log('AUDIO: MediaRecorder stopped, creating blob from', audioChunks.length, 'chunks');
+            if (audioChunks.length > 0) {
+              audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+              console.log('AUDIO: Audio blob created, size:', (audioBlob.size / 1024 / 1024).toFixed(2), 'MB');
+            } else {
+              console.error('AUDIO: No audio chunks collected!');
+            }
+          };
 
-            audioMediaRecorder.onerror = (e) => {
-              console.error('AUDIO: MediaRecorder error:', e);
-            };
+          audioMediaRecorder.onerror = (e) => {
+            console.error('AUDIO: MediaRecorder error:', e);
+          };
 
-            audioMediaRecorder.start(1000); // Capture every second
-            console.log('AUDIO: MediaRecorder started for transcription, state:', audioMediaRecorder.state);
-          } catch (e) {
-            console.error('Failed to start audio MediaRecorder:', e);
-          }
-        } else {
-          console.log('AUDIO: Transcription/save audio not enabled, skipping MediaRecorder');
+          audioMediaRecorder.start(1000); // Capture every second
+          console.log('AUDIO: Auto-recording started (always enabled for analysis)');
+        } catch (e) {
+          console.error('Failed to start audio MediaRecorder:', e);
         }
       }
 
@@ -6292,7 +6826,9 @@ ${presentationText.slice(0, 8000)}
       drawFrame();
 
       btnRecord.classList.add('recording');
-      btnRecord.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg> Стоп';
+      btnRecord.innerHTML = useStreamRecording
+        ? '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg> Стоп (файл)'
+        : '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg> Стоп';
       recIndicator.classList.add('active');
       recordingSeconds = 0;
       const MAX_RECORDING_MINUTES = 60;
@@ -6302,14 +6838,15 @@ ${presentationText.slice(0, 8000)}
         const secs = (recordingSeconds % 60).toString().padStart(2, '0');
         recTime.textContent = `${mins}:${secs}`;
 
-        // Auto-stop at 60 minutes
-        if (recordingSeconds >= MAX_RECORDING_MINUTES * 60) {
-          alert('⏱️ Достигнут лимит записи 60 минут. Запись остановлена.');
+        // Auto-stop only for memory recording (not stream recording)
+        if (!useStreamRecording && recordingSeconds >= MAX_RECORDING_MINUTES * 60) {
+          alert('⏱️ Достигнут лимит записи 60 минут. Запись остановлена.\n\nДля длинных записей выберите "Сохранить в файл" при старте.');
           stopRecording();
         }
-        // Warning at 55 minutes
-        else if (recordingSeconds === 55 * 60) {
+        // Warning at 55 minutes (only for memory recording)
+        else if (!useStreamRecording && recordingSeconds === 55 * 60) {
           console.log('⚠️ Recording: 5 minutes remaining');
+          alert('⚠️ Осталось 5 минут до лимита записи.');
         }
       }, 1000);
 
@@ -6386,24 +6923,38 @@ ${presentationText.slice(0, 8000)}
 
         convertingProgress.style.width = '90%';
 
-        // Get MP4 data
-        const { buffer } = muxer.target;
-        const blob = new Blob([buffer], { type: 'video/mp4' });
+        if (useStreamRecording && fileWritableStream) {
+          // Stream recording - close the file stream
+          await fileWritableStream.close();
+          fileWritableStream = null;
+          console.log('✅ File saved directly to disk');
+          alert('Видео сохранено! Файл уже на вашем диске.');
+        } else {
+          // Memory recording - download as blob
+          const { buffer } = muxer.target;
+          const blob = new Blob([buffer], { type: 'video/mp4' });
 
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `presentation-${Date.now()}.mp4`;
-        a.click();
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `presentation-${Date.now()}.mp4`;
+          a.click();
+        }
 
         convertingProgress.style.width = '100%';
       } catch (err) {
         console.error('MP4 encoding error:', err);
         alert('Ошибка создания MP4: ' + err.message);
+        // Close file stream on error
+        if (fileWritableStream) {
+          try { await fileWritableStream.close(); } catch (e) {}
+          fileWritableStream = null;
+        }
       }
 
       muxer = null;
       videoEncoder = null;
       audioEncoder = null;
+      useStreamRecording = false;
       convertingOverlay.classList.remove('active');
 
       // Stop audio recorder and process transcription
@@ -6434,25 +6985,23 @@ ${presentationText.slice(0, 8000)}
 
         console.log('AUDIO: Blob ready:', !!audioBlob, 'size:', audioBlob?.size);
 
-        // Save audio file if enabled
-        if (overlayState.saveAudioEnabled && audioBlob) {
+        // ALWAYS save audio file (no memory issues, useful for analysis)
+        if (audioBlob) {
           const audioUrl = URL.createObjectURL(audioBlob);
           const audioLink = document.createElement('a');
           audioLink.href = audioUrl;
-          audioLink.download = `recording-audio-${Date.now()}.webm`;
+          audioLink.download = `audio-${new Date().toISOString().slice(0,10)}-${Date.now()}.webm`;
           audioLink.click();
-          console.log('AUDIO: Audio file download triggered');
+          console.log('AUDIO: Audio file saved, size:', (audioBlob.size / 1024 / 1024).toFixed(2), 'MB');
         }
 
-        // Process transcription if enabled
-        if (overlayState.transcribeEnabled && audioBlob) {
-          console.log('AUDIO: Starting transcription process');
-          processTranscription(audioBlob);
+        // ALWAYS auto-analyze audio after video recording
+        if (audioBlob && audioBlob.size > 50000) { // At least 50KB
+          const durationSec = recordingSeconds || 60;
+          console.log('AUDIO: Starting auto-analysis...');
+          autoAnalyzeAudio(audioBlob, durationSec);
         } else {
-          console.log('AUDIO: Transcription skipped:', {
-            transcribeEnabled: overlayState.transcribeEnabled,
-            hasBlob: !!audioBlob
-          });
+          console.log('AUDIO: Audio too small for analysis');
         }
 
         // Reset
