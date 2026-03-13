@@ -3150,6 +3150,7 @@
     let slides = [];
     let currentSlide = 0;
     let pdfDoc = null;
+    let pdfArrayBuffer = null; // Store original PDF for recovery
     let cameraStream = null;
     let micStream = null;
     let screenStream = null;
@@ -3712,6 +3713,8 @@
     function clearContent() {
       // Clear slides
       slides = [];
+      pdfDoc = null;
+      pdfArrayBuffer = null;
       thumbnails.innerHTML = '';
       currentSlide = 0;
       slideCanvas.style.display = 'none';
@@ -5546,6 +5549,8 @@ ${presentationText.slice(0, 8000)}
       if (!files.length) return;
 
       slides = [];
+      pdfDoc = null;
+      pdfArrayBuffer = null;
       thumbnails.innerHTML = '';
       stopScreenShare();
 
@@ -5576,6 +5581,7 @@ ${presentationText.slice(0, 8000)}
 
     async function loadPDF(file) {
       const arrayBuffer = await file.arrayBuffer();
+      pdfArrayBuffer = arrayBuffer.slice(0); // Store copy for recovery
       pdfDoc = await pdfjsLib.getDocument(arrayBuffer).promise;
 
       for (let i = 1; i <= pdfDoc.numPages; i++) {
@@ -5635,6 +5641,8 @@ ${presentationText.slice(0, 8000)}
 
     async function renderSlide(index) {
       const slide = slides[index];
+      if (!slide) return;
+
       currentSlideEl.textContent = index + 1;
 
       document.querySelectorAll('.thumb').forEach((t, i) => {
@@ -5645,12 +5653,19 @@ ${presentationText.slice(0, 8000)}
         slideCanvas.style.display = 'block';
         slideImage.style.display = 'none';
 
-        const page = slide.page;
-        const viewport = page.getViewport({ scale: 2 });
-        slideCanvas.width = viewport.width;
-        slideCanvas.height = viewport.height;
-        const ctx = slideCanvas.getContext('2d');
-        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        try {
+          const page = slide.page;
+          const viewport = page.getViewport({ scale: 2 });
+          slideCanvas.width = viewport.width;
+          slideCanvas.height = viewport.height;
+          const ctx = slideCanvas.getContext('2d');
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        } catch (err) {
+          console.error('PDF render error, attempting recovery...', err);
+          if (await recoverPDF()) {
+            await renderSlide(index); // Retry after recovery
+          }
+        }
       } else if (slide.type === 'image') {
         slideCanvas.style.display = 'none';
         slideImage.style.display = 'block';
@@ -5658,6 +5673,39 @@ ${presentationText.slice(0, 8000)}
       }
 
       renderSplitSlide();
+    }
+
+    // Recovery function for lost PDF
+    async function recoverPDF() {
+      if (!pdfArrayBuffer) {
+        console.error('No PDF backup available for recovery');
+        return false;
+      }
+
+      console.log('🔄 Recovering PDF from backup...');
+      try {
+        const savedSlide = currentSlide;
+        pdfDoc = await pdfjsLib.getDocument(pdfArrayBuffer.slice(0)).promise;
+
+        // Rebuild slides array with fresh page references
+        const pdfSlideIndices = [];
+        slides.forEach((s, i) => {
+          if (s.type === 'pdf') pdfSlideIndices.push({ index: i, pageNum: s.pageNum });
+        });
+
+        for (const item of pdfSlideIndices) {
+          const page = await pdfDoc.getPage(item.pageNum);
+          slides[item.index].page = page;
+        }
+
+        currentSlide = savedSlide;
+        console.log('✅ PDF recovered successfully');
+        return true;
+      } catch (err) {
+        console.error('PDF recovery failed:', err);
+        alert('PDF потерян. Пожалуйста, загрузите файл заново.');
+        return false;
+      }
     }
 
     async function renderSplitSlide() {
@@ -5679,12 +5727,17 @@ ${presentationText.slice(0, 8000)}
         splitSlideCanvas.style.display = 'block';
         splitSlideImage.style.display = 'none';
 
-        const page = slide.page;
-        const viewport = page.getViewport({ scale: 1.5 });
-        splitSlideCanvas.width = viewport.width;
-        splitSlideCanvas.height = viewport.height;
-        const ctx = splitSlideCanvas.getContext('2d');
-        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        try {
+          const page = slide.page;
+          const viewport = page.getViewport({ scale: 1.5 });
+          splitSlideCanvas.width = viewport.width;
+          splitSlideCanvas.height = viewport.height;
+          const ctx = splitSlideCanvas.getContext('2d');
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        } catch (err) {
+          console.error('Split view PDF render error:', err);
+          // Recovery will be triggered by main renderSlide
+        }
       } else if (slide.type === 'image') {
         splitSlideCanvas.style.display = 'none';
         splitSlideImage.style.display = 'block';
