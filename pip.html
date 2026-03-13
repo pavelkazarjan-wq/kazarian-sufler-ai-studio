@@ -2514,42 +2514,40 @@
       // CLIENT MODE - Minimal UI for consultation
       document.body.innerHTML = `
         <style>
-          * { box-sizing: border-box; }
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          html, body { height: 100%; overflow: hidden; }
           .client-container {
             position: fixed; inset: 0; background: #0f172a;
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            padding: 10px; overflow-y: auto;
+            display: flex; flex-direction: column;
+            padding: 8px; overflow: hidden;
           }
           .client-video-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-            max-width: 1400px; width: 100%; flex: 1; min-height: 0;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+            flex: 1; min-height: 0; width: 100%;
           }
           .client-video-box {
-            background: #1e293b; border-radius: 16px; overflow: hidden;
-            position: relative; display: flex; align-items: center; justify-content: center;
-            min-height: 200px;
+            background: #1e293b; border-radius: 12px; overflow: hidden;
+            position: relative; min-height: 0;
           }
           .client-video-box video {
             width: 100%; height: 100%; object-fit: cover;
-            background: #000;
+            background: #000; display: block;
           }
           .client-video-label {
-            position: absolute; top: 12px; left: 12px;
-            background: rgba(0,0,0,0.7); padding: 6px 12px; border-radius: 8px;
-            color: white; font-weight: 600; font-size: 14px; z-index: 10;
+            position: absolute; top: 8px; left: 8px;
+            background: rgba(0,0,0,0.7); padding: 4px 10px; border-radius: 6px;
+            color: white; font-weight: 600; font-size: 12px; z-index: 10;
           }
           .client-controls {
-            margin-top: 16px; margin-bottom: 10px;
-            display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
-            width: 100%; padding: 0 10px;
+            display: flex; gap: 8px; justify-content: center; align-items: center;
+            padding: 10px 4px; flex-shrink: 0; flex-wrap: wrap;
           }
           .client-btn {
-            padding: 12px 20px; border-radius: 12px; border: none; font-size: 14px; font-weight: 600;
+            padding: 10px 16px; border-radius: 10px; border: none; font-size: 13px; font-weight: 600;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            gap: 6px; transition: all 0.2s; flex: 1; min-width: 100px; max-width: 180px;
+            gap: 4px; transition: all 0.2s; white-space: nowrap;
           }
-          .client-btn:hover { transform: scale(1.02); }
-          .client-btn:active { transform: scale(0.98); }
+          .client-btn:active { transform: scale(0.95); }
           .client-btn-camera { background: #3b82f6; color: white; }
           .client-btn-camera.off { background: #64748b; }
           .client-btn-mic { background: #10b981; color: white; }
@@ -2557,51 +2555,43 @@
           .client-btn-leave { background: #ef4444; color: white; }
           .client-btn-support { background: #6366f1; color: white; text-decoration: none; }
           .client-status {
-            margin-top: 8px; color: #94a3b8; text-align: center; font-size: 16px;
-            padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; width: 100%;
+            color: #94a3b8; text-align: center; font-size: 13px;
+            padding: 6px; flex-shrink: 0;
           }
 
-          /* Mobile portrait - stack videos vertically */
-          @media (max-width: 768px) {
-            .client-container { padding: 8px; justify-content: flex-start; }
+          /* Mobile portrait */
+          @media (max-width: 768px) and (orientation: portrait) {
             .client-video-grid {
               grid-template-columns: 1fr;
-              gap: 10px;
-              height: calc(100vh - 160px);
-              flex: none;
-            }
-            .client-video-box {
-              min-height: 0;
-              height: 100%;
-            }
-            .client-video-label { font-size: 12px; padding: 4px 10px; top: 8px; left: 8px; }
-            .client-controls { gap: 8px; margin-top: 10px; }
-            .client-btn {
-              padding: 10px 14px; font-size: 12px; min-width: 70px; flex: 1;
-            }
-            .client-status { font-size: 14px; }
-          }
-
-          /* Mobile landscape - side by side but smaller */
-          @media (max-height: 500px) and (orientation: landscape) {
-            .client-container { flex-direction: row; flex-wrap: wrap; padding: 8px; }
-            .client-video-grid {
-              grid-template-columns: 1fr 1fr;
-              height: calc(100vh - 80px);
+              grid-template-rows: 1fr 1fr;
               gap: 8px;
             }
-            .client-video-box { min-height: 0; }
-            .client-controls {
-              position: fixed; bottom: 8px; left: 0; right: 0;
-              margin: 0; padding: 0 8px; background: rgba(15,23,42,0.95);
+            .client-controls { padding: 8px 4px; gap: 6px; }
+            .client-btn { padding: 10px 12px; font-size: 12px; flex: 1; min-width: 0; }
+            .client-status { font-size: 12px; padding: 4px; }
+          }
+
+          /* Mobile landscape */
+          @media (orientation: landscape) and (max-height: 500px) {
+            .client-container { padding: 6px; }
+            .client-video-grid {
+              grid-template-columns: 1fr 1fr;
+              grid-template-rows: 1fr;
+              gap: 6px;
             }
-            .client-btn { padding: 8px 12px; font-size: 11px; }
+            .client-controls { padding: 6px 4px; gap: 6px; }
+            .client-btn { padding: 8px 10px; font-size: 11px; }
             .client-status { display: none; }
           }
 
           /* Very small screens */
           @media (max-width: 400px) {
-            .client-btn { padding: 8px 10px; font-size: 11px; gap: 4px; }
+            .client-btn { padding: 8px 8px; font-size: 10px; }
+          }
+
+          /* Safe area for notch phones */
+          @supports (padding: env(safe-area-inset-bottom)) {
+            .client-controls { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
           }
         </style>
         <div class="client-container">
