@@ -3151,6 +3151,9 @@
     let currentSlide = 0;
     let pdfDoc = null;
     let pdfArrayBuffer = null; // Store original PDF for recovery
+
+    // Broadcast Channel for syncing with broadcast window
+    const broadcastChannel = new BroadcastChannel('kazarian-broadcast');
     let cameraStream = null;
     let micStream = null;
     let screenStream = null;
@@ -5673,6 +5676,25 @@ ${presentationText.slice(0, 8000)}
       }
 
       renderSplitSlide();
+
+      // Send slide to broadcast window (if not broadcast mode itself)
+      if (!isBroadcastMode) {
+        try {
+          let imageData;
+          if (slide.type === 'pdf') {
+            imageData = slideCanvas.toDataURL('image/jpeg', 0.85);
+          } else {
+            imageData = slide.src;
+          }
+          broadcastChannel.postMessage({
+            type: 'slideImage',
+            index: index,
+            imageData: imageData
+          });
+        } catch (e) {
+          console.log('Broadcast send error:', e);
+        }
+      }
     }
 
     // Recovery function for lost PDF
@@ -5794,74 +5816,118 @@ ${presentationText.slice(0, 8000)}
     slideContainer.addEventListener('wheel', handleWheelNavigation, { passive: false });
     splitView.addEventListener('wheel', handleWheelNavigation, { passive: false });
 
-    // Broadcast button - toggle fullscreen clean mode for OBS/Zoom capture
-    let isBroadcastOverlayActive = false;
+    // Broadcast window reference
+    let broadcastWindow = null;
 
+    // Broadcast button - open separate window for OBS/Zoom capture
     btnBroadcast.addEventListener('click', () => {
-      isBroadcastOverlayActive = !isBroadcastOverlayActive;
+      if (broadcastWindow && !broadcastWindow.closed) {
+        // Window already open - focus it
+        broadcastWindow.focus();
+        return;
+      }
 
-      if (isBroadcastOverlayActive) {
-        document.body.classList.add('broadcast-mode');
+      // Open new window with broadcast mode
+      const url = new URL(window.location.href);
+      url.searchParams.set('broadcast', 'true');
+
+      broadcastWindow = window.open(
+        url.toString(),
+        'KazarianBroadcast',
+        'width=1280,height=720,menubar=no,toolbar=no,location=no,status=no,resizable=yes'
+      );
+
+      if (broadcastWindow) {
         btnBroadcast.classList.add('active');
-        btnBroadcast.querySelector('span') && (btnBroadcast.innerHTML = `
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-          Выход
-        `);
+        console.log('📺 Broadcast window opened - захватите его в Zoom/OBS');
 
-        // Try to go fullscreen
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen().catch(e => console.log('Fullscreen not available'));
-        }
-
-        console.log('📺 Broadcast mode ON - захватывайте это окно в OBS/Zoom');
+        // Send current slide to broadcast window
+        setTimeout(() => {
+          if (slides.length > 0 && slides[currentSlide]) {
+            const currentSlideObj = slides[currentSlide];
+            let imageData;
+            if (currentSlideObj.type === 'pdf') {
+              imageData = slideCanvas.toDataURL('image/jpeg', 0.85);
+            } else {
+              imageData = currentSlideObj.src;
+            }
+            broadcastChannel.postMessage({
+              type: 'slideImage',
+              index: currentSlide,
+              imageData: imageData
+            });
+          }
+        }, 1500);
       } else {
-        document.body.classList.remove('broadcast-mode');
-        btnBroadcast.classList.remove('active');
-        btnBroadcast.innerHTML = `
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="3" width="20" height="14" rx="2"></rect>
-            <line x1="8" y1="21" x2="16" y2="21"></line>
-            <line x1="12" y1="17" x2="12" y2="21"></line>
-          </svg>
-          Зум
-        `;
+        alert('Не удалось открыть окно. Разрешите всплывающие окна для этого сайта.');
+      }
+    });
 
-        // Exit fullscreen
-        if (document.fullscreenElement && document.exitFullscreen) {
-          document.exitFullscreen();
+    // Check if broadcast window closed
+    setInterval(() => {
+      if (broadcastWindow && broadcastWindow.closed) {
+        broadcastWindow = null;
+        btnBroadcast.classList.remove('active');
+      }
+    }, 1000);
+
+    // If this IS the broadcast window, listen for messages
+    if (isBroadcastMode) {
+      document.body.classList.add('broadcast-mode');
+
+      // Create broadcast display elements
+      const broadcastSlideImg = document.createElement('img');
+      broadcastSlideImg.id = 'broadcast-slide';
+      broadcastSlideImg.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;';
+      slideContainer.appendChild(broadcastSlideImg);
+
+      broadcastChannel.onmessage = (event) => {
+        const { type, imageData, slide } = event.data;
+
+        if (type === 'slideImage' && imageData) {
+          // Show received slide image
+          slideCanvas.style.display = 'none';
+          slideImage.style.display = 'none';
+          broadcastSlideImg.style.display = 'block';
+          broadcastSlideImg.src = imageData;
+          placeholder.style.display = 'none';
         }
 
-        console.log('📺 Broadcast mode OFF');
-      }
-    });
+        if (type === 'init' && typeof slide === 'number') {
+          currentSlide = slide;
+          // Request slide image
+          broadcastChannel.postMessage({ type: 'requestSlide', slide: slide });
+        }
+      };
 
-    // Exit broadcast mode on Escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && isBroadcastOverlayActive) {
-        btnBroadcast.click();
-      }
-    });
+      // Request current state from main window
+      broadcastChannel.postMessage({ type: 'requestState' });
+    }
 
-    // Also exit when fullscreen changes
-    document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement && isBroadcastOverlayActive) {
-        // Fullscreen was exited externally, turn off broadcast mode
-        isBroadcastOverlayActive = false;
-        document.body.classList.remove('broadcast-mode');
-        btnBroadcast.classList.remove('active');
-        btnBroadcast.innerHTML = `
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="3" width="20" height="14" rx="2"></rect>
-            <line x1="8" y1="21" x2="16" y2="21"></line>
-            <line x1="12" y1="17" x2="12" y2="21"></line>
-          </svg>
-          Зум
-        `;
-      }
-    });
+    // Main window responds to broadcast window requests
+    if (!isBroadcastMode) {
+      broadcastChannel.onmessage = (event) => {
+        const { type, slide } = event.data;
+
+        if (type === 'requestState' || type === 'requestSlide') {
+          // Send current slide image
+          if (slides.length > 0 && slides[currentSlide]) {
+            const currentSlideObj = slides[currentSlide];
+            let imageData;
+            if (currentSlideObj.type === 'pdf') {
+              imageData = slideCanvas.toDataURL('image/jpeg', 0.85);
+            } else {
+              imageData = currentSlideObj.src;
+            }
+            broadcastChannel.postMessage({
+              type: 'slideImage',
+              index: currentSlide,
+              imageData: imageData
+            });
+          }
+        }
+      };
+    }
 
     // Camera
     btnCamera.addEventListener('click', async () => {
