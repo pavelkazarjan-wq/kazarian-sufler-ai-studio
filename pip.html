@@ -5,6 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KazarianWEBINARStudio</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="theme-color" content="#0f172a">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -141,6 +143,8 @@
     }
     body.broadcast-mode .header,
     body.broadcast-mode .sidebar,
+    body.broadcast-mode .controls,
+    body.broadcast-mode #footer,
     body.broadcast-mode #thumbnails,
     body.broadcast-mode .placeholder,
     body.broadcast-mode .mobile-menu-btn,
@@ -151,7 +155,19 @@
     body.broadcast-mode .transcription-modal,
     body.broadcast-mode #teleprompter-panel,
     body.broadcast-mode #ai-suggestions,
-    body.broadcast-mode #emotion-panel {
+    body.broadcast-mode #emotion-panel,
+    body.broadcast-mode #clock-overlay,
+    body.broadcast-mode #youtube-overlay,
+    body.broadcast-mode .ticker-container,
+    body.broadcast-mode .name-plate,
+    body.broadcast-mode .converting-overlay,
+    body.broadcast-mode .modal-overlay,
+    body.broadcast-mode #camera-circle,
+    body.broadcast-mode .broadcast-exit-hint,
+    body.broadcast-mode .broadcast-btn,
+    body.broadcast-mode .nav-arrow,
+    body.broadcast-mode #slide-canvas,
+    body.broadcast-mode #slide-image {
       display: none !important;
     }
     body.broadcast-mode .canvas-area {
@@ -162,6 +178,24 @@
       bottom: 0;
       padding: 0;
       margin: 0;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+    body.broadcast-mode #slide-container {
+      width: 100%;
+      height: 100%;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+    body.broadcast-mode #broadcast-slide {
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      width: auto;
+      height: auto;
+      object-fit: contain;
     }
     body.broadcast-mode #main-canvas {
       width: 100vw !important;
@@ -177,36 +211,8 @@
       max-height: none !important;
       border-radius: 0;
     }
-    body.broadcast-mode .broadcast-exit-hint {
-      display: block !important;
-    }
     .broadcast-exit-hint {
       display: none;
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      padding: 8px 16px;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      font-size: 12px;
-      border-radius: 20px;
-      z-index: 99999;
-      cursor: pointer;
-      opacity: 0.3;
-      transition: opacity 0.3s;
-    }
-    .broadcast-exit-hint:hover {
-      opacity: 1;
-    }
-    body.broadcast-mode .broadcast-btn {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 99999;
-      opacity: 0.3;
-    }
-    body.broadcast-mode .broadcast-btn:hover {
-      opacity: 1;
     }
 
     /* Real-time Clock Overlay */
@@ -443,7 +449,7 @@
     }
 
     .canvas-area {
-      position: fixed; top: 60px; left: 0; right: 0; bottom: 80px;
+      position: fixed; top: 60px; left: 0; right: 0; bottom: 70px;
       background: #000; display: flex; align-items: center; justify-content: center;
     }
     .canvas-area:fullscreen {
@@ -515,18 +521,19 @@
 
     /* Controls */
     .controls {
-      position: fixed; bottom: 0; left: 0; right: 0; height: 80px;
+      position: fixed; bottom: 0; left: 0; right: 0; height: 70px;
       background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255,255,255,0.1);
-      display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 20px;
-      flex-wrap: wrap;
+      display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 15px;
+      flex-wrap: nowrap;
     }
 
     .btn {
-      display: flex; align-items: center; gap: 6px; padding: 10px 14px;
-      border: none; border-radius: 10px; font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 4px; padding: 6px 10px;
+      border: none; border-radius: 8px; font-size: 11px; font-weight: 500;
       cursor: pointer; transition: all 0.2s ease; font-family: 'Inter', sans-serif;
+      white-space: nowrap;
     }
-    .btn svg { width: 18px; height: 18px; }
+    .btn svg { width: 14px; height: 14px; }
     .btn-primary { background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); }
     .btn-secondary { background: rgba(255,255,255,0.1); color: #e2e8f0; }
@@ -1799,7 +1806,7 @@
       </div>
       <img id="splash-image" alt="Заставка" style="display:none;" />
       <div id="splash-text">Скоро начнём</div>
-      <video id="intro-video" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; background:#000;" playsinline></video>
+      <video id="intro-video" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; background:#000; z-index:10;" playsinline></video>
     </div>
 
     <!-- Live Audience: Comments Overlay -->
@@ -3170,6 +3177,110 @@
     let audioMediaRecorder = null;
     let audioChunks = [];
     let audioBlob = null;
+
+    // === Auto-save folder system (IndexedDB) ===
+    let savedDirectoryHandle = null;
+    const DB_NAME = 'KazarianStudioDB';
+    const STORE_NAME = 'settings';
+
+    async function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+        request.onupgradeneeded = (e) => {
+          e.target.result.createObjectStore(STORE_NAME);
+        };
+      });
+    }
+
+    async function getSavedDirectory() {
+      try {
+        const db = await openDB();
+        return new Promise((resolve) => {
+          const tx = db.transaction(STORE_NAME, 'readonly');
+          const store = tx.objectStore(STORE_NAME);
+          const request = store.get('saveDirectory');
+          request.onsuccess = () => resolve(request.result || null);
+          request.onerror = () => resolve(null);
+        });
+      } catch { return null; }
+    }
+
+    async function setSavedDirectory(handle) {
+      try {
+        const db = await openDB();
+        return new Promise((resolve) => {
+          const tx = db.transaction(STORE_NAME, 'readwrite');
+          const store = tx.objectStore(STORE_NAME);
+          store.put(handle, 'saveDirectory');
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+        });
+      } catch { return false; }
+    }
+
+    async function getOrSelectDirectory() {
+      // Try to use saved directory
+      let dirHandle = await getSavedDirectory();
+      if (dirHandle) {
+        try {
+          // Verify we still have permission
+          const perm = await dirHandle.queryPermission({ mode: 'readwrite' });
+          if (perm === 'granted') {
+            savedDirectoryHandle = dirHandle;
+            return dirHandle;
+          }
+          // Try to request permission
+          const newPerm = await dirHandle.requestPermission({ mode: 'readwrite' });
+          if (newPerm === 'granted') {
+            savedDirectoryHandle = dirHandle;
+            return dirHandle;
+          }
+        } catch (e) {
+          console.log('Saved directory no longer accessible:', e);
+        }
+      }
+
+      // Need to select a new directory
+      try {
+        dirHandle = await window.showDirectoryPicker({
+          id: 'webinar-recordings',
+          mode: 'readwrite',
+          startIn: 'desktop'
+        });
+        await setSavedDirectory(dirHandle);
+        savedDirectoryHandle = dirHandle;
+        console.log('📁 Save folder selected:', dirHandle.name);
+        return dirHandle;
+      } catch (e) {
+        console.log('Directory selection cancelled');
+        return null;
+      }
+    }
+
+    async function saveFileToDirectory(dirHandle, filename, data) {
+      try {
+        const fileHandle = await dirHandle.getFileHandle(filename, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(data);
+        await writable.close();
+        console.log('✅ Saved:', filename);
+        return true;
+      } catch (e) {
+        console.error('Save error:', e);
+        return false;
+      }
+    }
+
+    // Load saved directory on startup
+    getSavedDirectory().then(h => {
+      if (h) {
+        savedDirectoryHandle = h;
+        console.log('📁 Auto-save folder loaded:', h.name);
+      }
+    });
+
     // Load settings from localStorage
     const savedSettings = JSON.parse(localStorage.getItem('webinarStudioSettings') || '{}');
     let sourceMode = savedSettings.sourceMode || 'file';
@@ -4698,9 +4809,16 @@
 
     // Whisper API transcription
     async function transcribeAudio(audioBlob) {
-      // Convert blob to base64
+      // Convert blob to base64 (chunked to avoid stack overflow)
       const arrayBuffer = await audioBlob.arrayBuffer();
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+      const uint8Array = new Uint8Array(arrayBuffer);
+      let binary = '';
+      const chunkSize = 8192;
+      for (let i = 0; i < uint8Array.length; i += chunkSize) {
+        const chunk = uint8Array.subarray(i, i + chunkSize);
+        binary += String.fromCharCode.apply(null, chunk);
+      }
+      const base64 = btoa(binary);
 
       const response = await fetch('/.netlify/functions/openai-transcribe', {
         method: 'POST',
@@ -5206,17 +5324,31 @@ ${presentationText.slice(0, 8000)}
           };
         }
 
-        // Call Gemini API via Netlify function
-        const response = await fetch('/.netlify/functions/gemini-generate', {
+        // Build prompt for OpenAI
+        let prompt;
+        if (requestBody.contents[0].parts.length > 1) {
+          // Had images - use text description instead
+          prompt = requestBody.contents[0].parts[0].text + '\n\n(Слайды загружены, используй текст презентации для генерации)';
+        } else {
+          prompt = requestBody.contents[0].parts[0].text;
+        }
+
+        // Call OpenAI API via Netlify function
+        const response = await fetch('/.netlify/functions/openai-generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: requestBody.contents })
+          body: JSON.stringify({
+            prompt: prompt,
+            systemPrompt: 'Ты помощник для создания контента вебинара. Отвечай ТОЛЬКО валидным JSON без markdown и пояснений.',
+            model: 'gpt-4o-mini',
+            maxTokens: 2000
+          })
         });
 
         const data = await response.json();
 
-        if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-          let jsonText = data.candidates[0].content.parts[0].text;
+        if (data.text) {
+          let jsonText = data.text;
           // Clean up potential markdown
           jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
@@ -5246,6 +5378,8 @@ ${presentationText.slice(0, 8000)}
           } else {
             aiStatus.textContent = '✅ Тикер и CTA обновлены';
           }
+        } else if (data.error) {
+          throw new Error(data.error);
         } else {
           throw new Error('Неверный ответ от AI');
         }
@@ -5277,9 +5411,20 @@ ${presentationText.slice(0, 8000)}
     }
 
     // Splash screen functions
-    function showSplash() {
-      splashScreen.classList.add('active');
-      splashScreen.classList.remove('hiding');
+    function showSplash(instant = false) {
+      if (instant) {
+        // Disable transition for instant show
+        splashScreen.style.transition = 'none';
+        splashScreen.classList.add('active');
+        splashScreen.classList.remove('hiding');
+        // Force reflow to apply instant change
+        splashScreen.offsetHeight;
+        // Re-enable transition
+        splashScreen.style.transition = '';
+      } else {
+        splashScreen.classList.add('active');
+        splashScreen.classList.remove('hiding');
+      }
       overlayState.splashVisible = true;
       document.getElementById('btn-quick-splash').classList.add('active');
       // Always mute mic during splash (prevents click sounds)
@@ -6015,14 +6160,30 @@ ${presentationText.slice(0, 8000)}
                 const blob = new Blob(standaloneAudioChunks, { type: 'audio/webm' });
                 const duration = Math.round((Date.now() - standaloneAudioStartTime) / 1000);
                 const sizeMB = (blob.size / 1024 / 1024).toFixed(2);
+                const audioFilename = `audio-${new Date().toISOString().slice(0,10)}-${Date.now()}.webm`;
                 console.log('🎤 Standalone audio saved:', sizeMB, 'MB,', duration, 'sec');
 
-                // Auto-download audio file
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `audio-${new Date().toISOString().slice(0,10)}-${Date.now()}.webm`;
-                a.click();
+                // Try to save to auto-save directory
+                if (savedDirectoryHandle) {
+                  try {
+                    await saveFileToDirectory(savedDirectoryHandle, audioFilename, blob);
+                    console.log('🎤 Saved to folder:', savedDirectoryHandle.name);
+                  } catch (e) {
+                    // Fallback to download
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = audioFilename;
+                    a.click();
+                  }
+                } else {
+                  // No auto-save directory - use download
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = audioFilename;
+                  a.click();
+                }
 
                 // Auto-analyze if audio is longer than 30 seconds
                 if (duration >= 30) {
@@ -6030,7 +6191,6 @@ ${presentationText.slice(0, 8000)}
                   autoAnalyzeAudio(blob, duration);
                 } else {
                   console.log('🤖 Audio too short for analysis (<30 sec)');
-                  URL.revokeObjectURL(url);
                 }
               }
               standaloneAudioChunks = [];
@@ -6081,20 +6241,34 @@ ${presentationText.slice(0, 8000)}
               const blob = new Blob(standaloneAudioChunks, { type: 'audio/webm' });
               const duration = Math.round((Date.now() - standaloneAudioStartTime) / 1000);
               const sizeMB = (blob.size / 1024 / 1024).toFixed(2);
+              const audioFilename = `audio-${new Date().toISOString().slice(0,10)}-${Date.now()}.webm`;
               console.log('🎤 Standalone audio saved:', sizeMB, 'MB,', duration, 'sec');
 
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = `audio-${new Date().toISOString().slice(0,10)}-${Date.now()}.webm`;
-              a.click();
+              // Try to save to auto-save directory
+              if (savedDirectoryHandle) {
+                try {
+                  await saveFileToDirectory(savedDirectoryHandle, audioFilename, blob);
+                  console.log('🎤 Saved to folder:', savedDirectoryHandle.name);
+                } catch (e) {
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = audioFilename;
+                  a.click();
+                }
+              } else {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = audioFilename;
+                a.click();
+              }
 
               if (duration >= 30) {
                 console.log('🤖 Starting auto-analysis...');
                 autoAnalyzeAudio(blob, duration);
               } else {
                 console.log('🤖 Audio too short for analysis (<30 sec)');
-                URL.revokeObjectURL(url);
               }
             }
             standaloneAudioChunks = [];
@@ -6234,9 +6408,9 @@ ${presentationText.slice(0, 8000)}
         }
       }
 
-      // Show splash at start if we have an image
+      // Show splash at start if we have an image (instant show for recording)
       if (overlayState.splashImageData) {
-        showSplash();
+        showSplash(true); // instant=true for no animation
         splashAutoShown = true;
 
         // Hide splash after duration and play intro if available
@@ -6249,7 +6423,7 @@ ${presentationText.slice(0, 8000)}
         }, (overlayState.splashDuration || 3) * 1000);
       } else if (introVideoUrl) {
         // No splash but have intro - play it immediately
-        showSplash();
+        showSplash(true); // instant=true for no animation
         setTimeout(() => playIntro(), 100);
       }
 
@@ -6276,11 +6450,28 @@ ${presentationText.slice(0, 8000)}
       // Try to use File System API for direct file recording (no memory limit)
       useStreamRecording = false;
       fileWritableStream = null;
+      let currentVideoFilename = `webinar-${new Date().toISOString().slice(0,10)}-${Date.now()}.mp4`;
 
-      if (window.showSaveFilePicker) {
+      // Try auto-save directory first
+      if (window.showDirectoryPicker) {
+        try {
+          const dirHandle = await getOrSelectDirectory();
+          if (dirHandle) {
+            const fileHandle = await dirHandle.getFileHandle(currentVideoFilename, { create: true });
+            fileWritableStream = await fileHandle.createWritable();
+            useStreamRecording = true;
+            console.log('📁 Recording to:', dirHandle.name + '/' + currentVideoFilename);
+          }
+        } catch (e) {
+          console.warn('Auto-save directory failed:', e);
+        }
+      }
+
+      // Fallback to save dialog
+      if (!useStreamRecording && window.showSaveFilePicker) {
         try {
           const fileHandle = await window.showSaveFilePicker({
-            suggestedName: `webinar-${new Date().toISOString().slice(0,10)}.mp4`,
+            suggestedName: currentVideoFilename,
             types: [{
               description: 'MP4 Video',
               accept: { 'video/mp4': ['.mp4'] }
@@ -6293,7 +6484,6 @@ ${presentationText.slice(0, 8000)}
           if (e.name !== 'AbortError') {
             console.warn('File System API failed, falling back to memory:', e);
           }
-          // User cancelled or API failed - fall back to memory recording
         }
       }
 
@@ -6390,7 +6580,33 @@ ${presentationText.slice(0, 8000)}
           console.log('AUDIO: Created new AudioContext');
         }
         const masterGain = audioCtx.createGain();
-        const processor = audioCtx.createScriptProcessor(4096, 1, 1); // Smaller buffer = better sync
+        masterGain.gain.value = 0.9; // Slightly reduce to prevent clipping
+
+        // Add audio processing chain for better quality
+        // 1. High-pass filter to remove low rumble (room noise, handling noise)
+        const highPassFilter = audioCtx.createBiquadFilter();
+        highPassFilter.type = 'highpass';
+        highPassFilter.frequency.value = 80; // Cut below 80Hz
+        highPassFilter.Q.value = 0.7;
+
+        // 2. Compressor to reduce dynamic range and prevent clipping
+        const compressor = audioCtx.createDynamicsCompressor();
+        compressor.threshold.value = -24; // Start compressing at -24dB
+        compressor.knee.value = 12; // Soft knee for natural sound
+        compressor.ratio.value = 4; // 4:1 compression
+        compressor.attack.value = 0.003; // 3ms attack (fast, catches transients)
+        compressor.release.value = 0.15; // 150ms release (smooth)
+
+        // 3. Limiter to prevent any clipping
+        const limiter = audioCtx.createDynamicsCompressor();
+        limiter.threshold.value = -3; // Limit at -3dB
+        limiter.knee.value = 0; // Hard knee for limiting
+        limiter.ratio.value = 20; // Strong limiting
+        limiter.attack.value = 0.001; // 1ms
+        limiter.release.value = 0.05; // 50ms
+
+        // Use larger buffer for stability (reduces clicks)
+        const processor = audioCtx.createScriptProcessor(8192, 1, 1);
 
         // Mic source with gain control
         let micGain = null;
@@ -6400,7 +6616,7 @@ ${presentationText.slice(0, 8000)}
           micGain.gain.value = 1.0;
           micSource.connect(micGain);
           micGain.connect(masterGain);
-          console.log('AUDIO: Mic source connected');
+          console.log('AUDIO: Mic source connected with processing');
         }
 
         // Guest audio source (from WebRTC)
@@ -6450,10 +6666,17 @@ ${presentationText.slice(0, 8000)}
         // Store references for controlling during recording
         window._recordingAudio = { micGain, guestGain, introGain, audioCtx };
 
-        // Use shared recordingStartTime for both audio and video sync
+        // Use AudioContext time for accurate audio timestamps (avoids drift)
         let audioStarted = false;
+        let audioContextStartTime = null;
+
         processor.onaudioprocess = (e) => {
           if (!isRecording || !audioEncoder) return;
+
+          // Initialize audioContextStartTime on first audio callback
+          if (audioContextStartTime === null) {
+            audioContextStartTime = audioCtx.currentTime;
+          }
 
           // Control audio sources based on state - use smooth transitions to avoid clicks
           if (window._recordingAudio) {
@@ -6480,9 +6703,10 @@ ${presentationText.slice(0, 8000)}
 
           const inputData = e.inputBuffer.getChannelData(0);
 
-          // Use performance.now() with shared recordingStartTime for sync with video
-          // Both audio and video use same time source = perfect sync
-          const timestamp = Math.round((performance.now() - recordingStartTime) * 1000); // microseconds
+          // Use AudioContext.currentTime for accurate audio timing
+          // This clock is hardware-synced and doesn't drift like performance.now()
+          const audioElapsed = audioCtx.currentTime - audioContextStartTime;
+          const timestamp = Math.round(audioElapsed * 1000000); // microseconds
 
           const audioData = new AudioData({
             format: 'f32',
@@ -6501,9 +6725,14 @@ ${presentationText.slice(0, 8000)}
           }
         };
 
-        masterGain.connect(processor);
+        // Connect audio processing chain: masterGain → highPassFilter → compressor → limiter → processor
+        masterGain.connect(highPassFilter);
+        highPassFilter.connect(compressor);
+        compressor.connect(limiter);
+        limiter.connect(processor);
         // IMPORTANT: processor MUST connect to destination for onaudioprocess to fire
         processor.connect(audioCtx.destination);
+        console.log('AUDIO: Processing chain connected (highpass → compressor → limiter)');
 
         // Audio recording for transcription (separate WebM file)
         // Read toggle state directly from DOM to ensure we have current values
@@ -6703,24 +6932,28 @@ ${presentationText.slice(0, 8000)}
 
         // Draw splash/intro/outro screen if active - COVERS EVERYTHING
         if (splashScreen.classList.contains('active')) {
-          // If intro video is playing, draw it
-          if (isIntroPlaying && introVideo.readyState >= 2) {
-            // Draw black background
+          // If intro video is playing or loading, handle it (don't show splash)
+          if (isIntroPlaying) {
+            // Draw black background first
             recordingCtx.fillStyle = '#000';
             recordingCtx.fillRect(0, 0, W, H);
 
-            // Draw intro video scaled to FILL (better quality)
-            const vidW = introVideo.videoWidth;
-            const vidH = introVideo.videoHeight;
-            if (vidW > 0 && vidH > 0) {
-              // Use cover scaling for better quality
-              const vidScale = Math.max(W / vidW, H / vidH);
-              const drawW = vidW * vidScale;
-              const drawH = vidH * vidScale;
-              const drawX = (W - drawW) / 2;
-              const drawY = (H - drawH) / 2;
-              recordingCtx.drawImage(introVideo, drawX, drawY, drawW, drawH);
+            // Only draw video if ready
+            if (introVideo.readyState >= 2) {
+              // Draw intro video scaled to FILL (better quality)
+              const vidW = introVideo.videoWidth;
+              const vidH = introVideo.videoHeight;
+              if (vidW > 0 && vidH > 0) {
+                // Use cover scaling for better quality
+                const vidScale = Math.max(W / vidW, H / vidH);
+                const drawW = vidW * vidScale;
+                const drawH = vidH * vidScale;
+                const drawX = (W - drawW) / 2;
+                const drawY = (H - drawH) / 2;
+                recordingCtx.drawImage(introVideo, drawX, drawY, drawW, drawH);
+              }
             }
+            // If not ready yet, just show black screen (no splash flash)
           }
           // If outro is playing, draw outro FULLSCREEN
           else if (isOutroPlaying && outroImageLoaded && outroImageLoaded.complete) {
@@ -6999,7 +7232,12 @@ ${presentationText.slice(0, 8000)}
               const sx = (vw - cropSize) / 2;
               const sy = (vh - cropSize) / 2;
 
-              recordingCtx.drawImage(splitCamera, sx, sy, cropSize, cropSize, x, y, squareSize, squareSize);
+              // Mirror camera horizontally (match UI preview)
+              recordingCtx.save();
+              recordingCtx.translate(x + squareSize, y);
+              recordingCtx.scale(-1, 1);
+              recordingCtx.drawImage(splitCamera, sx, sy, cropSize, cropSize, 0, 0, squareSize, squareSize);
+              recordingCtx.restore();
             }
 
             if (guestStream && splitGuestVideo.videoWidth > 0) {
@@ -7095,12 +7333,15 @@ ${presentationText.slice(0, 8000)}
                   x = W - size - margin; y = H - size - margin; break;
               }
 
-              // Draw with circular clip
+              // Draw with circular clip and mirror horizontally (match UI preview)
               recordingCtx.save();
               recordingCtx.beginPath();
               recordingCtx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2);
               recordingCtx.clip();
-              recordingCtx.drawImage(cameraVideo, x, y, size, size);
+              // Mirror horizontally: translate to center, scale -1, draw offset
+              recordingCtx.translate(x + size, y);
+              recordingCtx.scale(-1, 1);
+              recordingCtx.drawImage(cameraVideo, 0, 0, size, size);
               recordingCtx.restore();
 
               // Draw border
@@ -7190,11 +7431,25 @@ ${presentationText.slice(0, 8000)}
       if (overlayState.outroImageData) {
         isOutroPlaying = true;
         muteAudioForSplash(); // Mute audio during outro
-        showSplash(); // Reuse splash screen for outro display
+
+        // Show outro on screen (not just recording)
+        splashImage.src = overlayState.outroImageData;
+        splashImage.style.display = 'block';
+        splashTextEl.textContent = overlayState.outroText || 'Спасибо за внимание!';
+        splashTextEl.style.display = 'block';
+        splashScreen.classList.add('active', 'has-image');
+        splashScreen.classList.remove('hiding');
+
         // Wait for outro duration
         await new Promise(resolve => setTimeout(resolve, overlayState.outroDuration * 1000));
         isOutroPlaying = false;
         hideSplash(false);
+
+        // Restore splash image if needed
+        if (overlayState.splashImageData) {
+          splashImage.src = overlayState.splashImageData;
+        }
+        splashTextEl.textContent = overlayState.splashText || 'Скоро начнём';
       }
 
       isRecording = false;
@@ -7294,11 +7549,30 @@ ${presentationText.slice(0, 8000)}
 
         // ALWAYS save audio file (no memory issues, useful for analysis)
         if (audioBlob) {
-          const audioUrl = URL.createObjectURL(audioBlob);
-          const audioLink = document.createElement('a');
-          audioLink.href = audioUrl;
-          audioLink.download = `audio-${new Date().toISOString().slice(0,10)}-${Date.now()}.webm`;
-          audioLink.click();
+          const audioFilename = `audio-${new Date().toISOString().slice(0,10)}-${Date.now()}.webm`;
+
+          // Try to save to auto-save directory
+          if (savedDirectoryHandle) {
+            try {
+              await saveFileToDirectory(savedDirectoryHandle, audioFilename, audioBlob);
+              console.log('AUDIO: Saved to folder:', savedDirectoryHandle.name + '/' + audioFilename);
+            } catch (e) {
+              console.warn('Auto-save failed, using download:', e);
+              // Fallback to download
+              const audioUrl = URL.createObjectURL(audioBlob);
+              const audioLink = document.createElement('a');
+              audioLink.href = audioUrl;
+              audioLink.download = audioFilename;
+              audioLink.click();
+            }
+          } else {
+            // No auto-save directory - use download
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audioLink = document.createElement('a');
+            audioLink.href = audioUrl;
+            audioLink.download = audioFilename;
+            audioLink.click();
+          }
           console.log('AUDIO: Audio file saved, size:', (audioBlob.size / 1024 / 1024).toFixed(2), 'MB');
         }
 

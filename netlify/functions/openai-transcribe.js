@@ -1,5 +1,4 @@
-const fetch = require('node-fetch');
-const FormData = require('form-data');
+// Using native fetch and File (Node 20+)
 
 exports.handler = async (event, context) => {
   // CORS headers
@@ -54,12 +53,11 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Create form data
+    // Create form data using native FormData and File (Node 20+)
     const formData = new FormData();
-    formData.append('file', audioBuffer, {
-      filename: 'audio.webm',
-      contentType: 'audio/webm'
-    });
+    // Use File constructor which properly includes filename
+    const audioFile = new File([audioBuffer], 'audio.webm', { type: 'audio/webm' });
+    formData.append('file', audioFile);
     formData.append('model', 'whisper-1');
     formData.append('language', language);
 
@@ -67,8 +65,7 @@ exports.handler = async (event, context) => {
     const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        ...formData.getHeaders()
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
       },
       body: formData
     });
