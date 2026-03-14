@@ -1,4 +1,4 @@
-// Using native fetch and File (Node 20+)
+// Using native fetch and Blob (Node 18+)
 
 exports.handler = async (event, context) => {
   // CORS headers
@@ -43,6 +43,8 @@ exports.handler = async (event, context) => {
     // Convert base64 to buffer
     const audioBuffer = Buffer.from(audioBase64, 'base64');
 
+    console.log('Audio size:', (audioBuffer.length / 1024 / 1024).toFixed(2), 'MB');
+
     // Rate limit: Max 25MB (OpenAI limit)
     const MAX_SIZE_MB = 25;
     if (audioBuffer.length > MAX_SIZE_MB * 1024 * 1024) {
@@ -53,11 +55,11 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Create form data using native FormData and File (Node 20+)
+    // Create form data using native FormData and Blob (Node 18+)
     const formData = new FormData();
-    // Use File constructor which properly includes filename
-    const audioFile = new File([audioBuffer], 'audio.webm', { type: 'audio/webm' });
-    formData.append('file', audioFile);
+    // Use Blob with filename in append (works in Node 18+)
+    const audioBlob = new Blob([audioBuffer], { type: 'audio/webm' });
+    formData.append('file', audioBlob, 'audio.webm');
     formData.append('model', 'whisper-1');
     formData.append('language', language);
 
@@ -72,6 +74,7 @@ exports.handler = async (event, context) => {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('OpenAI API error:', response.status, errorText);
       throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
     }
 
