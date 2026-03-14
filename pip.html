@@ -6605,8 +6605,9 @@ ${presentationText.slice(0, 8000)}
         limiter.attack.value = 0.001; // 1ms
         limiter.release.value = 0.05; // 50ms
 
-        // Use larger buffer for stability (reduces clicks)
-        const processor = audioCtx.createScriptProcessor(8192, 1, 1);
+        // Buffer size 4096: balance between stability and responsiveness
+        // Smaller = more frequent callbacks = less chance of missing data on long recordings
+        const processor = audioCtx.createScriptProcessor(4096, 1, 1);
 
         // Mic source with gain control
         let micGain = null;
@@ -6703,10 +6704,9 @@ ${presentationText.slice(0, 8000)}
 
           const inputData = e.inputBuffer.getChannelData(0);
 
-          // Use AudioContext.currentTime for accurate audio timing
-          // This clock is hardware-synced and doesn't drift like performance.now()
-          const audioElapsed = audioCtx.currentTime - audioContextStartTime;
-          const timestamp = Math.round(audioElapsed * 1000000); // microseconds
+          // Calculate timestamp from actual samples processed (not from clock)
+          // This prevents drift on long recordings - timestamp = samples / sampleRate
+          const timestamp = Math.round((audioSampleCount / 48000) * 1000000); // microseconds
 
           const audioData = new AudioData({
             format: 'f32',
