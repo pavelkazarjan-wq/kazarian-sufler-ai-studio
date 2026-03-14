@@ -2374,9 +2374,11 @@
     <input type="text" id="transcribe-guest-name" value="Гость" placeholder="Имя гостя">
     <label style="margin-top: 12px;">OpenAI API ключ (для транскрипции)</label>
     <input type="password" id="openai-api-key" placeholder="sk-..." style="font-family: monospace;">
-    <div style="font-size: 10px; color: #64748b; margin: 8px 0;">
-      Ключ хранится локально. Нужен для транскрипции длинных записей.
+    <div style="display: flex; gap: 8px; margin-top: 8px;">
+      <button class="overlay-btn" id="btn-save-api-key" style="flex:1; padding: 6px 10px; font-size: 11px;">💾 Сохранить</button>
+      <button class="overlay-btn overlay-btn-secondary" id="btn-delete-api-key" style="flex:1; padding: 6px 10px; font-size: 11px; background: rgba(239,68,68,0.2); color: #ef4444;">🗑️ Удалить</button>
     </div>
+    <div id="api-key-status" style="font-size: 10px; color: #64748b; margin: 8px 0;"></div>
 
     <h4 style="margin-top: 20px;">🔒 Инструменты психолога</h4>
     <p style="font-size:10px;color:#64748b;margin-bottom:10px;">Видны только вам, НЕ попадают в запись</p>
@@ -4746,15 +4748,40 @@
       document.getElementById('transcribe-guest-name').value = overlayState.transcribeGuestName;
       // Load OpenAI API key from localStorage
       const savedApiKey = localStorage.getItem('openai-api-key');
+      const apiKeyStatus = document.getElementById('api-key-status');
       if (savedApiKey) {
         document.getElementById('openai-api-key').value = savedApiKey;
+        apiKeyStatus.textContent = '✅ Ключ сохранён';
+        apiKeyStatus.style.color = '#22c55e';
+      } else {
+        apiKeyStatus.textContent = '⚠️ Ключ не настроен';
+        apiKeyStatus.style.color = '#f59e0b';
       }
     })();
 
-    // Save OpenAI API key when changed
-    document.getElementById('openai-api-key').addEventListener('change', function() {
-      localStorage.setItem('openai-api-key', this.value);
-      console.log('🔑 OpenAI API key saved');
+    // Save OpenAI API key button
+    document.getElementById('btn-save-api-key').addEventListener('click', function() {
+      const apiKey = document.getElementById('openai-api-key').value.trim();
+      const apiKeyStatus = document.getElementById('api-key-status');
+      if (apiKey && apiKey.startsWith('sk-')) {
+        localStorage.setItem('openai-api-key', apiKey);
+        apiKeyStatus.textContent = '✅ Ключ сохранён';
+        apiKeyStatus.style.color = '#22c55e';
+        console.log('🔑 OpenAI API key saved');
+      } else {
+        apiKeyStatus.textContent = '❌ Неверный формат ключа (должен начинаться с sk-)';
+        apiKeyStatus.style.color = '#ef4444';
+      }
+    });
+
+    // Delete OpenAI API key button
+    document.getElementById('btn-delete-api-key').addEventListener('click', function() {
+      localStorage.removeItem('openai-api-key');
+      document.getElementById('openai-api-key').value = '';
+      const apiKeyStatus = document.getElementById('api-key-status');
+      apiKeyStatus.textContent = '🗑️ Ключ удалён';
+      apiKeyStatus.style.color = '#64748b';
+      console.log('🔑 OpenAI API key deleted');
     });
 
     // Transcription modal elements
