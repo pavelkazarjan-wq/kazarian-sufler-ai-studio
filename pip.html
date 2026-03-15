@@ -2678,16 +2678,47 @@
           .promo-info p { font-size: 14px; color: #94a3b8; line-height: 1.5; }
           .promo-services { margin-top: 20px; }
           .promo-services h4 { font-size: 14px; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
-          .service-item {
+          .service-card { margin-bottom: 10px; border-radius: 12px; overflow: hidden; }
+          .service-header {
             display: flex; align-items: center; gap: 12px;
-            padding: 12px 16px; background: rgba(59, 130, 246, 0.1);
-            border-radius: 12px; margin-bottom: 10px;
+            padding: 14px 16px; background: rgba(59, 130, 246, 0.1);
             border: 1px solid rgba(59, 130, 246, 0.2);
-            transition: all 0.2s;
+            border-radius: 12px; cursor: pointer; transition: all 0.2s;
           }
-          .service-item:hover { background: rgba(59, 130, 246, 0.15); transform: translateX(4px); }
-          .service-icon { font-size: 24px; }
-          .service-text { font-size: 14px; color: #e2e8f0; }
+          .service-card.open .service-header {
+            border-radius: 12px 12px 0 0;
+            background: rgba(59, 130, 246, 0.2);
+            border-bottom: none;
+          }
+          .service-header:hover { background: rgba(59, 130, 246, 0.2); }
+          .service-icon { font-size: 24px; flex-shrink: 0; }
+          .service-title { font-size: 14px; color: #e2e8f0; flex: 1; }
+          .service-arrow {
+            font-size: 12px; color: #64748b; transition: transform 0.3s;
+          }
+          .service-card.open .service-arrow { transform: rotate(180deg); }
+          .service-body {
+            max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+            background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(59, 130, 246, 0.2);
+            border-top: none; border-radius: 0 0 12px 12px;
+          }
+          .service-card.open .service-body { max-height: 400px; }
+          .service-content { padding: 16px; }
+          .service-desc { font-size: 13px; color: #cbd5e1; line-height: 1.6; margin-bottom: 12px; }
+          .service-features { font-size: 12px; color: #94a3b8; line-height: 1.7; margin-bottom: 12px; }
+          .service-price {
+            font-size: 14px; font-weight: 600; color: #22c55e;
+            padding: 8px 12px; background: rgba(34, 197, 94, 0.1);
+            border-radius: 8px; display: inline-block; margin-bottom: 12px;
+          }
+          .service-book-btn {
+            display: block; width: 100%; padding: 12px; border: none;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white; font-size: 14px; font-weight: 600;
+            border-radius: 10px; cursor: pointer; text-align: center;
+            text-decoration: none; transition: all 0.2s;
+          }
+          .service-book-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59,130,246,0.4); }
           .promo-links { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; justify-content: center; }
           .promo-link {
             display: flex; align-items: center; gap: 6px;
@@ -2746,26 +2777,104 @@
             </div>
             <div class="promo-services">
               <h4>Мои услуги</h4>
-              <a href="https://t.me/PavloKazarianBot?start=psychotherapy" target="_blank" class="service-item" style="text-decoration:none; color:inherit;">
-                <span class="service-icon">🧠</span>
-                <span class="service-text">Индивидуальная психотерапия</span>
-              </a>
-              <a href="https://t.me/PavloKazarianBot?start=family" target="_blank" class="service-item" style="text-decoration:none; color:inherit;">
-                <span class="service-icon">💑</span>
-                <span class="service-text">Семейное консультирование</span>
-              </a>
-              <a href="https://t.me/PavloKazarianBot?start=nlp" target="_blank" class="service-item" style="text-decoration:none; color:inherit;">
-                <span class="service-icon">🎯</span>
-                <span class="service-text">НЛП-коучинг и тренинги</span>
-              </a>
-              <a href="https://t.me/PavloKazarianBot?start=hypnosis" target="_blank" class="service-item" style="text-decoration:none; color:inherit;">
-                <span class="service-icon">🌀</span>
-                <span class="service-text">Эриксоновский гипноз</span>
-              </a>
-              <a href="https://t.me/PavloKazarianBot?start=rehab" target="_blank" class="service-item" style="text-decoration:none; color:inherit;">
-                <span class="service-icon">🏥</span>
-                <span class="service-text">Реабилитация зависимостей</span>
-              </a>
+
+              <div class="service-card" onclick="this.classList.toggle('open')">
+                <div class="service-header">
+                  <span class="service-icon">🧠</span>
+                  <span class="service-title">Индивидуальная психотерапия</span>
+                  <span class="service-arrow">▼</span>
+                </div>
+                <div class="service-body">
+                  <div class="service-content">
+                    <div class="service-desc">Глубинная работа с запросом клиента: травмы, страхи, кризисы, ПТСР, самооценка, смыслы, родовые сценарии. Онлайн или очно.</div>
+                    <div class="service-features">
+                      • Первая сессия - диагностика запроса и формат работы<br>
+                      • Методы: НЛП, эриксоновский гипноз, телесные практики<br>
+                      • Работа на 4 уровнях: личностном, системном, экзистенциальном, регрессивном
+                    </div>
+                    <div class="service-price">75€ / 60 мин · 100€ / 90 мин</div>
+                    <a href="https://t.me/PavloKazarianBot" target="_blank" class="service-book-btn" onclick="event.stopPropagation()">📅 Записаться на консультацию</a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="service-card" onclick="this.classList.toggle('open')">
+                <div class="service-header">
+                  <span class="service-icon">💑</span>
+                  <span class="service-title">Семейное консультирование</span>
+                  <span class="service-arrow">▼</span>
+                </div>
+                <div class="service-body">
+                  <div class="service-content">
+                    <div class="service-desc">Работа с парой: конфликты, кризис, созависимость, восстановление доверия и коммуникации.</div>
+                    <div class="service-features">
+                      • Методы: ИМАГО, ЭФТ, привязанность, коммуникативные практики<br>
+                      • Работа с парой или каждым партнёром отдельно
+                    </div>
+                    <div class="service-price">120€ / 90 мин</div>
+                    <a href="https://t.me/PavloKazarianBot" target="_blank" class="service-book-btn" onclick="event.stopPropagation()">📅 Записаться на консультацию</a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="service-card" onclick="this.classList.toggle('open')">
+                <div class="service-header">
+                  <span class="service-icon">🎯</span>
+                  <span class="service-title">НЛП-коучинг и тренинги</span>
+                  <span class="service-arrow">▼</span>
+                </div>
+                <div class="service-body">
+                  <div class="service-content">
+                    <div class="service-desc">Работа с целями, убеждениями, ограничивающими паттернами. Индивидуально и в группах.</div>
+                    <div class="service-features">
+                      • Сертифицированный тренер НЛП (Пьюселик, Дилтс)<br>
+                      • Форматы: индивидуально, малые группы, корпоративно
+                    </div>
+                    <div class="service-price">Клуб «Время трансформаций» 20€/мес</div>
+                    <a href="https://t.me/PavloKazarianBot" target="_blank" class="service-book-btn" onclick="event.stopPropagation()">📅 Записаться на консультацию</a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="service-card" onclick="this.classList.toggle('open')">
+                <div class="service-header">
+                  <span class="service-icon">🌀</span>
+                  <span class="service-title">Эриксоновский гипноз / Регрессия</span>
+                  <span class="service-arrow">▼</span>
+                </div>
+                <div class="service-body">
+                  <div class="service-content">
+                    <div class="service-desc">Работа с глубинными слоями психики: корневые травмы, родовые паттерны, интеграция через регрессию и гипноз.</div>
+                    <div class="service-features">
+                      • Методы: гипнотерапия, регрессии, ребёфинг, реимпринтинг<br>
+                      • Мастер эриксоновского гипноза, 20+ лет практики
+                    </div>
+                    <div class="service-price">120€ / 90 мин</div>
+                    <a href="https://t.me/PavloKazarianBot" target="_blank" class="service-book-btn" onclick="event.stopPropagation()">📅 Записаться на консультацию</a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="service-card" onclick="this.classList.toggle('open')">
+                <div class="service-header">
+                  <span class="service-icon">🏥</span>
+                  <span class="service-title">Реабилитация зависимого поведения</span>
+                  <span class="service-arrow">▼</span>
+                </div>
+                <div class="service-body">
+                  <div class="service-content">
+                    <div class="service-desc">Программы для зависимых и созависимых: химические зависимости, поведенческие паттерны, семейная система.</div>
+                    <div class="service-features">
+                      • Работа с зависимым и семьёй параллельно<br>
+                      • Центр «Источник», 20+ лет практики<br>
+                      • ⭐ Консультация для ветеранов - бесплатно
+                    </div>
+                    <div class="service-price">75€ / 60 мин · 100€ / 90 мин · 120€ / парная</div>
+                    <a href="https://t.me/PavloKazarianBot" target="_blank" class="service-book-btn" onclick="event.stopPropagation()">📅 Записаться на консультацию</a>
+                  </div>
+                </div>
+              </div>
+
             </div>
             <div class="promo-links">
               <a href="https://t.me/psihodoctor" target="_blank" class="promo-link">
