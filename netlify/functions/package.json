@@ -4,6 +4,7 @@
   "description": "Netlify Functions for KazarianWEBINARStudio",
   "dependencies": {
     "node-fetch": "^2.7.0",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.0",
+    "@google/generative-ai": "^0.21.0"
   }
 }

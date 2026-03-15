@@ -3846,7 +3846,7 @@
           mirrorBtn.textContent = isMirrored ? '🪞 Зеркало' : '🪞 Обычно';
         };
 
-        // Photo memento - capture both videos (once per session)
+        // Photo memento - AI-generated photo of both people together (once per session)
         const photoBtn = document.getElementById('client-photo-btn');
         let photoTaken = false;
 
@@ -3857,63 +3857,68 @@
           }
 
           try {
-            // Create canvas to combine both videos
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+            photoBtn.textContent = '📸 Создаю...';
+            photoBtn.disabled = true;
 
-            // Set canvas size (side by side)
-            const w = 640, h = 480;
-            canvas.width = w * 2;
-            canvas.height = h;
+            // Capture frames from both videos
+            const captureFrame = (video) => {
+              const canvas = document.createElement('canvas');
+              canvas.width = 512;
+              canvas.height = 512;
+              const ctx = canvas.getContext('2d');
 
-            // Draw host video (left)
-            ctx.drawImage(hostVideo, 0, 0, w, h);
+              // Calculate crop to get square centered on face (upper portion)
+              const vw = video.videoWidth;
+              const vh = video.videoHeight;
+              const size = Math.min(vw, vh);
+              const sx = (vw - size) / 2;
+              const sy = Math.max(0, (vh - size) / 2 - size * 0.1); // Slightly above center for face
 
-            // Draw client video (right)
-            ctx.save();
-            if (isMirrored) {
-              ctx.translate(w * 2, 0);
-              ctx.scale(-1, 1);
-              ctx.drawImage(myVideo, 0, 0, w, h);
+              ctx.drawImage(video, sx, sy, size, size, 0, 0, 512, 512);
+              return canvas.toDataURL('image/jpeg', 0.9);
+            };
+
+            const hostImage = captureFrame(hostVideo);
+            const clientImage = captureFrame(myVideo);
+
+            // Call Gemini API to generate combined photo
+            const response = await fetch('/.netlify/functions/gemini-photo', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                hostImage,
+                clientImage,
+                hostName: 'Павел Казарьян',
+                clientName: clientName || 'клиент'
+              })
+            });
+
+            const result = await response.json();
+
+            if (result.success && result.image) {
+              // Download the AI-generated image
+              const dateStr = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+              const link = document.createElement('a');
+              link.download = 'consultation-memory-' + dateStr.replace(/\./g, '-') + '.png';
+              link.href = result.image;
+              link.click();
+
+              // Mark as used
+              photoTaken = true;
+              photoBtn.classList.add('used');
+              photoBtn.textContent = '📸 Готово!';
+              setTimeout(() => {
+                photoBtn.textContent = '📸 Фото ✓';
+              }, 2000);
             } else {
-              ctx.drawImage(myVideo, w, 0, w, h);
+              throw new Error(result.error || 'Не удалось сгенерировать фото');
             }
-            ctx.restore();
-
-            // Add labels
-            ctx.fillStyle = 'rgba(0,0,0,0.5)';
-            ctx.fillRect(10, h - 40, 180, 30);
-            ctx.fillRect(w + 10, h - 40, 80, 30);
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 16px Inter, sans-serif';
-            ctx.fillText('Павел Казарьян', 20, h - 18);
-            ctx.fillText('Вы', w + 20, h - 18);
-
-            // Add date
-            const dateStr = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            ctx.fillStyle = 'rgba(0,0,0,0.5)';
-            ctx.fillRect(canvas.width - 120, 10, 110, 25);
-            ctx.fillStyle = 'white';
-            ctx.font = '14px Inter, sans-serif';
-            ctx.fillText(dateStr, canvas.width - 110, 28);
-
-            // Download the image
-            const link = document.createElement('a');
-            link.download = 'consultation-photo-' + dateStr.replace(/\./g, '-') + '.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-
-            // Mark as used
-            photoTaken = true;
-            photoBtn.classList.add('used');
-            photoBtn.textContent = '📸 Готово!';
-            setTimeout(() => {
-              photoBtn.textContent = '📸 Фото ✓';
-            }, 2000);
 
           } catch (err) {
-            console.error('Photo capture error:', err);
-            alert('Не удалось сделать фото: ' + err.message);
+            console.error('Photo generation error:', err);
+            photoBtn.textContent = '📸 Фото';
+            photoBtn.disabled = false;
+            alert('Не удалось создать фото: ' + err.message);
           }
         };
 
