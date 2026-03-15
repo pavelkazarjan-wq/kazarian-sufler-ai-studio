@@ -2952,17 +2952,15 @@
             50% { background-position: 100% 50%; }
           }
           .waiting-logo {
-            width: 120px; height: 120px; margin-bottom: 24px;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
-            border-radius: 30px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4);
-            animation: pulse 2s ease-in-out infinite;
+            width: 100px; height: 100px; margin-bottom: 24px;
+            display: flex; align-items: center; justify-content: center;
+            animation: logoPulse 2s ease-in-out infinite;
           }
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 25px 80px rgba(99, 102, 241, 0.6); }
+          @keyframes logoPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 10px 30px rgba(83, 74, 183, 0.4)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 15px 40px rgba(83, 74, 183, 0.6)); }
           }
-          .waiting-logo svg { width: 60px; height: 60px; }
+          .waiting-logo svg { width: 100px; height: 100px; }
           .waiting-title {
             font-size: 28px; font-weight: 700; color: white; margin-bottom: 8px;
           }
@@ -3251,9 +3249,19 @@
           </button>
 
           <div class="waiting-logo">
-            <svg viewBox="0 0 40 40" fill="none">
-              <path d="M20 8L8 14v12l12 6 12-6V14L20 8z" stroke="white" stroke-width="2" fill="none"/>
-              <circle cx="20" cy="20" r="6" fill="white"/>
+            <svg viewBox="0 0 48 48" fill="none">
+              <!-- Base square with rounded corners -->
+              <rect x="0" y="0" width="48" height="48" rx="11" fill="#534AB7" opacity="0.15"/>
+              <rect x="0" y="0" width="48" height="48" rx="11" fill="none" stroke="#534AB7" stroke-width="1.5"/>
+              <!-- Head arc -->
+              <path d="M12,26 A12,12 0 0,1 36,26" fill="none" stroke="#534AB7" stroke-width="2" stroke-linecap="round"/>
+              <!-- Center circle -->
+              <circle cx="24" cy="26" r="5" fill="#534AB7" opacity="0.3"/>
+              <circle cx="24" cy="26" r="5" fill="none" stroke="#534AB7" stroke-width="1.5"/>
+              <!-- Pulse line -->
+              <polyline points="6,39 10,39 13,33 16,44 19,37 22,39 26,39 29,32 32,44 35,39 38,39 42,39" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- REC dot -->
+              <circle cx="43" cy="6" r="4" fill="#E24B4A" opacity="0.85"/>
             </svg>
           </div>
           <div class="waiting-title">Добро пожаловать!</div>
