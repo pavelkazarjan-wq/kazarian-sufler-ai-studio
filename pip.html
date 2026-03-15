@@ -3342,6 +3342,80 @@
       `;
 
       // Client mode logic with WAITING ROOM
+      // Initialize Supabase for client
+      const CLIENT_SUPABASE_URL = 'https://ngxbfuimddefjeufwcwf.supabase.co';
+      const CLIENT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neGJmdWltZGRlZmpldWZ3Y3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDQ5MjYsImV4cCI6MjA4MDc4MDkyNn0.xRRF3L8BCzM5qTKzODT3IfayIQ1x4u0sa-4ki3UbhkI';
+      let clientSupabase = null;
+      let waitingRecordId = null;
+
+      if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+        clientSupabase = window.supabase.createClient(CLIENT_SUPABASE_URL, CLIENT_SUPABASE_KEY);
+        console.log('✅ Client Supabase initialized');
+      }
+
+      // Register client in waiting_clients
+      async function registerWaitingClient() {
+        if (!clientSupabase) return null;
+        try {
+          const { data, error } = await clientSupabase
+            .from('waiting_clients')
+            .insert([{
+              session_id: sessionId,
+              client_name: clientName || 'Клиент',
+              status: 'waiting',
+              scheduled_time: null
+            }])
+            .select()
+            .single();
+
+          if (error) throw error;
+          waitingRecordId = data.id;
+          console.log('✅ Registered in waiting_clients:', data.id);
+          return data;
+        } catch (err) {
+          console.error('Failed to register waiting client:', err);
+          return null;
+        }
+      }
+
+      // Update client status
+      async function updateWaitingStatus(status) {
+        if (!clientSupabase || !waitingRecordId) return;
+        try {
+          await clientSupabase
+            .from('waiting_clients')
+            .update({ status })
+            .eq('id', waitingRecordId);
+          console.log('📝 Updated status to:', status);
+        } catch (err) {
+          console.error('Failed to update status:', err);
+        }
+      }
+
+      // Subscribe to status changes (for when host admits)
+      function subscribeToStatusChanges() {
+        if (!clientSupabase || !waitingRecordId) return;
+
+        clientSupabase
+          .channel('waiting-status-' + waitingRecordId)
+          .on('postgres_changes', {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'waiting_clients',
+            filter: `id=eq.${waitingRecordId}`
+          }, (payload) => {
+            console.log('📨 Status changed:', payload.new.status);
+            if (payload.new.status === 'admitted') {
+              // Host accepted - enter consultation
+              enterConsultation();
+            } else if (payload.new.status === 'rejected') {
+              waitingStatusText.textContent = '❌ Ведущий отклонил подключение';
+              waitingMusic.pause();
+            }
+          })
+          .subscribe();
+      }
+
       (function initClientMode() {
         let myStream = null;
         let peer = null;
@@ -3490,6 +3564,11 @@
             myVideo.srcObject = myStream;
             myVideo.setAttribute('playsinline', 'true');
             myVideo.play().catch(e => console.error('Video play error:', e));
+
+            // Register in Supabase waiting_clients
+            waitingStatusText.textContent = 'Регистрация...';
+            await registerWaitingClient();
+            subscribeToStatusChanges();
 
             waitingStatusText.textContent = 'Подключение к серверу...';
             peer = new Peer(undefined, { debug: 2 });
@@ -3929,9 +4008,106 @@
 
     // Initialize Supabase client (only if SDK loaded)
     let supabase = null;
+    let currentWaitingClientId = null;
+
     if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
       supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       console.log('✅ Supabase initialized');
+
+      // Subscribe to waiting_clients realtime - HOST receives notifications
+      supabase
+        .channel('waiting-clients-channel')
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'waiting_clients'
+        }, (payload) => {
+          console.log('🔔 New waiting client:', payload.new);
+          const client = payload.new;
+          if (client.status === 'waiting') {
+            currentWaitingClientId = client.id;
+            showSupabaseGuestNotification(client.client_name, client.session_id, client.id);
+          }
+        })
+        .subscribe((status) => {
+          console.log('📡 Realtime subscription status:', status);
+        });
+    }
+
+    // Show notification when client is waiting (via Supabase)
+    function showSupabaseGuestNotification(guestName, sessionId, recordId) {
+      const toast = document.getElementById('guest-waiting-toast');
+      const nameEl = document.getElementById('guest-waiting-name');
+      const notifSound = document.getElementById('notification-sound');
+
+      nameEl.textContent = guestName || 'Клиент';
+      toast.style.display = 'block';
+      toast.dataset.sessionId = sessionId;
+      toast.dataset.recordId = recordId;
+
+      // Play notification sound
+      if (notifSound) {
+        notifSound.volume = 0.5;
+        notifSound.play().catch(e => console.log('Sound blocked'));
+      }
+
+      // Browser notification
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Клиент ожидает', {
+          body: guestName + ' ждёт подключения к консультации',
+          icon: 'https://kazarian-webinar-ai-studio.netlify.app/favicon.svg'
+        });
+      } else if ('Notification' in window && Notification.permission !== 'denied') {
+        Notification.requestPermission();
+      }
+
+      console.log('🔔 Guest notification shown for:', guestName);
+    }
+
+    // Admit client via Supabase
+    async function admitSupabaseClient(recordId, sessionId) {
+      if (!supabase) return;
+
+      try {
+        // Update status to admitted
+        await supabase
+          .from('waiting_clients')
+          .update({ status: 'admitted' })
+          .eq('id', recordId);
+
+        console.log('✅ Client admitted via Supabase:', recordId);
+
+        // Now initialize peer for this session
+        initConsultationPeer(sessionId);
+
+        // Hide notification
+        document.getElementById('guest-waiting-toast').style.display = 'none';
+
+        // Show hangup button
+        document.getElementById('btn-hangup').style.display = 'flex';
+        document.getElementById('btn-consultation').style.display = 'none';
+
+      } catch (err) {
+        console.error('Failed to admit client:', err);
+      }
+    }
+
+    // Reject client via Supabase
+    async function rejectSupabaseClient(recordId) {
+      if (!supabase) return;
+
+      try {
+        await supabase
+          .from('waiting_clients')
+          .update({ status: 'rejected' })
+          .eq('id', recordId);
+
+        console.log('❌ Client rejected via Supabase:', recordId);
+        document.getElementById('guest-waiting-toast').style.display = 'none';
+
+      } catch (err) {
+        console.error('Failed to reject client:', err);
+      }
     }
 
     // Save session to Supabase
@@ -4603,19 +4779,36 @@
 
       // Admit guest button
       document.getElementById('btn-admit-guest').onclick = () => {
-        if (waitingDataConn && waitingDataConn.open) {
+        const toast = document.getElementById('guest-waiting-toast');
+        const recordId = toast.dataset.recordId;
+        const sessionId = toast.dataset.sessionId;
+
+        // If Supabase client (scheduled consultation)
+        if (recordId && sessionId) {
+          admitSupabaseClient(recordId, sessionId);
+        }
+        // If PeerJS direct connection (instant consultation)
+        else if (waitingDataConn && waitingDataConn.open) {
           waitingDataConn.send({ type: 'admitted' });
-          console.log('✅ Guest admitted');
+          console.log('✅ Guest admitted via PeerJS');
           hideGuestWaitingNotification();
         }
       };
 
       // Reject guest button
       document.getElementById('btn-reject-guest').onclick = () => {
-        if (waitingDataConn && waitingDataConn.open) {
+        const toast = document.getElementById('guest-waiting-toast');
+        const recordId = toast.dataset.recordId;
+
+        // If Supabase client
+        if (recordId) {
+          rejectSupabaseClient(recordId);
+        }
+        // If PeerJS direct connection
+        else if (waitingDataConn && waitingDataConn.open) {
           waitingDataConn.send({ type: 'rejected' });
           waitingDataConn.close();
-          console.log('❌ Guest rejected');
+          console.log('❌ Guest rejected via PeerJS');
           hideGuestWaitingNotification();
         }
       };
