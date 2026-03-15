@@ -6172,7 +6172,15 @@
         throw new Error('OpenAI API ключ не настроен. Введите ключ в настройках транскрипции.');
       }
 
-      console.log(`🎤 Transcribing ${(audioBlob.size/1024/1024).toFixed(2)} MB directly via OpenAI API`);
+      const fileSizeMB = audioBlob.size / 1024 / 1024;
+      console.log(`🎤 Transcribing ${fileSizeMB.toFixed(2)} MB directly via OpenAI API`);
+
+      // Check file size limit (OpenAI limit is 25MB)
+      const MAX_SIZE_MB = 24; // Slightly under limit for safety
+      if (fileSizeMB > MAX_SIZE_MB) {
+        console.warn(`⚠️ Audio file too large (${fileSizeMB.toFixed(1)}MB > ${MAX_SIZE_MB}MB)`);
+        throw new Error(`Аудио слишком большое (${fileSizeMB.toFixed(1)}MB). Максимум ${MAX_SIZE_MB}MB (~60 минут записи). Попробуйте записать короче или используйте внешний сервис транскрипции.`);
+      }
 
       // Create FormData with audio file
       const formData = new FormData();
@@ -7531,7 +7539,8 @@ ${presentationText.slice(0, 8000)}
             source.connect(audioDestination);
 
             standaloneAudioRecorder = new MediaRecorder(audioDestination.stream, {
-              mimeType: 'audio/webm;codecs=opus'
+              mimeType: 'audio/webm;codecs=opus',
+              audioBitsPerSecond: 48000 // 48kbps for smaller files
             });
 
             standaloneAudioRecorder.ondataavailable = (e) => {
@@ -8147,7 +8156,8 @@ ${presentationText.slice(0, 8000)}
           audioBlob = null; // Reset blob
 
           audioMediaRecorder = new MediaRecorder(audioDestination.stream, {
-            mimeType: 'audio/webm;codecs=opus'
+            mimeType: 'audio/webm;codecs=opus',
+            audioBitsPerSecond: 48000 // 48kbps - good for speech, ~65 min before 25MB limit
           });
 
           audioMediaRecorder.ondataavailable = (e) => {
