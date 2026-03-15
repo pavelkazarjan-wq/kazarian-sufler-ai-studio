@@ -1050,6 +1050,53 @@
     .modal-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); }
     .modal-btn-secondary { background: rgba(255,255,255,0.1); color: #e2e8f0; margin-top: 8px; }
     .modal-btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
+    /* Consultation modal */
+    .consult-option {
+      display: flex; align-items: center; gap: 12px; padding: 16px;
+      background: rgba(255,255,255,0.05); border: 2px solid transparent;
+      border-radius: 12px; cursor: pointer; margin-bottom: 12px; transition: all 0.2s;
+    }
+    .consult-option:hover { background: rgba(255,255,255,0.1); }
+    .consult-option.selected { border-color: #3b82f6; background: rgba(59,130,246,0.15); }
+    .consult-option-radio {
+      width: 22px; height: 22px; border: 2px solid #64748b; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .consult-option.selected .consult-option-radio {
+      border-color: #3b82f6; background: #3b82f6;
+    }
+    .consult-option.selected .consult-option-radio::after {
+      content: ''; width: 8px; height: 8px; background: white; border-radius: 50%;
+    }
+    .consult-option-text { flex: 1; }
+    .consult-option-title { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+    .consult-option-desc { font-size: 12px; color: #94a3b8; }
+    .consult-schedule-fields {
+      display: none; padding: 16px; background: rgba(0,0,0,0.2);
+      border-radius: 12px; margin-top: -4px; margin-bottom: 12px;
+    }
+    .consult-schedule-fields.visible { display: block; }
+    .consult-schedule-fields label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; margin-top: 12px; }
+    .consult-schedule-fields label:first-child { margin-top: 0; }
+    .consult-schedule-fields input, .consult-schedule-fields select {
+      width: 100%; padding: 10px 12px; border: 1px solid #334155;
+      border-radius: 8px; background: #1e293b; color: white; font-size: 14px;
+    }
+    .consult-schedule-fields input:focus, .consult-schedule-fields select:focus {
+      outline: none; border-color: #3b82f6;
+    }
+    .consult-result {
+      background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 12px; padding: 16px; margin-top: 16px; display: none;
+    }
+    .consult-result.visible { display: block; }
+    .consult-result-label { font-size: 12px; color: #22c55e; margin-bottom: 8px; }
+    .consult-result-link {
+      width: 100%; padding: 10px; background: #0f172a; border: 1px solid #22c55e;
+      border-radius: 8px; color: #22c55e; font-size: 11px; resize: none; height: 50px;
+    }
+
     .room-code {
       font-size: 28px; font-weight: 700; text-align: center; padding: 20px;
       background: rgba(59, 130, 246, 0.2); border-radius: 12px; margin-bottom: 12px;
@@ -1906,6 +1953,58 @@
       📞 Положить трубку
     </button>
 
+    <!-- Consultation Modal -->
+    <div class="modal-overlay" id="consultation-modal">
+      <div class="modal" style="width: 440px;">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px;">
+            <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          </svg>
+          Создать консультацию
+        </h3>
+
+        <div class="consult-option selected" id="consult-now-option" data-mode="now">
+          <div class="consult-option-radio"></div>
+          <div class="consult-option-text">
+            <div class="consult-option-title">Сейчас</div>
+            <div class="consult-option-desc">Начать консультацию прямо сейчас</div>
+          </div>
+        </div>
+
+        <div class="consult-option" id="consult-schedule-option" data-mode="schedule">
+          <div class="consult-option-radio"></div>
+          <div class="consult-option-text">
+            <div class="consult-option-title">Запланировать</div>
+            <div class="consult-option-desc">Указать дату и время</div>
+          </div>
+        </div>
+
+        <div class="consult-schedule-fields" id="consult-schedule-fields">
+          <label>Имя клиента</label>
+          <input type="text" id="consult-client-name" placeholder="Иван Иванов">
+          <label>Дата</label>
+          <input type="date" id="consult-date">
+          <label>Время</label>
+          <input type="time" id="consult-time" value="14:00">
+          <label>Ссылка действует после консультации</label>
+          <select id="consult-expiry">
+            <option value="1">1 час</option>
+            <option value="2" selected>2 часа</option>
+            <option value="6">6 часов</option>
+            <option value="24">24 часа</option>
+          </select>
+        </div>
+
+        <div class="consult-result" id="consult-result">
+          <div class="consult-result-label">✓ Ссылка создана</div>
+          <textarea class="consult-result-link" id="consult-result-link" readonly></textarea>
+        </div>
+
+        <button class="modal-btn modal-btn-primary" id="consult-create-btn">📋 Создать ссылку</button>
+        <button class="modal-btn modal-btn-secondary" id="consult-close-btn">Отмена</button>
+      </div>
+    </div>
+
     <div class="divider"></div>
 
     <!-- View mode selection -->
@@ -2423,31 +2522,6 @@
       <button class="overlay-btn overlay-btn-secondary" id="btn-delete-api-key" style="flex:1; padding: 6px 10px; font-size: 11px; background: rgba(239,68,68,0.2); color: #ef4444;">🗑️ Удалить</button>
     </div>
     <div id="api-key-status" style="font-size: 10px; color: #64748b; margin: 8px 0;"></div>
-
-    <h4 style="margin-top: 20px;">📅 Запланировать консультацию</h4>
-    <p style="font-size:10px;color:#64748b;margin-bottom:10px;">Создать ссылку с датой и временем</p>
-    <label>Имя клиента</label>
-    <input type="text" id="schedule-client-name" placeholder="Иван Иванов" style="margin-bottom: 8px;">
-    <label>Дата консультации</label>
-    <input type="date" id="schedule-date" style="margin-bottom: 8px;">
-    <label>Время консультации</label>
-    <input type="time" id="schedule-time" value="14:00" style="margin-bottom: 8px;">
-    <label>Ссылка действительна (часов после консультации)</label>
-    <select id="schedule-expiry" style="margin-bottom: 12px; padding: 8px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white;">
-      <option value="1">1 час</option>
-      <option value="2" selected>2 часа</option>
-      <option value="6">6 часов</option>
-      <option value="24">24 часа</option>
-    </select>
-    <button class="overlay-btn overlay-btn-primary" id="btn-generate-scheduled-link" style="width:100%; margin-bottom: 8px;">
-      📋 Создать ссылку
-    </button>
-    <div id="scheduled-link-result" style="display: none; margin-bottom: 12px;">
-      <textarea id="scheduled-link-text" readonly style="width: 100%; height: 60px; font-size: 11px; background: #0f172a; border: 1px solid #22c55e; border-radius: 8px; padding: 8px; color: #22c55e; resize: none;"></textarea>
-      <button class="overlay-btn" id="btn-copy-scheduled-link" style="width: 100%; margin-top: 6px; background: #22c55e; color: white;">
-        ✓ Скопировать ссылку
-      </button>
-    </div>
 
     <h4 style="margin-top: 20px;">🔒 Инструменты психолога</h4>
     <p style="font-size:10px;color:#64748b;margin-bottom:10px;">Видны только вам, НЕ попадают в запись</p>
@@ -5078,47 +5152,179 @@
       }
     });
 
-    // Consultation button - creates link and registers host peer
-    document.getElementById('btn-consultation').addEventListener('click', () => {
-      const consultSessionId = 'cons-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-      const consultationLink = window.location.origin + window.location.pathname + '?mode=client&session=' + consultSessionId;
+    // =============================================
+    // CONSULTATION MODAL
+    // =============================================
+    const consultModal = document.getElementById('consultation-modal');
+    const consultNowOption = document.getElementById('consult-now-option');
+    const consultScheduleOption = document.getElementById('consult-schedule-option');
+    const consultScheduleFields = document.getElementById('consult-schedule-fields');
+    const consultResult = document.getElementById('consult-result');
+    const consultResultLink = document.getElementById('consult-result-link');
+    const consultCreateBtn = document.getElementById('consult-create-btn');
+    const consultCloseBtn = document.getElementById('consult-close-btn');
+    const consultDateInput = document.getElementById('consult-date');
 
-      const btn = document.getElementById('btn-consultation');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '⏳ Подключение...';
-      btn.disabled = true;
+    let consultMode = 'now';
 
-      console.log('🔵 Consultation: Creating session', consultSessionId);
+    // Set default date
+    if (consultDateInput) {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      consultDateInput.value = `${yyyy}-${mm}-${dd}`;
+      consultDateInput.min = `${yyyy}-${mm}-${dd}`;
+    }
 
-      // Initialize consultation peer
-      const consultPeer = initConsultationPeer(consultSessionId);
+    // Toggle options
+    consultNowOption?.addEventListener('click', () => {
+      consultMode = 'now';
+      consultNowOption.classList.add('selected');
+      consultScheduleOption.classList.remove('selected');
+      consultScheduleFields.classList.remove('visible');
+      consultResult.classList.remove('visible');
+      consultCreateBtn.textContent = '📋 Создать ссылку';
+    });
 
-      // Wait for peer to be ready
-      const checkReady = setInterval(() => {
-        if (consultPeer && !consultPeer.destroyed && consultPeer.id === consultSessionId) {
+    consultScheduleOption?.addEventListener('click', () => {
+      consultMode = 'schedule';
+      consultScheduleOption.classList.add('selected');
+      consultNowOption.classList.remove('selected');
+      consultScheduleFields.classList.add('visible');
+      consultResult.classList.remove('visible');
+      consultCreateBtn.textContent = '📋 Создать ссылку';
+    });
+
+    // Close modal
+    consultCloseBtn?.addEventListener('click', () => {
+      consultModal.classList.remove('active');
+    });
+
+    consultModal?.addEventListener('click', (e) => {
+      if (e.target === consultModal) consultModal.classList.remove('active');
+    });
+
+    // Helper: Convert Kyiv time to UTC timestamp
+    function kyivToTimestamp(dateStr, timeStr) {
+      const tempDate = new Date(`${dateStr}T${timeStr}:00`);
+      const kyivNow = new Date().toLocaleString('en-US', { timeZone: 'Europe/Kyiv' });
+      const localNow = new Date().toLocaleString('en-US');
+      const kyivOffset = new Date(kyivNow).getTime() - new Date(localNow).getTime();
+      return tempDate.getTime() - kyivOffset;
+    }
+
+    // Create button handler
+    consultCreateBtn?.addEventListener('click', () => {
+      if (consultMode === 'now') {
+        // === INSTANT CONSULTATION ===
+        consultModal.classList.remove('active');
+
+        const consultSessionId = 'cons-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        const consultationLink = window.location.origin + window.location.pathname + '?mode=client&session=' + consultSessionId;
+
+        const btn = document.getElementById('btn-consultation');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Подключение...';
+        btn.disabled = true;
+
+        console.log('🔵 Consultation: Creating session', consultSessionId);
+
+        const consultPeer = initConsultationPeer(consultSessionId);
+
+        const checkReady = setInterval(() => {
+          if (consultPeer && !consultPeer.destroyed && consultPeer.id === consultSessionId) {
+            clearInterval(checkReady);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+
+            navigator.clipboard.writeText(consultationLink).then(() => {
+              alert('✅ Ссылка скопирована!\\n\\n' + consultationLink + '\\n\\n⚠️ Отправь ссылку клиенту.');
+            }).catch(() => {
+              prompt('Ссылка для клиента:', consultationLink);
+            });
+
+            console.log('✅ Consultation ready:', consultSessionId);
+          }
+        }, 100);
+
+        setTimeout(() => {
           clearInterval(checkReady);
-          btn.innerHTML = originalText;
-          btn.disabled = false;
+          if (btn.disabled) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            alert('❌ Не удалось создать комнату. Проверьте интернет.');
+          }
+        }, 10000);
 
-          navigator.clipboard.writeText(consultationLink).then(() => {
-            alert('✅ Ссылка скопирована!\\n\\n' + consultationLink + '\\n\\n⚠️ Отправь ссылку клиенту.');
-          }).catch(() => {
-            prompt('Ссылка для клиента:', consultationLink);
-          });
+      } else {
+        // === SCHEDULED CONSULTATION ===
+        const clientName = document.getElementById('consult-client-name').value.trim() || 'Клиент';
+        const dateStr = document.getElementById('consult-date').value;
+        const timeStr = document.getElementById('consult-time').value;
+        const expiryHours = parseInt(document.getElementById('consult-expiry').value) || 2;
 
-          console.log('✅ Consultation ready:', consultSessionId);
+        if (!dateStr || !timeStr) {
+          alert('Выберите дату и время консультации');
+          return;
         }
-      }, 100);
 
-      // Timeout
-      setTimeout(() => {
-        clearInterval(checkReady);
-        if (btn.disabled) {
-          btn.innerHTML = originalText;
-          btn.disabled = false;
-          alert('❌ Не удалось создать комнату. Проверьте интернет.');
+        const scheduledTimestamp = kyivToTimestamp(dateStr, timeStr);
+
+        if (scheduledTimestamp <= Date.now()) {
+          alert('Время консультации должно быть в будущем');
+          return;
         }
-      }, 10000);
+
+        const sessionId = 'sched-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        const expiryTimestamp = scheduledTimestamp + (expiryHours * 60 * 60 * 1000);
+
+        const tokenData = {
+          s: sessionId,
+          n: clientName,
+          t: scheduledTimestamp,
+          e: expiryTimestamp
+        };
+
+        const tokenBase64 = btoa(JSON.stringify(tokenData)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        const scheduledLink = window.location.origin + window.location.pathname + '?mode=client&token=' + tokenBase64;
+
+        // Format nice message
+        const scheduledDateTime = new Date(scheduledTimestamp);
+        const dateOptions = { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' };
+        const formattedDate = scheduledDateTime.toLocaleDateString('ru-RU', dateOptions);
+
+        const fullMessage = `${clientName}, ваша консультация запланирована на ${formattedDate}.\n\nСсылка для подключения:\n${scheduledLink}\n\nОткройте ссылку за 5 минут до начала.`;
+
+        consultResultLink.value = fullMessage;
+        consultResult.classList.add('visible');
+        consultCreateBtn.textContent = '📋 Скопировать';
+
+        // Copy to clipboard
+        navigator.clipboard.writeText(fullMessage).then(() => {
+          consultCreateBtn.textContent = '✓ Скопировано!';
+          setTimeout(() => {
+            consultCreateBtn.textContent = '📋 Скопировать';
+          }, 2000);
+        }).catch(() => {});
+
+        console.log(`📅 Scheduled consultation for ${clientName} at ${formattedDate}`);
+      }
+    });
+
+    // Consultation button - opens modal
+    document.getElementById('btn-consultation').addEventListener('click', () => {
+      // Reset modal state
+      consultMode = 'now';
+      consultNowOption.classList.add('selected');
+      consultScheduleOption.classList.remove('selected');
+      consultScheduleFields.classList.remove('visible');
+      consultResult.classList.remove('visible');
+      consultCreateBtn.textContent = '📋 Создать ссылку';
+      document.getElementById('consult-client-name').value = '';
+
+      // Show modal
+      consultModal.classList.add('active');
     });
 
     // Hang up consultation call
@@ -5308,120 +5514,6 @@
       apiKeyStatus.textContent = '🗑️ Ключ удалён';
       apiKeyStatus.style.color = '#64748b';
       console.log('🔑 OpenAI API key deleted');
-    });
-
-    // =============================================
-    // SCHEDULED CONSULTATION LINK GENERATOR
-    // =============================================
-
-    // Set default date to today
-    const scheduleDateInput = document.getElementById('schedule-date');
-    if (scheduleDateInput) {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      scheduleDateInput.value = `${yyyy}-${mm}-${dd}`;
-      scheduleDateInput.min = `${yyyy}-${mm}-${dd}`;
-    }
-
-    // Helper: Convert Kyiv time to UTC timestamp
-    function kyivTimeToTimestamp(dateStr, timeStr) {
-      // Create a date object and format it in Kyiv timezone to get offset
-      const tempDate = new Date(`${dateStr}T${timeStr}:00`);
-
-      // Get what time it is in Kyiv when it's this local time
-      const kyivNow = new Date().toLocaleString('en-US', { timeZone: 'Europe/Kyiv' });
-      const localNow = new Date().toLocaleString('en-US');
-      const kyivOffset = new Date(kyivNow).getTime() - new Date(localNow).getTime();
-
-      // User enters Kyiv time, adjust to get correct UTC timestamp
-      return tempDate.getTime() - kyivOffset;
-    }
-
-    // Generate scheduled link button
-    document.getElementById('btn-generate-scheduled-link')?.addEventListener('click', function() {
-      const clientName = document.getElementById('schedule-client-name').value.trim() || 'Клиент';
-      const dateStr = document.getElementById('schedule-date').value;
-      const timeStr = document.getElementById('schedule-time').value;
-      const expiryHours = parseInt(document.getElementById('schedule-expiry').value) || 2;
-
-      if (!dateStr || !timeStr) {
-        alert('Выберите дату и время консультации');
-        return;
-      }
-
-      // Convert Kyiv time to UTC timestamp
-      const scheduledTimestamp = kyivTimeToTimestamp(dateStr, timeStr);
-      const scheduledDateTime = new Date(scheduledTimestamp);
-
-      // Check if in the future
-      if (scheduledTimestamp <= Date.now()) {
-        alert('Время консультации должно быть в будущем');
-        return;
-      }
-
-      // Generate unique session ID
-      const sessionId = 'sched-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-
-      // Expiry = scheduled time + expiry hours
-      const expiryTimestamp = scheduledTimestamp + (expiryHours * 60 * 60 * 1000);
-
-      // Create token object
-      const tokenData = {
-        s: sessionId,           // session ID
-        n: clientName,          // client name
-        t: scheduledTimestamp,  // scheduled time
-        e: expiryTimestamp      // expiry time
-      };
-
-      // Encode token as base64url
-      const tokenJson = JSON.stringify(tokenData);
-      const tokenBase64 = btoa(tokenJson).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-
-      // Build link
-      const scheduledLink = window.location.origin + window.location.pathname + '?mode=client&token=' + tokenBase64;
-
-      // Show result
-      const resultDiv = document.getElementById('scheduled-link-result');
-      const linkTextarea = document.getElementById('scheduled-link-text');
-      resultDiv.style.display = 'block';
-      linkTextarea.value = scheduledLink;
-
-      // Format date for display
-      const dateOptions = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
-      const formattedDate = scheduledDateTime.toLocaleDateString('ru-RU', dateOptions);
-
-      console.log(`📅 Scheduled consultation link created for ${clientName} at ${formattedDate}`);
-    });
-
-    // Copy scheduled link button
-    document.getElementById('btn-copy-scheduled-link')?.addEventListener('click', function() {
-      const linkTextarea = document.getElementById('scheduled-link-text');
-      const clientName = document.getElementById('schedule-client-name').value.trim() || 'Клиент';
-      const dateStr = document.getElementById('schedule-date').value;
-      const timeStr = document.getElementById('schedule-time').value;
-
-      // Format nice message
-      const scheduledDateTime = new Date(`${dateStr}T${timeStr}:00`);
-      const dateOptions = { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' };
-      const formattedDate = scheduledDateTime.toLocaleDateString('ru-RU', dateOptions);
-
-      const fullMessage = `${clientName}, ваша консультация запланирована на ${formattedDate}.\n\nСсылка для подключения:\n${linkTextarea.value}\n\nОткройте ссылку за 5 минут до начала.`;
-
-      navigator.clipboard.writeText(fullMessage).then(() => {
-        this.textContent = '✓ Скопировано!';
-        this.style.background = '#16a34a';
-        setTimeout(() => {
-          this.textContent = '✓ Скопировать ссылку';
-          this.style.background = '#22c55e';
-        }, 2000);
-      }).catch(() => {
-        // Fallback - copy just the link
-        linkTextarea.select();
-        document.execCommand('copy');
-        alert('Ссылка скопирована!');
-      });
     });
 
     // Transcription modal elements
