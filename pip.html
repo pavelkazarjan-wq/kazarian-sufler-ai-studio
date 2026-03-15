@@ -1678,28 +1678,37 @@
 
   <!-- Guest waiting notification toast -->
   <div id="guest-waiting-toast" style="display:none; position:fixed; top:80px; right:20px; z-index:9999;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 20px; border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(99,102,241,0.5); max-width: 320px; animation: slideIn 0.3s ease;">
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 24px; border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1); max-width: 340px; animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
     <style>
-      @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-      @keyframes pulse-ring { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+      @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+      @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+      @keyframes ring-pulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.4); opacity: 0; } }
     </style>
-    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
       <div style="position:relative;">
-        <div style="width:48px; height:48px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px;">👤</div>
-        <div style="position:absolute; inset:-4px; border:2px solid #22c55e; border-radius:50%; animation: pulse-ring 1.5s ease-out infinite;"></div>
+        <div style="width:56px; height:56px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(99,102,241,0.4);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <div style="position:absolute; top:-2px; right:-2px; width:14px; height:14px; background:#22c55e; border-radius:50%; border:3px solid #0f172a; animation: pulse-dot 1.5s ease-in-out infinite;"></div>
+        <div style="position:absolute; inset:-6px; border:2px solid rgba(34,197,94,0.5); border-radius:18px; animation: ring-pulse 2s ease-out infinite;"></div>
       </div>
       <div>
-        <div style="color:white; font-weight:600; font-size:16px;">Гость ожидает</div>
-        <div style="color:rgba(255,255,255,0.8); font-size:13px;" id="guest-waiting-name">Клиент</div>
+        <div style="color:#94a3b8; font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Входящий вызов</div>
+        <div style="color:white; font-weight:600; font-size:18px;" id="guest-waiting-name">Клиент</div>
+        <div style="color:#64748b; font-size:13px; margin-top:2px;">Ожидает подключения</div>
       </div>
     </div>
-    <div style="display:flex; gap:8px;">
-      <button id="btn-admit-guest" style="flex:1; padding:10px 16px; background:#22c55e; border:none; border-radius:10px; color:white; font-weight:600; font-size:14px; cursor:pointer;">
-        ✓ Впустить
+    <div style="display:flex; gap:10px;">
+      <button id="btn-admit-guest" style="flex:1; padding:12px 20px; background: linear-gradient(135deg, #22c55e, #16a34a); border:none; border-radius:12px; color:white; font-weight:600; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(34,197,94,0.3);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Принять
       </button>
-      <button id="btn-reject-guest" style="padding:10px 16px; background:rgba(255,255,255,0.2); border:none; border-radius:10px; color:white; font-size:14px; cursor:pointer;">
-        ✕
+      <button id="btn-reject-guest" style="padding:12px 16px; background: rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); border-radius:12px; color:#f87171; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: all 0.2s;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
   </div>
@@ -2465,8 +2474,31 @@
       }
     }
 
-    // Show expired message
-    if (isClientMode && tokenExpired) {
+    // Check if session was already used (one-time links)
+    function isSessionUsed(sid) {
+      try {
+        const usedSessions = JSON.parse(localStorage.getItem('usedConsultationSessions') || '[]');
+        return usedSessions.includes(sid);
+      } catch { return false; }
+    }
+
+    function markSessionAsUsed(sid) {
+      try {
+        const usedSessions = JSON.parse(localStorage.getItem('usedConsultationSessions') || '[]');
+        if (!usedSessions.includes(sid)) {
+          usedSessions.push(sid);
+          // Keep only last 100 sessions
+          if (usedSessions.length > 100) usedSessions.shift();
+          localStorage.setItem('usedConsultationSessions', JSON.stringify(usedSessions));
+        }
+      } catch {}
+    }
+
+    const sessionAlreadyUsed = isClientMode && sessionId && isSessionUsed(sessionId);
+
+    // Show expired message (time-based or already used)
+    if (isClientMode && (tokenExpired || sessionAlreadyUsed)) {
+      const reason = sessionAlreadyUsed ? 'already-used' : 'expired';
       document.body.innerHTML = `
         <style>
           .expired-container {
@@ -2481,13 +2513,15 @@
           .expired-contact:hover { background: #2563eb; }
         </style>
         <div class="expired-container">
-          <div class="expired-icon">⏰</div>
-          <div class="expired-title">Ссылка устарела</div>
-          <div class="expired-text">Срок действия этой ссылки истёк. Пожалуйста, свяжитесь с психологом для получения новой ссылки.</div>
+          <div class="expired-icon">${reason === 'already-used' ? '✅' : '⏰'}</div>
+          <div class="expired-title">${reason === 'already-used' ? 'Ссылка уже использована' : 'Ссылка устарела'}</div>
+          <div class="expired-text">${reason === 'already-used'
+            ? 'Эта консультация уже состоялась. Для новой консультации свяжитесь с психологом.'
+            : 'Срок действия этой ссылки истёк. Пожалуйста, свяжитесь с психологом для получения новой ссылки.'}</div>
           <a href="https://t.me/PavloKazarianBot" class="expired-contact">📱 Написать в Telegram</a>
         </div>
       `;
-      throw new Error('Link expired');
+      throw new Error('Link ' + reason);
     }
 
     // Check if consultation is scheduled for future - show waiting room
@@ -2761,6 +2795,28 @@
           }
           .waiting-volume-btn:hover { background: rgba(255,255,255,0.2); }
 
+          /* Music toggle button */
+          .waiting-music-toggle {
+            position: absolute; top: 20px; right: 20px;
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 16px; border-radius: 25px; color: white;
+            cursor: pointer; font-size: 14px; transition: all 0.3s;
+            backdrop-filter: blur(8px);
+          }
+          .waiting-music-toggle:hover { background: rgba(255,255,255,0.2); }
+          .waiting-music-toggle.playing { background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.4); }
+          .waiting-music-toggle svg { width: 20px; height: 20px; }
+          .waiting-play-music {
+            display: none; /* Hidden by default, shown only if autoplay fails */
+            align-items: center; gap: 10px;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            border: none; padding: 14px 28px; border-radius: 30px;
+            color: white; font-size: 16px; font-weight: 500; cursor: pointer;
+            margin: 10px 0 20px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+          }
+          .waiting-play-music:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(99,102,241,0.5); }
+
           /* === CONSULTATION ROOM === */
           .client-container {
             position: fixed; inset: 0; background: #0f172a;
@@ -2969,13 +3025,20 @@
           .client-btn-mirror.active { background: #059669; }
         </style>
 
-        <!-- Audio for waiting room -->
-        <audio id="waiting-music" loop>
-          <source src="https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3" type="audio/mpeg">
+        <!-- Audio for waiting room - using free relaxing music -->
+        <audio id="waiting-music" loop crossorigin="anonymous">
+          <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
         </audio>
 
         <!-- WAITING ROOM -->
         <div class="waiting-room" id="waiting-room">
+          <!-- Music toggle in corner -->
+          <button class="waiting-music-toggle" id="waiting-music-toggle">
+            <svg id="music-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <svg id="music-icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="1" y1="1" x2="23" y2="23" stroke-width="2.5"/></svg>
+            <span id="music-toggle-text">Музыка</span>
+          </button>
+
           <div class="waiting-logo">
             <svg viewBox="0 0 40 40" fill="none">
               <path d="M20 8L8 14v12l12 6 12-6V14L20 8z" stroke="white" stroke-width="2" fill="none"/>
@@ -2984,6 +3047,12 @@
           </div>
           <div class="waiting-title">Добро пожаловать!</div>
           <div class="waiting-subtitle">Консультация с Павлом Казарьяном</div>
+
+          <!-- Fallback play button if autoplay blocked -->
+          <button class="waiting-play-music" id="waiting-play-music">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <span>Нажмите для включения музыки</span>
+          </button>
 
           <div class="waiting-status">
             <div class="waiting-spinner"></div>
@@ -3012,7 +3081,7 @@
             </a>
           </div>
 
-          <div class="waiting-volume">
+          <div class="waiting-volume" style="display:none;">
             <button class="waiting-volume-btn" id="waiting-volume-btn">🔊</button>
             <span>Фоновая музыка</span>
           </div>
@@ -3073,7 +3142,11 @@
         const clientContainer = document.getElementById('client-container');
         const waitingStatusText = document.getElementById('waiting-status-text');
         const waitingMusic = document.getElementById('waiting-music');
-        const volumeBtn = document.getElementById('waiting-volume-btn');
+        const musicToggle = document.getElementById('waiting-music-toggle');
+        const musicIconOn = document.getElementById('music-icon-on');
+        const musicIconOff = document.getElementById('music-icon-off');
+        const musicToggleText = document.getElementById('music-toggle-text');
+        const playMusicBtn = document.getElementById('waiting-play-music');
 
         const hostVideo = document.getElementById('client-host-video');
         const myVideo = document.getElementById('client-my-video');
@@ -3084,29 +3157,58 @@
 
         // Music controls
         let musicPlaying = false;
-        volumeBtn.onclick = () => {
+
+        function updateMusicUI(playing) {
+          musicPlaying = playing;
+          if (playing) {
+            musicToggle.classList.add('playing');
+            musicIconOn.style.display = 'block';
+            musicIconOff.style.display = 'none';
+            playMusicBtn.style.display = 'none';
+          } else {
+            musicToggle.classList.remove('playing');
+            musicIconOn.style.display = 'none';
+            musicIconOff.style.display = 'block';
+          }
+        }
+
+        function toggleMusic() {
           if (musicPlaying) {
             waitingMusic.pause();
-            volumeBtn.textContent = '🔇';
-            musicPlaying = false;
+            updateMusicUI(false);
           } else {
-            waitingMusic.volume = 0.3;
-            waitingMusic.play().catch(e => console.log('Music autoplay blocked'));
-            volumeBtn.textContent = '🔊';
-            musicPlaying = true;
+            waitingMusic.volume = 0.25;
+            waitingMusic.play().then(() => {
+              updateMusicUI(true);
+            }).catch(e => {
+              console.log('Music play failed:', e);
+              playMusicBtn.style.display = 'flex';
+            });
           }
+        }
+
+        musicToggle.onclick = toggleMusic;
+        playMusicBtn.onclick = () => {
+          waitingMusic.volume = 0.25;
+          waitingMusic.play().then(() => {
+            updateMusicUI(true);
+          }).catch(e => console.log('Music still blocked:', e));
         };
 
-        // Try to autoplay music (may be blocked)
-        setTimeout(() => {
-          waitingMusic.volume = 0.3;
-          waitingMusic.play().then(() => {
-            musicPlaying = true;
-            volumeBtn.textContent = '🔊';
+        // Try to autoplay music immediately
+        waitingMusic.volume = 0.25;
+        const autoplayPromise = waitingMusic.play();
+        if (autoplayPromise !== undefined) {
+          autoplayPromise.then(() => {
+            updateMusicUI(true);
+            console.log('Music autoplay success');
           }).catch(() => {
-            volumeBtn.textContent = '🔇';
+            // Autoplay blocked - show play button
+            updateMusicUI(false);
+            playMusicBtn.style.display = 'flex';
+            console.log('Music autoplay blocked - showing button');
           });
-        }, 1000);
+        }
 
         // Function to enter consultation room
         function enterConsultation() {
@@ -3115,6 +3217,10 @@
           waitingMusic.pause();
           waitingRoom.style.display = 'none';
           clientContainer.classList.add('active');
+          // Mark this session as used (one-time link)
+          if (typeof markSessionAsUsed === 'function' && sessionId) {
+            markSessionAsUsed(sessionId);
+          }
           startVideoCall();
         }
 
@@ -3608,7 +3714,7 @@
     // SUPABASE - Хранение сессий
     // =============================================
     const SUPABASE_URL = 'https://ngxbfuimddefjeufwcwf.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neGJmdWltZGRlZmplanVmd2N3ZiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzA5ODI0MDAwLCJleHAiOjIwMjU0MDAwMDB9.placeholder';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neGJmdWltZGRlZmpldWZ3Y3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDQ5MjYsImV4cCI6MjA4MDc4MDkyNn0.xRRF3L8BCzM5qTKzODT3IfayIQ1x4u0sa-4ki3UbhkI';
 
     // Initialize Supabase client (only if SDK loaded)
     let supabase = null;
