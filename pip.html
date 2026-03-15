@@ -2668,11 +2668,17 @@
           }
           .promo-header { display: flex; align-items: center; gap: 20px; margin-bottom: 24px; }
           .promo-photo {
-            width: 100px; height: 100px; border-radius: 50%;
+            width: 110px; height: 110px; border-radius: 50%;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             display: flex; align-items: center; justify-content: center;
             font-size: 40px; flex-shrink: 0;
             box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+            overflow: hidden;
+          }
+          .promo-photo img {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: center 15%;
+            border-radius: 50%;
           }
           .promo-info h3 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
           .promo-info p { font-size: 14px; color: #94a3b8; line-height: 1.5; }
@@ -2729,6 +2735,29 @@
           .promo-link:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
           .promo-link svg { width: 16px; height: 16px; fill: currentColor; }
           .waiting-footer { margin-top: 30px; text-align: center; color: #64748b; font-size: 12px; }
+          .music-toggle {
+            position: fixed; top: 20px; right: 20px;
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 16px; background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 30px; color: #94a3b8;
+            cursor: pointer; font-size: 14px; transition: all 0.3s;
+            z-index: 100;
+          }
+          .music-toggle:hover { background: rgba(59, 130, 246, 0.3); color: white; }
+          .music-toggle.playing { background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.3); color: #22c55e; }
+          .music-toggle svg { width: 20px; height: 20px; }
+          .play-music-btn {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            display: flex; align-items: center; gap: 10px;
+            padding: 14px 28px; background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border: none; border-radius: 30px; color: white;
+            font-size: 15px; font-weight: 500; cursor: pointer;
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s; z-index: 100;
+          }
+          .play-music-btn:hover { transform: translateX(-50%) translateY(-3px); box-shadow: 0 12px 40px rgba(59, 130, 246, 0.5); }
+          .play-music-btn svg { width: 24px; height: 24px; }
           @media (max-width: 600px) {
             .countdown-value { font-size: 32px; min-width: 50px; }
             .countdown-card { padding: 20px 30px; }
@@ -2737,6 +2766,22 @@
           }
         </style>
         <div class="waiting-container">
+          <!-- Background Music -->
+          <audio id="waiting-music" loop>
+            <source src="https://cdn.pixabay.com/download/audio/2022/02/22/audio_d1718ab41b.mp3" type="audio/mpeg">
+          </audio>
+
+          <button class="music-toggle" id="music-toggle" onclick="toggleWaitingMusic()">
+            <svg id="music-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <svg id="music-icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="1" y1="1" x2="23" y2="23" stroke-width="2.5"/></svg>
+            <span id="music-text">Музыка</span>
+          </button>
+
+          <button class="play-music-btn" id="play-music-btn" onclick="startWaitingMusic()">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <span>Включить музыку</span>
+          </button>
+
           <div class="waiting-header">
             <div class="waiting-greeting">Добро пожаловать,</div>
             <div class="waiting-name">${clientName}</div>
@@ -2768,7 +2813,7 @@
           <div class="promo-card">
             <div class="promo-header">
               <div class="promo-photo">
-                <img src="https://res2.weblium.site/res/656e15d29a2eb3000f9a162d/656f1c6cc3ab9d000f3b6328_optimized_1011.webp" alt="Павел Казарьян" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                <img src="https://res2.weblium.site/res/656e15d29a2eb3000f9a162d/656f1c6cc3ab9d000f3b6328_optimized_1011.webp" alt="Павел Казарьян">
               </div>
               <div class="promo-info">
                 <h3>Павел Казарьян</h3>
@@ -2928,6 +2973,53 @@
 
       updateCountdown();
       setInterval(updateCountdown, 1000);
+
+      // Music controls
+      let musicPlaying = false;
+      const waitingAudio = document.getElementById('waiting-music');
+      const playMusicBtn = document.getElementById('play-music-btn');
+      const musicToggle = document.getElementById('music-toggle');
+
+      window.startWaitingMusic = function() {
+        waitingAudio.volume = 0.3;
+        waitingAudio.play().then(() => {
+          musicPlaying = true;
+          playMusicBtn.style.display = 'none';
+          musicToggle.classList.add('playing');
+          document.getElementById('music-icon-on').style.display = 'block';
+          document.getElementById('music-icon-off').style.display = 'none';
+        }).catch(e => console.log('Autoplay blocked:', e));
+      };
+
+      window.toggleWaitingMusic = function() {
+        if (musicPlaying) {
+          waitingAudio.pause();
+          musicPlaying = false;
+          musicToggle.classList.remove('playing');
+          document.getElementById('music-icon-on').style.display = 'none';
+          document.getElementById('music-icon-off').style.display = 'block';
+        } else {
+          waitingAudio.volume = 0.3;
+          waitingAudio.play().then(() => {
+            musicPlaying = true;
+            playMusicBtn.style.display = 'none';
+            musicToggle.classList.add('playing');
+            document.getElementById('music-icon-on').style.display = 'block';
+            document.getElementById('music-icon-off').style.display = 'none';
+          }).catch(e => console.log('Autoplay blocked:', e));
+        }
+      };
+
+      // Try autoplay
+      waitingAudio.volume = 0.3;
+      waitingAudio.play().then(() => {
+        musicPlaying = true;
+        playMusicBtn.style.display = 'none';
+        musicToggle.classList.add('playing');
+      }).catch(() => {
+        // Autoplay blocked - show play button
+        playMusicBtn.style.display = 'flex';
+      });
 
       throw new Error('Waiting room');
     }
