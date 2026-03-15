@@ -18,6 +18,8 @@
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <!-- Face-api.js для распознавания эмоций -->
   <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/dist/face-api.min.js"></script>
+  <!-- Supabase для хранения сессий -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; min-height: 100vh; overflow: hidden; }
@@ -3602,6 +3604,98 @@
       }
     })();
 
+    // =============================================
+    // SUPABASE - Хранение сессий
+    // =============================================
+    const SUPABASE_URL = 'https://ngxbfuimddefjeufwcwf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neGJmdWltZGRlZmplanVmd2N3ZiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzA5ODI0MDAwLCJleHAiOjIwMjU0MDAwMDB9.placeholder';
+
+    // Initialize Supabase client (only if SDK loaded)
+    let supabase = null;
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('✅ Supabase initialized');
+    }
+
+    // Save session to Supabase
+    async function saveSessionToSupabase(sessionData) {
+      if (!supabase) {
+        console.warn('Supabase not initialized');
+        return null;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('sessions')
+          .insert([sessionData])
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Supabase insert error:', error);
+          return null;
+        }
+
+        console.log('✅ Session saved to Supabase:', data.id);
+        return data;
+      } catch (err) {
+        console.error('Supabase error:', err);
+        return null;
+      }
+    }
+
+    // Upload file to Supabase Storage
+    async function uploadToSupabaseStorage(file, filename) {
+      if (!supabase) return null;
+
+      try {
+        const { data, error } = await supabase.storage
+          .from('recordings')
+          .upload(filename, file, {
+            contentType: file.type,
+            upsert: true
+          });
+
+        if (error) {
+          console.error('Storage upload error:', error);
+          return null;
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from('recordings')
+          .getPublicUrl(filename);
+
+        return urlData.publicUrl;
+      } catch (err) {
+        console.error('Storage error:', err);
+        return null;
+      }
+    }
+
+    // Get all sessions from Supabase
+    async function getSessionsFromSupabase(limit = 50) {
+      if (!supabase) return [];
+
+      try {
+        const { data, error } = await supabase
+          .from('sessions')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(limit);
+
+        if (error) {
+          console.error('Supabase select error:', error);
+          return [];
+        }
+
+        return data || [];
+      } catch (err) {
+        console.error('Supabase error:', err);
+        return [];
+      }
+    }
+
     // Overlay state
     const savedOverlaySettings = JSON.parse(localStorage.getItem('overlaySettings') || '{}');
     let overlayState = {
@@ -5489,6 +5583,29 @@ ${transcription}`
         transcriptionStatus.textContent = '✅ Автоанализ завершён!';
 
         console.log('🤖 Auto-analysis complete');
+
+        // Save to Supabase
+        if (supabase) {
+          transcriptionStatus.textContent = '💾 Сохранение в базу данных...';
+          const sessionData = {
+            client_name: overlayState.guestName || overlayState.transcribeGuestName || 'Клиент',
+            host_name: overlayState.hostName || 'Павел Казарьян',
+            session_type: 'consultation',
+            duration_seconds: durationSec,
+            transcription: formattedText,
+            protocol: protocol,
+            started_at: new Date(Date.now() - durationSec * 1000).toISOString(),
+            ended_at: new Date().toISOString()
+          };
+
+          const saved = await saveSessionToSupabase(sessionData);
+          if (saved) {
+            transcriptionStatus.textContent = '✅ Автоанализ завершён и сохранён!';
+            console.log('💾 Session saved to Supabase:', saved.id);
+          } else {
+            transcriptionStatus.textContent = '✅ Автоанализ завершён!';
+          }
+        }
 
       } catch (err) {
         console.error('Auto-analyze error:', err);
@@ -7578,12 +7695,8 @@ ${presentationText.slice(0, 8000)}
               const sx = (vw - cropSize) / 2;
               const sy = (vh - cropSize) / 2;
 
-              // Mirror camera horizontally (match UI preview)
-              recordingCtx.save();
-              recordingCtx.translate(x + squareSize, y);
-              recordingCtx.scale(-1, 1);
-              recordingCtx.drawImage(splitCamera, sx, sy, cropSize, cropSize, 0, 0, squareSize, squareSize);
-              recordingCtx.restore();
+              // Draw camera WITHOUT mirroring (so text is readable on recording)
+              recordingCtx.drawImage(splitCamera, sx, sy, cropSize, cropSize, x, y, squareSize, squareSize);
             }
 
             if (guestStream && splitGuestVideo.videoWidth > 0) {
@@ -7679,15 +7792,12 @@ ${presentationText.slice(0, 8000)}
                   x = W - size - margin; y = H - size - margin; break;
               }
 
-              // Draw with circular clip and mirror horizontally (match UI preview)
+              // Draw with circular clip (NO mirroring - text should be readable)
               recordingCtx.save();
               recordingCtx.beginPath();
               recordingCtx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2);
               recordingCtx.clip();
-              // Mirror horizontally: translate to center, scale -1, draw offset
-              recordingCtx.translate(x + size, y);
-              recordingCtx.scale(-1, 1);
-              recordingCtx.drawImage(cameraVideo, 0, 0, size, size);
+              recordingCtx.drawImage(cameraVideo, x, y, size, size);
               recordingCtx.restore();
 
               // Draw border
