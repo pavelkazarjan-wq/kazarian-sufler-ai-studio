@@ -1674,6 +1674,39 @@
     </div>
   </header>
 
+  <!-- Guest waiting notification toast -->
+  <div id="guest-waiting-toast" style="display:none; position:fixed; top:80px; right:20px; z-index:9999;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 20px; border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(99,102,241,0.5); max-width: 320px; animation: slideIn 0.3s ease;">
+    <style>
+      @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+      @keyframes pulse-ring { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+    </style>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+      <div style="position:relative;">
+        <div style="width:48px; height:48px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px;">👤</div>
+        <div style="position:absolute; inset:-4px; border:2px solid #22c55e; border-radius:50%; animation: pulse-ring 1.5s ease-out infinite;"></div>
+      </div>
+      <div>
+        <div style="color:white; font-weight:600; font-size:16px;">Гость ожидает</div>
+        <div style="color:rgba(255,255,255,0.8); font-size:13px;" id="guest-waiting-name">Клиент</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button id="btn-admit-guest" style="flex:1; padding:10px 16px; background:#22c55e; border:none; border-radius:10px; color:white; font-weight:600; font-size:14px; cursor:pointer;">
+        ✓ Впустить
+      </button>
+      <button id="btn-reject-guest" style="padding:10px 16px; background:rgba(255,255,255,0.2); border:none; border-radius:10px; color:white; font-size:14px; cursor:pointer;">
+        ✕
+      </button>
+    </div>
+  </div>
+
+  <!-- Audio notification sound -->
+  <audio id="notification-sound" preload="auto">
+    <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+  </audio>
+
   <div id="thumbnails"></div>
 
   <div class="canvas-area">
@@ -2653,16 +2686,86 @@
     }
 
     if (isClientMode && sessionId) {
-      // CLIENT MODE - Minimal UI for consultation
+      // CLIENT MODE - Waiting room + consultation
       document.body.innerHTML = `
         <style>
           * { box-sizing: border-box; margin: 0; padding: 0; }
           html, body { height: 100%; overflow: hidden; }
+
+          /* === WAITING ROOM === */
+          .waiting-room {
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; text-align: center;
+            animation: gradientShift 10s ease infinite;
+          }
+          @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+          }
+          .waiting-logo {
+            width: 120px; height: 120px; margin-bottom: 24px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 30px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+          }
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 25px 80px rgba(99, 102, 241, 0.6); }
+          }
+          .waiting-logo svg { width: 60px; height: 60px; }
+          .waiting-title {
+            font-size: 28px; font-weight: 700; color: white; margin-bottom: 8px;
+          }
+          .waiting-subtitle {
+            font-size: 16px; color: #94a3b8; margin-bottom: 32px;
+          }
+          .waiting-status {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255,255,255,0.1); padding: 16px 32px; border-radius: 16px;
+            margin-bottom: 24px;
+          }
+          .waiting-spinner {
+            width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.2);
+            border-top-color: #3b82f6; border-radius: 50%;
+            animation: spin 1s linear infinite;
+          }
+          @keyframes spin { to { transform: rotate(360deg); } }
+          .waiting-status-text { color: white; font-size: 16px; font-weight: 500; }
+          .waiting-info {
+            background: rgba(255,255,255,0.05); border-radius: 16px; padding: 24px;
+            max-width: 400px; margin-bottom: 32px;
+          }
+          .waiting-info-title { color: #e2e8f0; font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+          .waiting-info-text { color: #94a3b8; font-size: 13px; line-height: 1.6; }
+          .waiting-socials {
+            display: flex; gap: 16px; margin-bottom: 24px;
+          }
+          .waiting-social {
+            width: 48px; height: 48px; border-radius: 12px;
+            background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
+            color: white; text-decoration: none; transition: all 0.3s;
+          }
+          .waiting-social:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+          .waiting-social svg { width: 24px; height: 24px; fill: currentColor; }
+          .waiting-volume {
+            display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 12px;
+          }
+          .waiting-volume-btn {
+            background: rgba(255,255,255,0.1); border: none; padding: 8px 12px;
+            border-radius: 8px; color: white; cursor: pointer; font-size: 16px;
+          }
+          .waiting-volume-btn:hover { background: rgba(255,255,255,0.2); }
+
+          /* === CONSULTATION ROOM === */
           .client-container {
             position: fixed; inset: 0; background: #0f172a;
-            display: flex; flex-direction: column;
+            display: none; flex-direction: column;
             padding: 8px;
           }
+          .client-container.active { display: flex; }
           .client-video-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
             flex: 1; min-height: 0;
@@ -2863,7 +2966,58 @@
           .client-btn-mirror { background: #f59e0b; color: white; }
           .client-btn-mirror.active { background: #059669; }
         </style>
-        <div class="client-container">
+
+        <!-- Audio for waiting room -->
+        <audio id="waiting-music" loop>
+          <source src="https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3" type="audio/mpeg">
+        </audio>
+
+        <!-- WAITING ROOM -->
+        <div class="waiting-room" id="waiting-room">
+          <div class="waiting-logo">
+            <svg viewBox="0 0 40 40" fill="none">
+              <path d="M20 8L8 14v12l12 6 12-6V14L20 8z" stroke="white" stroke-width="2" fill="none"/>
+              <circle cx="20" cy="20" r="6" fill="white"/>
+            </svg>
+          </div>
+          <div class="waiting-title">Добро пожаловать!</div>
+          <div class="waiting-subtitle">Консультация с Павлом Казарьяном</div>
+
+          <div class="waiting-status">
+            <div class="waiting-spinner"></div>
+            <div class="waiting-status-text" id="waiting-status-text">Ожидайте подтверждения...</div>
+          </div>
+
+          <div class="waiting-info">
+            <div class="waiting-info-title">Пока вы ждёте:</div>
+            <div class="waiting-info-text">
+              Убедитесь, что камера и микрофон работают. Найдите тихое место без отвлекающих факторов. Приготовьте воду. Психолог скоро вас примет.
+            </div>
+          </div>
+
+          <div class="waiting-socials">
+            <a href="https://t.me/psihodoctor" target="_blank" class="waiting-social" title="Telegram">
+              <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            </a>
+            <a href="https://www.instagram.com/psiholog_pavlokazarian" target="_blank" class="waiting-social" title="Instagram">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            <a href="https://www.youtube.com/@psiholog_pavlokazarian" target="_blank" class="waiting-social" title="YouTube">
+              <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
+            <a href="https://www.facebook.com/Psihodoc" target="_blank" class="waiting-social" title="Facebook">
+              <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+          </div>
+
+          <div class="waiting-volume">
+            <button class="waiting-volume-btn" id="waiting-volume-btn">🔊</button>
+            <span>Фоновая музыка</span>
+          </div>
+        </div>
+
+        <!-- CONSULTATION ROOM (hidden until admitted) -->
+        <div class="client-container" id="client-container">
           <div class="client-video-grid">
             <div class="client-video-box">
               <div class="client-video-label">Павел Казарьян</div>
@@ -2905,11 +3059,20 @@
         </div>
       `;
 
-      // Client mode logic
+      // Client mode logic with WAITING ROOM
       (function initClientMode() {
         let myStream = null;
         let peer = null;
         let call = null;
+        let dataConn = null;
+        let isAdmitted = false;
+
+        const waitingRoom = document.getElementById('waiting-room');
+        const clientContainer = document.getElementById('client-container');
+        const waitingStatusText = document.getElementById('waiting-status-text');
+        const waitingMusic = document.getElementById('waiting-music');
+        const volumeBtn = document.getElementById('waiting-volume-btn');
+
         const hostVideo = document.getElementById('client-host-video');
         const myVideo = document.getElementById('client-my-video');
         const cameraBtn = document.getElementById('client-camera-btn');
@@ -2917,16 +3080,83 @@
         const leaveBtn = document.getElementById('client-leave-btn');
         const statusEl = document.getElementById('client-status');
 
+        // Music controls
+        let musicPlaying = false;
+        volumeBtn.onclick = () => {
+          if (musicPlaying) {
+            waitingMusic.pause();
+            volumeBtn.textContent = '🔇';
+            musicPlaying = false;
+          } else {
+            waitingMusic.volume = 0.3;
+            waitingMusic.play().catch(e => console.log('Music autoplay blocked'));
+            volumeBtn.textContent = '🔊';
+            musicPlaying = true;
+          }
+        };
+
+        // Try to autoplay music (may be blocked)
+        setTimeout(() => {
+          waitingMusic.volume = 0.3;
+          waitingMusic.play().then(() => {
+            musicPlaying = true;
+            volumeBtn.textContent = '🔊';
+          }).catch(() => {
+            volumeBtn.textContent = '🔇';
+          });
+        }, 1000);
+
+        // Function to enter consultation room
+        function enterConsultation() {
+          console.log('🎉 Client admitted to consultation!');
+          isAdmitted = true;
+          waitingMusic.pause();
+          waitingRoom.style.display = 'none';
+          clientContainer.classList.add('active');
+          startVideoCall();
+        }
+
+        // Start video call after admission
+        async function startVideoCall() {
+          try {
+            statusEl.textContent = 'Подключение видео...';
+
+            call = peer.call(sessionId, myStream);
+
+            if (call) {
+              call.on('stream', (remoteStream) => {
+                hostVideo.srcObject = remoteStream;
+                hostVideo.setAttribute('playsinline', 'true');
+                hostVideo.play().catch(e => console.error('Host video error:', e));
+                statusEl.textContent = 'Подключено ✅';
+                console.log('📹 Remote stream received');
+              });
+
+              call.on('close', () => {
+                statusEl.textContent = 'Звонок завершен';
+                showReviewModal();
+              });
+
+              call.on('error', (err) => {
+                statusEl.textContent = 'Ошибка: ' + err.type;
+              });
+            }
+          } catch (err) {
+            statusEl.textContent = 'Ошибка видео: ' + err.message;
+          }
+        }
+
+        // Main function - connect to waiting room
         async function startConsultation() {
           try {
-            statusEl.textContent = 'Запрос доступа к камере...';
+            waitingStatusText.textContent = 'Запрос доступа к камере...';
 
             // Detect mobile device
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             // Adaptive video constraints
             const videoConstraints = isMobile ? {
-              facingMode: 'user',  // Front camera on mobile
+              facingMode: 'user',
               width: { ideal: 640, max: 1280 },
               height: { ideal: 480, max: 720 }
             } : {
@@ -2939,81 +3169,70 @@
               audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
             });
             myVideo.srcObject = myStream;
-            myVideo.setAttribute('playsinline', 'true');  // Important for iOS
+            myVideo.setAttribute('playsinline', 'true');
             myVideo.play().catch(e => console.error('Video play error:', e));
 
-            statusEl.textContent = 'Подключение к серверу...';
+            waitingStatusText.textContent = 'Подключение к серверу...';
             peer = new Peer(undefined, { debug: 2 });
 
-            let retryCount = 0;
-            let isConnected = false;
-            let waitingForHost = false;
-            const RETRY_INTERVAL = 5000; // 5 seconds between retries
+            peer.on('open', (myPeerId) => {
+              console.log('🔵 Client peer open:', myPeerId);
+              waitingStatusText.textContent = 'Ожидайте подтверждения ведущего...';
 
-            function showWaitingForHost() {
-              if (waitingForHost) return;
-              waitingForHost = true;
-              statusEl.innerHTML = `
-                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-                  <div style="font-size:16px;">⏳ Ожидайте, психолог скоро подключится</div>
-                  <div style="font-size:12px;color:#64748b;">Автоматическое подключение при появлении</div>
-                </div>
-              `;
-            }
+              // Connect to host via data connection (for waiting room)
+              dataConn = peer.connect(sessionId, { reliable: true });
 
-            function tryCall() {
-              if (isConnected) return;
+              dataConn.on('open', () => {
+                console.log('📡 Data connection to host established');
+                // Send waiting notification to host
+                dataConn.send({ type: 'waiting', name: clientName || 'Клиент', peerId: myPeerId });
+              });
 
-              retryCount++;
-              if (retryCount <= 3) {
-                statusEl.textContent = 'Подключение к психологу...';
-              } else {
-                showWaitingForHost();
-              }
+              dataConn.on('data', (data) => {
+                console.log('📨 Data from host:', data);
+                if (data.type === 'admitted') {
+                  enterConsultation();
+                } else if (data.type === 'rejected') {
+                  waitingStatusText.textContent = '❌ Ведущий отклонил подключение';
+                  waitingMusic.pause();
+                }
+              });
 
-              call = peer.call(sessionId, myStream);
+              dataConn.on('error', (err) => {
+                console.error('Data connection error:', err);
+                // Host might not be online yet, keep waiting
+                waitingStatusText.textContent = 'Ожидайте, психолог скоро появится...';
+              });
 
-              if (call) {
-                call.on('stream', (remoteStream) => {
-                  isConnected = true;
-                  waitingForHost = false;
-                  hostVideo.srcObject = remoteStream;
-                  hostVideo.setAttribute('playsinline', 'true');
-                  hostVideo.play().catch(e => console.error('Host video error:', e));
-                  statusEl.textContent = 'Подключено ✅';
-                  console.log('📹 Remote stream received, tracks:', remoteStream.getTracks().map(t => t.kind));
-                });
+              dataConn.on('close', () => {
+                if (!isAdmitted) {
+                  waitingStatusText.textContent = 'Соединение прервано. Обновите страницу.';
+                }
+              });
+            });
 
-                call.on('close', () => {
-                  isConnected = false;
-                  statusEl.textContent = 'Звонок завершен';
-                });
-
-                call.on('error', (err) => {
-                  if (err.type === 'peer-unavailable') {
-                    // Host not available, keep trying
-                    setTimeout(tryCall, RETRY_INTERVAL);
-                  } else {
-                    statusEl.textContent = 'Ошибка: ' + err.type;
-                  }
-                });
-              } else {
-                // Call failed, retry
-                setTimeout(tryCall, RETRY_INTERVAL);
-              }
-            }
-
-            peer.on('open', () => tryCall());
             peer.on('error', (err) => {
+              console.error('Peer error:', err);
               if (err.type === 'peer-unavailable') {
-                setTimeout(tryCall, RETRY_INTERVAL);
-              } else if (err.type !== 'unavailable-id') {
-                statusEl.textContent = 'Ошибка подключения: ' + err.type;
+                waitingStatusText.textContent = 'Психолог ещё не в сети. Ожидайте...';
+                // Retry connecting
+                setTimeout(() => {
+                  if (!isAdmitted && peer && !peer.destroyed) {
+                    dataConn = peer.connect(sessionId, { reliable: true });
+                    dataConn.on('open', () => {
+                      dataConn.send({ type: 'waiting', name: clientName || 'Клиент', peerId: peer.id });
+                    });
+                    dataConn.on('data', (data) => {
+                      if (data.type === 'admitted') enterConsultation();
+                    });
+                  }
+                }, 5000);
               }
             });
+
           } catch (err) {
             alert('Нет доступа к камере: ' + err.message);
-            statusEl.textContent = 'Ошибка доступа к камере';
+            waitingStatusText.textContent = 'Ошибка доступа к камере';
           }
         }
 
@@ -3907,6 +4126,88 @@
       consultationPeer.on('open', (id) => {
         console.log('✅ Consultation peer ready:', id);
       });
+
+      // Handle waiting room data connections
+      let waitingGuest = null;
+      let waitingDataConn = null;
+
+      consultationPeer.on('connection', (conn) => {
+        console.log('📡 Data connection from client');
+        waitingDataConn = conn;
+
+        conn.on('open', () => {
+          console.log('📡 Data connection opened');
+        });
+
+        conn.on('data', (data) => {
+          console.log('📨 Data from client:', data);
+          if (data.type === 'waiting') {
+            waitingGuest = data;
+            showGuestWaitingNotification(data.name || 'Клиент');
+          }
+        });
+
+        conn.on('close', () => {
+          console.log('📡 Data connection closed');
+          hideGuestWaitingNotification();
+          waitingGuest = null;
+          waitingDataConn = null;
+        });
+      });
+
+      // Show guest waiting notification
+      function showGuestWaitingNotification(guestName) {
+        const toast = document.getElementById('guest-waiting-toast');
+        const nameEl = document.getElementById('guest-waiting-name');
+        const notifSound = document.getElementById('notification-sound');
+
+        nameEl.textContent = guestName;
+        toast.style.display = 'block';
+
+        // Play notification sound
+        notifSound.volume = 0.5;
+        notifSound.play().catch(e => console.log('Sound blocked'));
+
+        // Browser notification
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('Гость ожидает', {
+            body: guestName + ' ждёт подтверждения для входа',
+            icon: 'https://kazarian-webinar-ai-studio.netlify.app/favicon.svg'
+          });
+        } else if ('Notification' in window && Notification.permission !== 'denied') {
+          Notification.requestPermission().then(perm => {
+            if (perm === 'granted') {
+              new Notification('Гость ожидает', {
+                body: guestName + ' ждёт подтверждения для входа',
+                icon: 'https://kazarian-webinar-ai-studio.netlify.app/favicon.svg'
+              });
+            }
+          });
+        }
+      }
+
+      function hideGuestWaitingNotification() {
+        document.getElementById('guest-waiting-toast').style.display = 'none';
+      }
+
+      // Admit guest button
+      document.getElementById('btn-admit-guest').onclick = () => {
+        if (waitingDataConn && waitingDataConn.open) {
+          waitingDataConn.send({ type: 'admitted' });
+          console.log('✅ Guest admitted');
+          hideGuestWaitingNotification();
+        }
+      };
+
+      // Reject guest button
+      document.getElementById('btn-reject-guest').onclick = () => {
+        if (waitingDataConn && waitingDataConn.open) {
+          waitingDataConn.send({ type: 'rejected' });
+          waitingDataConn.close();
+          console.log('❌ Guest rejected');
+          hideGuestWaitingNotification();
+        }
+      };
 
       consultationPeer.on('call', async (incomingCall) => {
         console.log('📞 Consultation: Incoming call from client');
