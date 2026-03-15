@@ -2424,6 +2424,31 @@
     </div>
     <div id="api-key-status" style="font-size: 10px; color: #64748b; margin: 8px 0;"></div>
 
+    <h4 style="margin-top: 20px;">📅 Запланировать консультацию</h4>
+    <p style="font-size:10px;color:#64748b;margin-bottom:10px;">Создать ссылку с датой и временем</p>
+    <label>Имя клиента</label>
+    <input type="text" id="schedule-client-name" placeholder="Иван Иванов" style="margin-bottom: 8px;">
+    <label>Дата консультации</label>
+    <input type="date" id="schedule-date" style="margin-bottom: 8px;">
+    <label>Время консультации</label>
+    <input type="time" id="schedule-time" value="14:00" style="margin-bottom: 8px;">
+    <label>Ссылка действительна (часов после консультации)</label>
+    <select id="schedule-expiry" style="margin-bottom: 12px; padding: 8px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white;">
+      <option value="1">1 час</option>
+      <option value="2" selected>2 часа</option>
+      <option value="6">6 часов</option>
+      <option value="24">24 часа</option>
+    </select>
+    <button class="overlay-btn overlay-btn-primary" id="btn-generate-scheduled-link" style="width:100%; margin-bottom: 8px;">
+      📋 Создать ссылку
+    </button>
+    <div id="scheduled-link-result" style="display: none; margin-bottom: 12px;">
+      <textarea id="scheduled-link-text" readonly style="width: 100%; height: 60px; font-size: 11px; background: #0f172a; border: 1px solid #22c55e; border-radius: 8px; padding: 8px; color: #22c55e; resize: none;"></textarea>
+      <button class="overlay-btn" id="btn-copy-scheduled-link" style="width: 100%; margin-top: 6px; background: #22c55e; color: white;">
+        ✓ Скопировать ссылку
+      </button>
+    </div>
+
     <h4 style="margin-top: 20px;">🔒 Инструменты психолога</h4>
     <p style="font-size:10px;color:#64748b;margin-bottom:10px;">Видны только вам, НЕ попадают в запись</p>
     <button class="overlay-btn" id="btn-emotion-panel" style="width:100%;margin-bottom:8px;background:linear-gradient(135deg,#0a1419,#0f1e28);border:1px solid rgba(0,255,170,0.3);color:#00ffaa;font-family:'Courier New',monospace;letter-spacing:1px;">
@@ -5283,6 +5308,120 @@
       apiKeyStatus.textContent = '🗑️ Ключ удалён';
       apiKeyStatus.style.color = '#64748b';
       console.log('🔑 OpenAI API key deleted');
+    });
+
+    // =============================================
+    // SCHEDULED CONSULTATION LINK GENERATOR
+    // =============================================
+
+    // Set default date to today
+    const scheduleDateInput = document.getElementById('schedule-date');
+    if (scheduleDateInput) {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      scheduleDateInput.value = `${yyyy}-${mm}-${dd}`;
+      scheduleDateInput.min = `${yyyy}-${mm}-${dd}`;
+    }
+
+    // Helper: Convert Kyiv time to UTC timestamp
+    function kyivTimeToTimestamp(dateStr, timeStr) {
+      // Create a date object and format it in Kyiv timezone to get offset
+      const tempDate = new Date(`${dateStr}T${timeStr}:00`);
+
+      // Get what time it is in Kyiv when it's this local time
+      const kyivNow = new Date().toLocaleString('en-US', { timeZone: 'Europe/Kyiv' });
+      const localNow = new Date().toLocaleString('en-US');
+      const kyivOffset = new Date(kyivNow).getTime() - new Date(localNow).getTime();
+
+      // User enters Kyiv time, adjust to get correct UTC timestamp
+      return tempDate.getTime() - kyivOffset;
+    }
+
+    // Generate scheduled link button
+    document.getElementById('btn-generate-scheduled-link')?.addEventListener('click', function() {
+      const clientName = document.getElementById('schedule-client-name').value.trim() || 'Клиент';
+      const dateStr = document.getElementById('schedule-date').value;
+      const timeStr = document.getElementById('schedule-time').value;
+      const expiryHours = parseInt(document.getElementById('schedule-expiry').value) || 2;
+
+      if (!dateStr || !timeStr) {
+        alert('Выберите дату и время консультации');
+        return;
+      }
+
+      // Convert Kyiv time to UTC timestamp
+      const scheduledTimestamp = kyivTimeToTimestamp(dateStr, timeStr);
+      const scheduledDateTime = new Date(scheduledTimestamp);
+
+      // Check if in the future
+      if (scheduledTimestamp <= Date.now()) {
+        alert('Время консультации должно быть в будущем');
+        return;
+      }
+
+      // Generate unique session ID
+      const sessionId = 'sched-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+
+      // Expiry = scheduled time + expiry hours
+      const expiryTimestamp = scheduledTimestamp + (expiryHours * 60 * 60 * 1000);
+
+      // Create token object
+      const tokenData = {
+        s: sessionId,           // session ID
+        n: clientName,          // client name
+        t: scheduledTimestamp,  // scheduled time
+        e: expiryTimestamp      // expiry time
+      };
+
+      // Encode token as base64url
+      const tokenJson = JSON.stringify(tokenData);
+      const tokenBase64 = btoa(tokenJson).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+      // Build link
+      const scheduledLink = window.location.origin + window.location.pathname + '?mode=client&token=' + tokenBase64;
+
+      // Show result
+      const resultDiv = document.getElementById('scheduled-link-result');
+      const linkTextarea = document.getElementById('scheduled-link-text');
+      resultDiv.style.display = 'block';
+      linkTextarea.value = scheduledLink;
+
+      // Format date for display
+      const dateOptions = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+      const formattedDate = scheduledDateTime.toLocaleDateString('ru-RU', dateOptions);
+
+      console.log(`📅 Scheduled consultation link created for ${clientName} at ${formattedDate}`);
+    });
+
+    // Copy scheduled link button
+    document.getElementById('btn-copy-scheduled-link')?.addEventListener('click', function() {
+      const linkTextarea = document.getElementById('scheduled-link-text');
+      const clientName = document.getElementById('schedule-client-name').value.trim() || 'Клиент';
+      const dateStr = document.getElementById('schedule-date').value;
+      const timeStr = document.getElementById('schedule-time').value;
+
+      // Format nice message
+      const scheduledDateTime = new Date(`${dateStr}T${timeStr}:00`);
+      const dateOptions = { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' };
+      const formattedDate = scheduledDateTime.toLocaleDateString('ru-RU', dateOptions);
+
+      const fullMessage = `${clientName}, ваша консультация запланирована на ${formattedDate}.\n\nСсылка для подключения:\n${linkTextarea.value}\n\nОткройте ссылку за 5 минут до начала.`;
+
+      navigator.clipboard.writeText(fullMessage).then(() => {
+        this.textContent = '✓ Скопировано!';
+        this.style.background = '#16a34a';
+        setTimeout(() => {
+          this.textContent = '✓ Скопировать ссылку';
+          this.style.background = '#22c55e';
+        }, 2000);
+      }).catch(() => {
+        // Fallback - copy just the link
+        linkTextarea.select();
+        document.execCommand('copy');
+        alert('Ссылка скопирована!');
+      });
     });
 
     // Transcription modal elements
