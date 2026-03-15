@@ -3507,30 +3507,6 @@
         }
       }
 
-      // Subscribe to status changes (for when host admits)
-      function subscribeToStatusChanges() {
-        if (!clientSupabase || !waitingRecordId) return;
-
-        clientSupabase
-          .channel('waiting-status-' + waitingRecordId)
-          .on('postgres_changes', {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'waiting_clients',
-            filter: `id=eq.${waitingRecordId}`
-          }, (payload) => {
-            console.log('📨 Status changed:', payload.new.status);
-            if (payload.new.status === 'admitted') {
-              // Host accepted - enter consultation
-              enterConsultation();
-            } else if (payload.new.status === 'rejected') {
-              waitingStatusText.textContent = '❌ Ведущий отклонил подключение';
-              waitingMusic.pause();
-            }
-          })
-          .subscribe();
-      }
-
       (function initClientMode() {
         let myStream = null;
         let peer = null;
@@ -3622,6 +3598,29 @@
             markSessionAsUsed(sessionId);
           }
           startVideoCall();
+        }
+
+        // Subscribe to Supabase status changes (for when host admits)
+        function subscribeToStatusChanges() {
+          if (!clientSupabase || !waitingRecordId) return;
+
+          clientSupabase
+            .channel('waiting-status-' + waitingRecordId)
+            .on('postgres_changes', {
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'waiting_clients',
+              filter: `id=eq.${waitingRecordId}`
+            }, (payload) => {
+              console.log('📨 Status changed:', payload.new.status);
+              if (payload.new.status === 'admitted') {
+                enterConsultation();
+              } else if (payload.new.status === 'rejected') {
+                waitingStatusText.textContent = '❌ Ведущий отклонил подключение';
+                waitingMusic.pause();
+              }
+            })
+            .subscribe();
         }
 
         // Start video call after admission (with retry logic)
