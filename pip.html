@@ -8745,9 +8745,12 @@ ${presentationText.slice(0, 8000)}
           // Draw overlays
           drawOverlaysOnRecording();
 
-          // Encode frame - use performance.now() with shared recordingStartTime
-          // Same time source as audio = perfect sync
-          const videoTimestamp = Math.round((performance.now() - recordingStartTime) * 1000); // microseconds
+          // Encode frame - use frame count for timing (like audio uses sample count)
+          // This prevents drift: timestamp = frameCount / FPS * 1000000 (microseconds)
+          // At 30fps: each frame = 33333.33 microseconds
+          const TARGET_FPS = 30;
+          const FRAME_DURATION_US = 1000000 / TARGET_FPS; // 33333.33 microseconds
+          const videoTimestamp = Math.round(frameCount * FRAME_DURATION_US);
           const frame = new VideoFrame(recordingCanvas, {
             timestamp: videoTimestamp
           });
