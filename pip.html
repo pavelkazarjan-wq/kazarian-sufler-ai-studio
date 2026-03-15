@@ -2556,8 +2556,9 @@
 
     if (token) {
       try {
-        // Decode base64url token
-        const tokenData = JSON.parse(atob(token.replace(/-/g, '+').replace(/_/g, '/')));
+        // Decode base64url token with Unicode support
+        const base64 = token.replace(/-/g, '+').replace(/_/g, '/');
+        const tokenData = JSON.parse(decodeURIComponent(escape(atob(base64))));
         sessionId = tokenData.s;
         clientName = tokenData.n || 'Клиент';
         const expiresAt = tokenData.e;
@@ -5216,6 +5217,8 @@
 
     // Create button handler
     consultCreateBtn?.addEventListener('click', () => {
+      console.log('🔘 Create button clicked, mode:', consultMode);
+      try {
       if (consultMode === 'now') {
         // === INSTANT CONSULTATION ===
         consultModal.classList.remove('active');
@@ -5269,11 +5272,13 @@
           return;
         }
 
-        const scheduledTimestamp = kyivToTimestamp(dateStr, timeStr);
+        // Parse date/time directly (user's local time = Kyiv time assumption)
+        const scheduledTimestamp = new Date(`${dateStr}T${timeStr}:00`).getTime();
+        console.log('📅 Creating scheduled link:', { dateStr, timeStr, scheduledTimestamp, now: Date.now() });
 
+        // Warning if time is in the past, but still create link
         if (scheduledTimestamp <= Date.now()) {
-          alert('Время консультации должно быть в будущем');
-          return;
+          console.warn('⚠️ Scheduled time is in the past');
         }
 
         const sessionId = 'sched-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
@@ -5286,7 +5291,9 @@
           e: expiryTimestamp
         };
 
-        const tokenBase64 = btoa(JSON.stringify(tokenData)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        // Encode to base64 with Unicode support
+        const tokenJson = JSON.stringify(tokenData);
+        const tokenBase64 = btoa(unescape(encodeURIComponent(tokenJson))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
         const scheduledLink = window.location.origin + window.location.pathname + '?mode=client&token=' + tokenBase64;
 
         // Format nice message
@@ -5296,19 +5303,35 @@
 
         const fullMessage = `${clientName}, ваша консультация запланирована на ${formattedDate}.\n\nСсылка для подключения:\n${scheduledLink}\n\nОткройте ссылку за 5 минут до начала.`;
 
-        consultResultLink.value = fullMessage;
-        consultResult.classList.add('visible');
-        consultCreateBtn.textContent = '📋 Скопировать';
+        console.log('📋 Generated link:', scheduledLink);
+        console.log('📋 Full message:', fullMessage);
 
-        // Copy to clipboard
+        if (consultResultLink && consultResult) {
+          consultResultLink.value = fullMessage;
+          consultResult.classList.add('visible');
+          consultCreateBtn.textContent = '📋 Скопировать';
+        } else {
+          console.error('Elements not found:', { consultResultLink, consultResult });
+        }
+
+        // Copy to clipboard and show confirmation
         navigator.clipboard.writeText(fullMessage).then(() => {
           consultCreateBtn.textContent = '✓ Скопировано!';
+          alert('✅ Ссылка скопирована в буфер обмена!');
           setTimeout(() => {
             consultCreateBtn.textContent = '📋 Скопировать';
           }, 2000);
-        }).catch(() => {});
+        }).catch((e) => {
+          console.error('Clipboard error:', e);
+          // Show link in prompt as fallback
+          prompt('Скопируйте ссылку:', scheduledLink);
+        });
 
         console.log(`📅 Scheduled consultation for ${clientName} at ${formattedDate}`);
+      }
+      } catch (err) {
+        console.error('❌ Error creating consultation:', err);
+        alert('Ошибка: ' + err.message);
       }
     });
 
