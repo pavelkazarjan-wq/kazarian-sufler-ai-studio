@@ -3154,6 +3154,12 @@
             background: rgba(0,0,0,0.7); padding: 4px 10px; border-radius: 6px;
             color: white; font-weight: 600; font-size: 12px; z-index: 10;
           }
+          .client-video-box[data-camera-off]::after {
+            content: attr(data-camera-off);
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8); padding: 12px 20px; border-radius: 10px;
+            color: #94a3b8; font-size: 14px; z-index: 10;
+          }
           .client-bottom {
             flex-shrink: 0;
             padding-top: 8px;
@@ -3654,6 +3660,26 @@
                 hostVideo.play().catch(e => console.error('Host video error:', e));
                 statusEl.textContent = 'Подключено ✅';
                 console.log('📹 Remote stream received');
+
+                // Handle video track mute/unmute (when host turns camera on/off)
+                const videoTrack = remoteStream.getVideoTracks()[0];
+                if (videoTrack) {
+                  videoTrack.onmute = () => {
+                    console.log('📹 Host video muted');
+                    hostVideo.style.opacity = '0.3';
+                    hostVideo.parentElement.setAttribute('data-camera-off', 'Камера выключена');
+                  };
+                  videoTrack.onunmute = () => {
+                    console.log('📹 Host video unmuted');
+                    hostVideo.style.opacity = '1';
+                    hostVideo.parentElement.removeAttribute('data-camera-off');
+                  };
+                  // Check initial state
+                  if (videoTrack.muted) {
+                    hostVideo.style.opacity = '0.3';
+                    hostVideo.parentElement.setAttribute('data-camera-off', 'Камера выключена');
+                  }
+                }
               });
 
               call.on('close', () => {
