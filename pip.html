@@ -3624,15 +3624,28 @@
           startVideoCall();
         }
 
-        // Start video call after admission
-        async function startVideoCall() {
+        // Start video call after admission (with retry logic)
+        async function startVideoCall(retryCount = 0) {
+          const maxRetries = 5;
+          const retryDelay = 2000; // 2 seconds between retries
+
           try {
-            statusEl.textContent = 'Подключение видео...';
+            statusEl.textContent = retryCount > 0
+              ? `Подключение... (попытка ${retryCount + 1}/${maxRetries + 1})`
+              : 'Подключение видео...';
+
+            // Wait a bit for host peer to be ready
+            if (retryCount === 0) {
+              await new Promise(resolve => setTimeout(resolve, 1500));
+            }
 
             call = peer.call(sessionId, myStream);
 
             if (call) {
+              let streamReceived = false;
+
               call.on('stream', (remoteStream) => {
+                streamReceived = true;
                 hostVideo.srcObject = remoteStream;
                 hostVideo.setAttribute('playsinline', 'true');
                 hostVideo.play().catch(e => console.error('Host video error:', e));
@@ -3646,11 +3659,36 @@
               });
 
               call.on('error', (err) => {
-                statusEl.textContent = 'Ошибка: ' + err.type;
+                console.error('Call error:', err);
+                if (!streamReceived && retryCount < maxRetries) {
+                  console.log('Retrying call...');
+                  setTimeout(() => startVideoCall(retryCount + 1), retryDelay);
+                } else {
+                  statusEl.textContent = 'Ошибка: ' + err.type;
+                }
               });
+
+              // Timeout - if no stream in 5 seconds, retry
+              setTimeout(() => {
+                if (!streamReceived && retryCount < maxRetries) {
+                  console.log('No stream received, retrying...');
+                  call.close();
+                  startVideoCall(retryCount + 1);
+                }
+              }, 5000);
+
+            } else if (retryCount < maxRetries) {
+              // Call returned null, retry
+              console.log('Call failed to start, retrying...');
+              setTimeout(() => startVideoCall(retryCount + 1), retryDelay);
             }
           } catch (err) {
-            statusEl.textContent = 'Ошибка видео: ' + err.message;
+            console.error('Video call error:', err);
+            if (retryCount < maxRetries) {
+              setTimeout(() => startVideoCall(retryCount + 1), retryDelay);
+            } else {
+              statusEl.textContent = 'Ошибка видео: ' + err.message;
+            }
           }
         }
 
