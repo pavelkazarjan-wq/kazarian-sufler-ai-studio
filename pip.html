@@ -3159,7 +3159,7 @@
             padding-top: 8px;
           }
           .client-controls {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
           }
           .client-btn {
             padding: 12px 8px; border-radius: 10px; border: none; font-size: 12px; font-weight: 600;
@@ -3171,6 +3171,9 @@
           .client-btn-camera.off { background: #64748b; }
           .client-btn-mic { background: #10b981; color: white; }
           .client-btn-mic.off { background: #64748b; }
+          .client-btn-mirror { background: #f59e0b; color: white; }
+          .client-btn-photo { background: #8b5cf6; color: white; }
+          .client-btn-photo.used { background: #64748b; opacity: 0.6; }
           .client-btn-leave { background: #ef4444; color: white; }
           .client-btn-support { background: #6366f1; color: white; text-decoration: none; }
           .client-status {
@@ -3186,7 +3189,7 @@
               gap: 8px;
             }
             .client-controls {
-              grid-template-columns: 1fr 1fr;
+              grid-template-columns: repeat(3, 1fr);
             }
             .client-btn { padding: 14px 8px; font-size: 11px; }
           }
@@ -3430,8 +3433,9 @@
               <button class="client-btn client-btn-camera" id="client-camera-btn">📹 Камера</button>
               <button class="client-btn client-btn-mic" id="client-mic-btn">🎤 Микрофон</button>
               <button class="client-btn client-btn-mirror" id="client-mirror-btn">🪞 Зеркало</button>
-              <button class="client-btn client-btn-leave" id="client-leave-btn">📞 Трубку</button>
+              <button class="client-btn client-btn-photo" id="client-photo-btn">📸 Фото</button>
               <a href="https://t.me/PavloKazarianBot" target="_blank" class="client-btn client-btn-support">💬 Помощь</a>
+              <button class="client-btn client-btn-leave" id="client-leave-btn">📞 Сбросить</button>
             </div>
             <div class="client-status" id="client-status">Загрузка...</div>
           </div>
@@ -3814,6 +3818,77 @@
           myVideo.classList.toggle('video-mirrored');
           mirrorBtn.classList.toggle('active');
           mirrorBtn.textContent = isMirrored ? '🪞 Зеркало' : '🪞 Обычно';
+        };
+
+        // Photo memento - capture both videos (once per session)
+        const photoBtn = document.getElementById('client-photo-btn');
+        let photoTaken = false;
+
+        photoBtn.onclick = async () => {
+          if (photoTaken) {
+            alert('Фото на память можно сделать только один раз за сессию');
+            return;
+          }
+
+          try {
+            // Create canvas to combine both videos
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size (side by side)
+            const w = 640, h = 480;
+            canvas.width = w * 2;
+            canvas.height = h;
+
+            // Draw host video (left)
+            ctx.drawImage(hostVideo, 0, 0, w, h);
+
+            // Draw client video (right)
+            ctx.save();
+            if (isMirrored) {
+              ctx.translate(w * 2, 0);
+              ctx.scale(-1, 1);
+              ctx.drawImage(myVideo, 0, 0, w, h);
+            } else {
+              ctx.drawImage(myVideo, w, 0, w, h);
+            }
+            ctx.restore();
+
+            // Add labels
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fillRect(10, h - 40, 180, 30);
+            ctx.fillRect(w + 10, h - 40, 80, 30);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16px Inter, sans-serif';
+            ctx.fillText('Павел Казарьян', 20, h - 18);
+            ctx.fillText('Вы', w + 20, h - 18);
+
+            // Add date
+            const dateStr = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fillRect(canvas.width - 120, 10, 110, 25);
+            ctx.fillStyle = 'white';
+            ctx.font = '14px Inter, sans-serif';
+            ctx.fillText(dateStr, canvas.width - 110, 28);
+
+            // Download the image
+            const link = document.createElement('a');
+            link.download = 'consultation-photo-' + dateStr.replace(/\./g, '-') + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+
+            // Mark as used
+            photoTaken = true;
+            photoBtn.classList.add('used');
+            photoBtn.textContent = '📸 Готово!';
+            setTimeout(() => {
+              photoBtn.textContent = '📸 Фото ✓';
+            }, 2000);
+
+          } catch (err) {
+            console.error('Photo capture error:', err);
+            alert('Не удалось сделать фото: ' + err.message);
+          }
         };
 
         leaveBtn.onclick = () => {
