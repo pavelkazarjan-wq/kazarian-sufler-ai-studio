@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Подтверждение — WebinarStudio</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <style>
+    body {
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 400px;
+    }
+    .loader {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(59, 130, 246, 0.2);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 24px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    h2 { margin: 0 0 12px; font-size: 24px; }
+    p { color: #94a3b8; margin: 0; }
+    .error { color: #ef4444; display: none; }
+    .success { color: #10b981; }
+    .password-form { display: none; margin-top: 20px; }
+    .password-form input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+    .password-form input:focus { outline: none; border-color: #3b82f6; }
+    .password-form button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .password-form button:disabled { opacity: 0.6; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="loader" id="loader"></div>
+    <h2 id="title">Подтверждение...</h2>
+    <p id="message">Пожалуйста, подождите</p>
+    <p class="error" id="error"></p>
+    <div class="password-form" id="password-form">
+      <input type="password" id="new-password" placeholder="Новый пароль (мин. 6 символов)" minlength="6" required>
+      <input type="password" id="confirm-password" placeholder="Подтвердите пароль" minlength="6" required>
+      <button id="update-password-btn">Установить новый пароль</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Load config from secure endpoint
+    (async () => {
+      let supabaseClient;
+      try {
+        const configRes = await fetch('/.netlify/functions/config');
+        if (!configRes.ok) throw new Error('Config fetch failed');
+        const config = await configRes.json();
+        supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+      } catch (configErr) {
+        console.error('Config load failed:', configErr);
+        document.getElementById('error').textContent = 'Ошибка загрузки конфигурации';
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('loader').style.display = 'none';
+        return;
+      }
+      const loader = document.getElementById('loader');
+      const title = document.getElementById('title');
+      const message = document.getElementById('message');
+      const error = document.getElementById('error');
+      const passwordForm = document.getElementById('password-form');
+
+      try {
+        // Check for error in URL
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const queryParams = new URLSearchParams(window.location.search);
+
+        const errorCode = hashParams.get('error') || queryParams.get('error');
+        const errorDescription = hashParams.get('error_description') || queryParams.get('error_description');
+
+        if (errorCode) {
+          throw new Error(errorDescription || errorCode);
+        }
+
+        // Check if this is a password recovery flow
+        const authType = hashParams.get('type');
+        const isRecovery = authType === 'recovery';
+
+        // Get session (Supabase auto-handles the tokens from URL)
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+
+        if (sessionError) {
+          throw sessionError;
+        }
+
+        if (session) {
+          // If recovery, show password form
+          if (isRecovery) {
+            loader.style.display = 'none';
+            title.textContent = 'Установите новый пароль';
+            message.textContent = '';
+            passwordForm.style.display = 'block';
+
+            // Handle password update
+            document.getElementById('update-password-btn').addEventListener('click', async () => {
+              const newPassword = document.getElementById('new-password').value;
+              const confirmPassword = document.getElementById('confirm-password').value;
+
+              if (newPassword.length < 6) {
+                error.style.display = 'block';
+                error.textContent = 'Пароль должен быть не менее 6 символов';
+                return;
+              }
+
+              if (newPassword !== confirmPassword) {
+                error.style.display = 'block';
+                error.textContent = 'Пароли не совпадают';
+                return;
+              }
+
+              const btn = document.getElementById('update-password-btn');
+              btn.disabled = true;
+              btn.textContent = 'Сохранение...';
+
+              const { error: updateError } = await supabaseClient.auth.updateUser({
+                password: newPassword
+              });
+
+              if (updateError) {
+                error.style.display = 'block';
+                error.textContent = updateError.message;
+                btn.disabled = false;
+                btn.textContent = 'Установить новый пароль';
+                return;
+              }
+
+              title.textContent = 'Пароль обновлён!';
+              title.className = 'success';
+              message.textContent = 'Перенаправляем в приложение...';
+              passwordForm.style.display = 'none';
+
+              setTimeout(() => {
+                window.location.href = '/app.html';
+              }, 1500);
+            });
+            return;
+          }
+
+          // Normal email confirmation
+          loader.style.display = 'none';
+          title.textContent = 'Email подтверждён!';
+          title.className = 'success';
+          message.textContent = 'Перенаправляем в приложение...';
+
+          setTimeout(() => {
+            window.location.href = '/app.html';
+          }, 1500);
+        } else {
+          // Try to exchange code for session
+          const code = queryParams.get('code');
+          if (code) {
+            const { data, error: exchangeError } = await supabaseClient.auth.exchangeCodeForSession(code);
+            if (exchangeError) throw exchangeError;
+
+            loader.style.display = 'none';
+            title.textContent = 'Email подтверждён!';
+            title.className = 'success';
+            message.textContent = 'Перенаправляем в приложение...';
+
+            setTimeout(() => {
+              window.location.href = '/app.html';
+            }, 1500);
+          } else {
+            // No session and no code - redirect to login
+            window.location.href = '/login.html';
+          }
+        }
+      } catch (err) {
+        console.error('Auth callback error:', err);
+        loader.style.display = 'none';
+        title.textContent = 'Ошибка';
+        title.style.color = '#ef4444';
+        message.textContent = '';
+        error.style.display = 'block';
+        error.textContent = err.message || 'Не удалось подтвердить email. Попробуйте зарегистрироваться снова.';
+
+        setTimeout(() => {
+          window.location.href = '/login.html';
+        }, 5000);
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,2167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Режиссёрский пульт — WebinarStudio</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header h1 span {
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .status.disconnected {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse 2s infinite;
+    }
+    .status.disconnected .status-dot {
+      background: #ef4444;
+      animation: none;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .main-layout {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 1200px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    .preview-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .preview-card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .preview-video {
+      background: #000;
+      border-radius: 12px;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .preview-video video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      /* Force GPU rendering */
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      background: #000;
+      z-index: 5;
+    }
+    .preview-video video.hidden {
+      display: none !important;
+    }
+    .preview-placeholder {
+      position: relative;
+      z-index: 1;
+    }
+    .preview-placeholder.hidden {
+      display: none !important;
+    }
+    /* preview-placeholder styles are above */
+    .preview-placeholder svg {
+      width: 48px;
+      height: 48px;
+      opacity: 0.3;
+      margin-bottom: 12px;
+    }
+    .quality-indicators {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .quality-item {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    .quality-item label {
+      display: block;
+      font-size: 10px;
+      color: #64748b;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .quality-item .value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .quality-item .value.good { color: #22c55e; }
+    .quality-item .value.warning { color: #f59e0b; }
+    .quality-item .value.bad { color: #ef4444; }
+
+    .mixer-section {
+      margin-top: 16px;
+    }
+    .mixer-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .mixer-row:last-child {
+      border-bottom: none;
+    }
+    .mixer-label {
+      width: 100px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .mixer-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 6px;
+      background: rgba(100, 116, 139, 0.3);
+      border-radius: 3px;
+      outline: none;
+    }
+    .mixer-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #3b82f6;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .mixer-value {
+      width: 50px;
+      text-align: right;
+      font-size: 13px;
+      font-family: monospace;
+    }
+    .mixer-mute {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(100, 116, 139, 0.3);
+      color: #94a3b8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .mixer-mute.muted {
+      background: rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+    }
+    .mixer-mute svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .card.recording {
+      border-color: rgba(239, 68, 68, 0.5);
+      animation: recording-pulse 2s infinite;
+    }
+    @keyframes recording-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
+      50% { box-shadow: 0 0 20px 0 rgba(239, 68, 68, 0.3); }
+    }
+    .card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card h3 svg {
+      width: 18px;
+      height: 18px;
+      opacity: 0.7;
+    }
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .btn-row:last-child {
+      margin-bottom: 0;
+    }
+    .btn {
+      flex: 1;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: white;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+    .btn-secondary {
+      background: rgba(100, 116, 139, 0.3);
+      color: #94a3b8;
+      border: 1px solid rgba(100, 116, 139, 0.3);
+    }
+    .btn-secondary:hover {
+      background: rgba(100, 116, 139, 0.5);
+      color: white;
+    }
+    .btn-success {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+    .btn-warning {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+    }
+    .btn-purple {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+    }
+    .btn.active {
+      box-shadow: 0 0 0 2px #3b82f6;
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    .input-group {
+      margin-bottom: 10px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    .input-group input, .input-group textarea {
+      width: 100%;
+      padding: 8px 10px;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      color: white;
+      font-size: 13px;
+    }
+    .input-group input:focus, .input-group textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .toggle {
+      width: 40px;
+      height: 22px;
+      background: rgba(100, 116, 139, 0.3);
+      border-radius: 11px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle.active {
+      background: #3b82f6;
+    }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s;
+    }
+    .toggle.active::after {
+      transform: translateX(18px);
+    }
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .quick-btn {
+      padding: 12px 8px;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: white;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+    }
+    .quick-btn:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .quick-btn.active {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+    .quick-btn svg {
+      width: 20px;
+      height: 20px;
+      opacity: 0.7;
+    }
+    .color-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .color-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .color-btn:hover {
+      transform: scale(1.1);
+    }
+    .color-btn.active {
+      border-color: white;
+    }
+    .censor-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .back-link:hover {
+      color: white;
+    }
+    .recording-timer {
+      font-family: monospace;
+      font-size: 24px;
+      font-weight: 600;
+      color: #ef4444;
+      text-align: center;
+      margin: 12px 0;
+    }
+    .consultation-timer {
+      font-family: monospace;
+      font-size: 20px;
+      font-weight: 600;
+      color: #22c55e;
+      text-align: center;
+      margin: 8px 0;
+    }
+    .session-info {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(30, 41, 59, 0.95);
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 12px;
+      color: #94a3b8;
+      border: 1px solid rgba(255,255,255,0.1);
+      z-index: 100;
+    }
+    .session-code {
+      font-size: 18px;
+      font-weight: 600;
+      color: #3b82f6;
+      font-family: monospace;
+    }
+    .session-btns {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .session-btns button {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      border: none;
+    }
+    .session-btns .copy-btn {
+      background: #3b82f6;
+      color: white;
+    }
+    .session-btns .change-btn {
+      background: transparent;
+      border: 1px solid #475569;
+      color: #94a3b8;
+    }
+    /* Spinner animation */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    /* Streaming active state */
+    #streaming-card.recording {
+      border-color: rgba(139, 92, 246, 0.5);
+      animation: streaming-pulse 2s infinite;
+    }
+    @keyframes streaming-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.3); }
+      50% { box-shadow: 0 0 20px 0 rgba(139, 92, 246, 0.3); }
+    }
+    /* Button purple gradient */
+    .btn-purple {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+    }
+    .btn-purple:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    }
+    /* Textarea styling */
+    .input-group textarea {
+      resize: vertical;
+      min-height: 60px;
+      font-family: inherit;
+    }
+    /* Format buttons grid */
+    .format-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .format-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 14px 10px;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .format-btn:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.4);
+      transform: translateY(-1px);
+    }
+    .format-btn:active {
+      transform: scale(0.98);
+    }
+    .format-btn.loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .format-btn.success {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+    .format-icon {
+      font-size: 22px;
+    }
+    .format-label {
+      font-size: 12px;
+      font-weight: 500;
+    }
+    /* Overlay toggle buttons grid */
+    .overlay-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .overlay-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 12px 8px;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .overlay-btn:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .overlay-btn.active {
+      background: rgba(34, 197, 94, 0.25);
+      border-color: rgba(34, 197, 94, 0.5);
+      color: #22c55e;
+    }
+    .overlay-icon {
+      font-size: 20px;
+    }
+    .overlay-label {
+      font-size: 11px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <a href="/app.html" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Назад в студию
+      </a>
+      <h1>🎬 <span>Режиссёрский пульт</span></h1>
+    </div>
+    <div class="header-right">
+      <div class="status" id="connection-status">
+        <div class="status-dot"></div>
+        <span>Подключено к студии</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- Left: Preview & Audio -->
+    <div class="preview-section">
+      <!-- Video Preview -->
+      <div class="preview-card">
+        <h3 style="font-size:14px; margin-bottom:12px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          Превью студии
+        </h3>
+        <div class="preview-video" id="preview-container">
+          <video id="preview-video" class="hidden" autoplay playsinline muted webkit-playsinline x-webkit-airplay="allow"></video>
+          <!-- Mobile tap overlay for iOS -->
+          <div id="tap-to-play" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; cursor:pointer; z-index:10;">
+            <div style="text-align:center; color:#fff;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48" style="margin-bottom:8px;">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <div>Нажмите для воспроизведения</div>
+            </div>
+          </div>
+          <div class="preview-placeholder" id="preview-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="23 7 16 12 23 17 23 7"></polygon>
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+            </svg>
+            <div id="preview-status">Ожидание подключения...</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+          <button class="btn btn-primary" id="btn-connect-video" style="flex: 1;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <polygon points="23 7 16 12 23 17 23 7"></polygon>
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+            </svg>
+            Подключить видео
+          </button>
+          <button class="btn btn-secondary" id="btn-toggle-preview-audio" style="width: 50px;" title="Звук превью">
+            🔊
+          </button>
+        </div>
+        <div class="quality-indicators">
+          <div class="quality-item">
+            <label>FPS</label>
+            <div class="value good" id="fps-value">--</div>
+          </div>
+          <div class="quality-item">
+            <label>Битрейт</label>
+            <div class="value good" id="bitrate-value">--</div>
+          </div>
+          <div class="quality-item">
+            <label>Задержка</label>
+            <div class="value good" id="latency-value">--</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audio Mixer -->
+      <div class="preview-card">
+        <h3 style="font-size:14px; margin-bottom:12px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+          Микшер звука
+        </h3>
+        <div class="mixer-section">
+          <div class="mixer-row">
+            <span class="mixer-label">Ведущий</span>
+            <input type="range" class="mixer-slider" id="volume-host" min="0" max="100" value="100">
+            <span class="mixer-value" id="volume-host-val">100%</span>
+            <button class="mixer-mute" id="mute-host" title="Заглушить">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="mixer-row">
+            <span class="mixer-label">Гость 1</span>
+            <input type="range" class="mixer-slider" id="volume-guest1" min="0" max="100" value="100">
+            <span class="mixer-value" id="volume-guest1-val">100%</span>
+            <button class="mixer-mute" id="mute-guest1" title="Заглушить">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="mixer-row">
+            <span class="mixer-label">Гость 2</span>
+            <input type="range" class="mixer-slider" id="volume-guest2" min="0" max="100" value="100">
+            <span class="mixer-value" id="volume-guest2-val">100%</span>
+            <button class="mixer-mute" id="mute-guest2" title="Заглушить">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="mixer-row">
+            <span class="mixer-label">Мастер</span>
+            <input type="range" class="mixer-slider" id="volume-master" min="0" max="100" value="100" style="accent-color: #f59e0b;">
+            <span class="mixer-value" id="volume-master-val">100%</span>
+            <button class="mixer-mute" id="mute-master" title="Заглушить всё">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Controls Grid -->
+    <div class="grid">
+      <!-- Recording Control -->
+      <div class="card" id="recording-card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+          </svg>
+          Запись
+        </h3>
+        <div class="recording-timer" id="recording-timer" style="display:none;">00:00:00</div>
+        <div class="btn-row">
+          <button class="btn btn-danger" id="btn-record-start">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+              <circle cx="12" cy="12" r="6"></circle>
+            </svg>
+            Начать запись
+          </button>
+          <button class="btn btn-secondary" id="btn-record-stop" disabled>
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+              <rect x="6" y="6" width="12" height="12"></rect>
+            </svg>
+            Стоп
+          </button>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="btn-record-pause" disabled>Пауза</button>
+          <button class="btn btn-primary" id="btn-server-recordings" onclick="window.open('https://stream.tgcombain.org.ua/', '_blank')">
+            📁 Записи на сервере
+          </button>
+        </div>
+      </div>
+
+      <!-- Consultation Timer -->
+      <div class="card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Консультация
+        </h3>
+        <div class="consultation-timer" id="consultation-timer">00:00:00</div>
+        <div class="input-group">
+          <label>Длительность (минут)</label>
+          <input type="number" id="consultation-duration" value="60" min="1" max="480">
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-success" id="btn-consult-start">Старт</button>
+          <button class="btn btn-secondary" id="btn-consult-pause">Пауза</button>
+          <button class="btn btn-danger" id="btn-consult-reset">Сброс</button>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Быстрые действия
+        </h3>
+        <div class="quick-actions">
+          <button class="quick-btn" id="btn-show-host">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Ведущий
+          </button>
+          <button class="quick-btn" id="btn-show-guest1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+            </svg>
+            Гость 1
+          </button>
+          <button class="quick-btn" id="btn-show-guest2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Гость 2
+          </button>
+          <button class="quick-btn" id="btn-toggle-ticker">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="17" y1="10" x2="3" y2="10"></line>
+              <line x1="21" y1="6" x2="3" y2="6"></line>
+              <line x1="21" y1="14" x2="3" y2="14"></line>
+            </svg>
+            Бегущая
+          </button>
+          <button class="quick-btn" id="btn-show-cta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            </svg>
+            CTA
+          </button>
+          <button class="quick-btn" id="btn-hide-all">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            Скрыть всё
+          </button>
+        </div>
+      </div>
+
+      <!-- Censor Button -->
+      <div class="card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+          </svg>
+          Цензура / Пауза
+        </h3>
+        <button class="btn btn-danger censor-btn" id="btn-censor">
+          🔇 ЦЕНЗУРА (зажать)
+        </button>
+        <p style="color:#64748b; font-size:11px; margin-top:10px; text-align:center;">
+          Зажмите для скрытия видео и звука
+        </p>
+      </div>
+
+      <!-- Host Plate -->
+      <div class="card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          Плашка ведущего
+        </h3>
+        <div class="input-group">
+          <label>Имя</label>
+          <input type="text" id="host-name" value="Павел Казарьян">
+        </div>
+        <div class="input-group">
+          <label>Должность</label>
+          <input type="text" id="host-title" value="психолог-психотерапевт">
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-host-show">Показать</button>
+          <button class="btn btn-secondary" id="btn-host-hide">Скрыть</button>
+        </div>
+      </div>
+
+      <!-- Guest 1 Plate -->
+      <div class="card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+          </svg>
+          Плашка гостя 1
+        </h3>
+        <div class="input-group">
+          <label>Имя</label>
+          <input type="text" id="guest1-name" value="Гость 1">
+        </div>
+        <div class="input-group">
+          <label>Должность</label>
+          <input type="text" id="guest1-title" value="эксперт">
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-success" id="btn-guest1-show">Показать</button>
+          <button class="btn btn-secondary" id="btn-guest1-hide">Скрыть</button>
+        </div>
+      </div>
+
+      <!-- Guest 2 Plate -->
+      <div class="card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          Плашка гостя 2
+        </h3>
+        <div class="input-group">
+          <label>Имя</label>
+          <input type="text" id="guest2-name" value="Гость 2">
+        </div>
+        <div class="input-group">
+          <label>Должность</label>
+          <input type="text" id="guest2-title" value="эксперт">
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-purple" id="btn-guest2-show">Показать</button>
+          <button class="btn btn-secondary" id="btn-guest2-hide">Скрыть</button>
+        </div>
+      </div>
+
+      <!-- Ticker -->
+      <div class="card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="17" y1="10" x2="3" y2="10"></line>
+            <line x1="21" y1="6" x2="3" y2="6"></line>
+            <line x1="21" y1="14" x2="3" y2="14"></line>
+          </svg>
+          Бегущая строка
+        </h3>
+        <div class="toggle-row">
+          <span>Включить</span>
+          <div class="toggle" id="ticker-toggle"></div>
+        </div>
+        <div class="input-group">
+          <label>Текст</label>
+          <textarea id="ticker-text" rows="2">Добро пожаловать на вебинар!</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-ticker-update">Обновить</button>
+        </div>
+      </div>
+
+      <!-- CTA Button -->
+      <div class="card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          </svg>
+          Кнопка CTA
+        </h3>
+        <div class="input-group">
+          <label>Текст кнопки</label>
+          <input type="text" id="cta-text" value="Ссылка в описании">
+        </div>
+        <div class="input-group">
+          <label>Цвет</label>
+          <div class="color-row">
+            <button class="color-btn active" data-color="red" style="background: linear-gradient(135deg, #ef4444, #f97316);"></button>
+            <button class="color-btn" data-color="green" style="background: linear-gradient(135deg, #10b981, #059669);"></button>
+            <button class="color-btn" data-color="blue" style="background: linear-gradient(135deg, #3b82f6, #6366f1);"></button>
+            <button class="color-btn" data-color="purple" style="background: linear-gradient(135deg, #8b5cf6, #a855f7);"></button>
+            <button class="color-btn" data-color="yellow" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);"></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-warning" id="btn-cta-show">Показать</button>
+          <button class="btn btn-secondary" id="btn-cta-hide">Скрыть</button>
+        </div>
+      </div>
+
+      <!-- Live Overlays -->
+      <div class="card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
+          </svg>
+          Overlay-элементы
+        </h3>
+        <div class="overlay-grid">
+          <button class="overlay-btn" id="btn-toggle-clock" data-overlay="clock">
+            <span class="overlay-icon">⏰</span>
+            <span class="overlay-label">Часы</span>
+          </button>
+          <button class="overlay-btn" id="btn-toggle-youtube" data-overlay="youtube">
+            <span class="overlay-icon">📺</span>
+            <span class="overlay-label">YouTube</span>
+          </button>
+          <button class="overlay-btn" id="btn-toggle-comments" data-overlay="comments">
+            <span class="overlay-icon">💬</span>
+            <span class="overlay-label">Комменты</span>
+          </button>
+          <button class="overlay-btn" id="btn-toggle-viewers" data-overlay="viewers">
+            <span class="overlay-icon">👥</span>
+            <span class="overlay-label">Зрители</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Streaming Control -->
+      <div class="card" id="streaming-card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+          </svg>
+          Стрим (Restream)
+        </h3>
+        <div class="btn-row">
+          <button class="btn btn-purple" id="btn-stream-start">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <circle cx="12" cy="12" r="10"/>
+              <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+            </svg>
+            Начать стрим
+          </button>
+          <button class="btn btn-danger" id="btn-stream-stop" disabled>
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+              <rect x="6" y="6" width="12" height="12" rx="2"/>
+            </svg>
+            Стоп
+          </button>
+        </div>
+        <p style="color:#64748b; font-size:11px; margin-top:10px;">
+          Стрим идёт на Restream через relay-сервер
+        </p>
+      </div>
+
+      <!-- Media Controls: Splash/Intro/Outro -->
+      <div class="card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="20" rx="2"/>
+            <path d="M12 8v8M8 12h8"/>
+          </svg>
+          Медиа-заставки
+        </h3>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-show-splash">Заставка</button>
+          <button class="btn btn-secondary" id="btn-hide-splash">Скрыть</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-success" id="btn-play-intro">▶ Интро</button>
+          <button class="btn btn-warning" id="btn-show-outro">Аутро</button>
+        </div>
+        <p style="color:#64748b; font-size:11px; margin-top:8px;">
+          Заставка, интро-видео и аутро должны быть загружены в студии
+        </p>
+      </div>
+
+      <!-- Teleprompter -->
+      <div class="card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          Телесуфлёр
+        </h3>
+        <div class="input-group">
+          <label>Текст-подсказка для ведущего</label>
+          <textarea id="teleprompter-text" rows="3" placeholder="Введите текст, который увидит только ведущий..."></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-send-teleprompter">📤 Отправить</button>
+          <button class="btn btn-secondary" id="btn-clear-teleprompter">Очистить</button>
+        </div>
+        <div class="toggle-row" style="margin-top: 8px;">
+          <span style="font-size: 12px;">Автопрокрутка</span>
+          <div class="toggle" id="teleprompter-autoscroll"></div>
+        </div>
+      </div>
+
+      <!-- AI Генерация контента -->
+      <div class="card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          AI-генерация из записи
+        </h3>
+        <div class="format-grid">
+          <button class="format-btn" data-format="protocol" id="btn-format-protocol">
+            <span class="format-icon">🧩</span>
+            <span class="format-label">Протокол</span>
+          </button>
+          <button class="format-btn" data-format="youtube" id="btn-format-youtube">
+            <span class="format-icon">📺</span>
+            <span class="format-label">YouTube</span>
+          </button>
+          <button class="format-btn" data-format="summary" id="btn-format-summary">
+            <span class="format-icon">📝</span>
+            <span class="format-label">Конспект</span>
+          </button>
+          <button class="format-btn" data-format="social" id="btn-format-social">
+            <span class="format-icon">📱</span>
+            <span class="format-label">Соцсети</span>
+          </button>
+        </div>
+        <p style="color:#64748b; font-size:11px; margin-top:10px; text-align:center;">
+          Выберите формат для генерации из транскрипции
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session Info -->
+  <div class="session-info" id="session-info" style="display:none;">
+    <div style="margin-bottom:4px;">Код сессии:</div>
+    <div class="session-code" id="session-code-display"></div>
+    <div class="session-btns">
+      <button class="copy-btn" id="copy-session">Копировать</button>
+      <button class="change-btn" id="change-session">Сменить</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="alert('Ошибка загрузки. Проверьте интернет-соединение.'); window.location.reload();"></script>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script>
+    // Check if SDKs loaded
+    if (!window.supabase) {
+      alert('Supabase SDK не загружен. Перезагрузите страницу.');
+      throw new Error('Supabase SDK not loaded');
+    }
+
+    // Configuration - loaded from secure endpoint
+    let SUPABASE_URL = '';
+    let SUPABASE_ANON_KEY = '';
+    let supabaseClient = null;
+
+    // Load config before anything else
+    async function loadConfig() {
+      const res = await fetch('/.netlify/functions/config');
+      if (!res.ok) throw new Error('Config fetch failed');
+      const config = await res.json();
+      SUPABASE_URL = config.supabaseUrl;
+      SUPABASE_ANON_KEY = config.supabaseAnonKey;
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      return supabaseClient;
+    }
+
+    // Auth guard - check if user is logged in
+    (async () => {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.href);
+        return;
+      }
+    })();
+
+    // Get session code from URL or generate new
+    const urlParams = new URLSearchParams(window.location.search);
+    let sessionCode = urlParams.get('session') || localStorage.getItem('producer_session');
+
+    // Show session input if no code
+    if (!sessionCode) {
+      // Show session input form instead of prompt()
+      document.body.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;color:#e2e8f0;text-align:center;padding:20px;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);">
+          <div style="background:rgba(30,41,59,0.8);padding:40px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);max-width:400px;width:100%;">
+            <h2 style="margin-bottom:8px;font-size:24px;">🎬 Режиссёрский пульт</h2>
+            <p style="color:#94a3b8;margin-bottom:24px;font-size:14px;">Введите код сессии студии</p>
+            <input type="text" id="session-code-input" placeholder="Код сессии..."
+              style="width:100%;padding:14px 16px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:16px;margin-bottom:16px;text-align:center;"
+              onkeypress="if(event.key==='Enter')submitSessionCode()">
+            <button onclick="submitSessionCode()"
+              style="width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:10px;color:white;font-size:16px;font-weight:600;cursor:pointer;">
+              Подключиться
+            </button>
+            <p style="color:#64748b;font-size:12px;margin-top:16px;">Получите код у ведущего вебинара</p>
+          </div>
+        </div>
+      `;
+      window.submitSessionCode = function() {
+        const code = document.getElementById('session-code-input').value.trim();
+        if (code) {
+          localStorage.setItem('producer_session', code);
+          window.location.href = window.location.pathname + '?session=' + encodeURIComponent(code);
+        } else {
+          document.getElementById('session-code-input').style.borderColor = '#ef4444';
+        }
+      };
+      document.getElementById('session-code-input').focus();
+      throw new Error('Waiting for session code input');
+    }
+
+    // BroadcastChannel for local communication (fallback)
+    const localChannel = new BroadcastChannel('kazarian-producer');
+    let isConnected = false;
+    let isChannelSubscribed = false; // Track actual subscription state
+    let supabaseChannel = null;
+
+    // Timers
+    let recordingStartTime = null;
+    let recordingInterval = null;
+    let isRecording = false;
+    let consultationStartTime = null;
+    let consultationInterval = null;
+    let consultationPaused = false;
+    let consultationElapsed = 0;
+
+    // Send command to main studio (both local and remote)
+    function sendCommand(action, data = {}) {
+      const message = { action, ...data, from: 'producer', session: sessionCode, timestamp: Date.now() };
+
+      // Local broadcast
+      localChannel.postMessage(message);
+
+      // Remote via Supabase Realtime - only if channel is subscribed
+      if (supabaseChannel && sessionCode && isChannelSubscribed) {
+        supabaseChannel.send({
+          type: 'broadcast',
+          event: 'producer-command',
+          payload: message
+        });
+      } else if (supabaseChannel && !isChannelSubscribed) {
+        console.warn('⚠️ Channel not yet subscribed, command queued locally only');
+      }
+
+      console.log('📤 Sent:', action, data);
+    }
+
+    // Setup Supabase Realtime channel
+    async function setupRemoteConnection() {
+      if (!sessionCode) {
+        updateConnectionStatus(false, 'Нет кода сессии');
+        return;
+      }
+
+      try {
+        // Subscribe to producer channel for this session
+        supabaseChannel = supabaseClient.channel(`producer-${sessionCode}`, {
+          config: { broadcast: { self: false } }
+        });
+
+        supabaseChannel
+          .on('broadcast', { event: 'studio-response' }, (payload) => {
+            console.log('📥 Remote:', payload);
+            handleStudioMessage(payload.payload);
+          })
+          .on('broadcast', { event: 'state-update' }, (payload) => {
+            console.log('📥 State:', payload);
+            updateLocalState(payload.payload);
+          })
+          .on('broadcast', { event: 'quality-update' }, (payload) => {
+            updateQualityIndicators(payload.payload);
+          })
+          .subscribe((status) => {
+            console.log('Supabase channel status:', status);
+            if (status === 'SUBSCRIBED') {
+              isChannelSubscribed = true;
+              isConnected = true;
+              updateConnectionStatus(true);
+              // Request current state
+              sendCommand('get-state');
+            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+              isChannelSubscribed = false;
+              isConnected = false;
+              updateConnectionStatus(false, 'Ошибка канала: ' + status);
+            }
+          });
+
+      } catch (err) {
+        console.error('Supabase connection error:', err);
+        updateConnectionStatus(false, 'Ошибка подключения');
+      }
+    }
+
+    // Handle messages from studio
+    function handleStudioMessage(data) {
+      if (data.action === 'pong' || data.action === 'studio-ready') {
+        isConnected = true;
+        updateConnectionStatus(true);
+      } else if (data.action === 'state-update') {
+        updateLocalState(data);
+      } else if (data.action === 'recording-started') {
+        startRecordingTimer();
+      } else if (data.action === 'recording-stopped') {
+        stopRecordingTimer();
+      } else if (data.action === 'quality-update') {
+        updateQualityIndicators(data);
+      } else if (data.action === 'streaming-started') {
+        updateStreamingUI(true);
+      } else if (data.action === 'streaming-stopped') {
+        updateStreamingUI(false);
+      } else if (data.action === 'teleprompter-updated') {
+        // Confirmation from studio
+        console.log('📜 Teleprompter updated in studio');
+      } else if (data.action === 'protocol-created') {
+        // Protocol was created successfully - show success on format button
+        const format = data.format || 'protocol';
+        const btn = document.querySelector(`.format-btn[data-format="${format}"]`);
+        if (btn) {
+          btn.classList.remove('loading');
+          btn.classList.add('success');
+        }
+      } else if (data.action === 'protocol-error') {
+        // Protocol creation failed - show error on format buttons
+        console.error('Protocol error:', data.message);
+        document.querySelectorAll('.format-btn').forEach(btn => {
+          btn.classList.remove('loading');
+          const iconEl = btn.querySelector('.format-icon');
+          const labelEl = btn.querySelector('.format-label');
+          if (iconEl) iconEl.textContent = '❌';
+          if (labelEl) labelEl.textContent = data.message || 'Ошибка';
+          setTimeout(() => {
+            const format = btn.dataset.format;
+            if (format === 'protocol') { if (iconEl) iconEl.textContent = '🧩'; if (labelEl) labelEl.textContent = 'Протокол'; }
+            if (format === 'youtube') { if (iconEl) iconEl.textContent = '🎬'; if (labelEl) labelEl.textContent = 'YouTube'; }
+            if (format === 'summary') { if (iconEl) iconEl.textContent = '📝'; if (labelEl) labelEl.textContent = 'Резюме'; }
+            if (format === 'social') { if (iconEl) iconEl.textContent = '📱'; if (labelEl) labelEl.textContent = 'Соцсети'; }
+          }, 3000);
+        });
+      } else if (data.action === 'protocol-creating') {
+        // Protocol is being created - update UI
+        console.log('Protocol creating for format:', data.format);
+      } else if (data.action === 'splash-shown' || data.action === 'splash-hidden') {
+        console.log('🎬 Splash state:', data.action);
+      } else if (data.action === 'overlay-toggled') {
+        // Sync overlay button state from studio
+        const btn = document.querySelector(`.overlay-btn[data-overlay="${data.overlay}"]`);
+        if (btn) {
+          btn.classList.toggle('active', data.enabled);
+        }
+      } else if (data.action === 'video-sending') {
+        console.log('📹 Studio is sending video...');
+        previewStatus.textContent = 'Получение видео...';
+      } else if (data.action === 'video-retry') {
+        console.log('📹 Studio retrying video connection...');
+        previewStatus.textContent = data.message || 'Повторное подключение...';
+      } else if (data.action === 'video-error') {
+        console.error('📹 Video error from studio:', data.message);
+        previewStatus.textContent = data.message || 'Ошибка видео';
+        btnConnectVideo.textContent = 'Подключить видео';
+        btnConnectVideo.disabled = false;
+      }
+    }
+
+    // Receive local messages
+    localChannel.onmessage = (event) => {
+      console.log('📥 Local:', event.data);
+      handleStudioMessage(event.data);
+    };
+
+    function updateConnectionStatus(connected, message) {
+      const status = document.getElementById('connection-status');
+      if (connected) {
+        status.classList.remove('disconnected');
+        status.querySelector('span').textContent = 'Подключено: ' + (sessionCode || 'локально');
+      } else {
+        status.classList.add('disconnected');
+        status.querySelector('span').textContent = message || 'Нет связи со студией';
+      }
+    }
+
+    function updateLocalState(state) {
+      if (state.hostName) document.getElementById('host-name').value = state.hostName;
+      if (state.hostTitle) document.getElementById('host-title').value = state.hostTitle;
+      if (state.guest1Name) document.getElementById('guest1-name').value = state.guest1Name;
+      if (state.guest1Title) document.getElementById('guest1-title').value = state.guest1Title;
+      if (state.guest2Name) document.getElementById('guest2-name').value = state.guest2Name;
+      if (state.guest2Title) document.getElementById('guest2-title').value = state.guest2Title;
+      if (state.tickerText) document.getElementById('ticker-text').value = state.tickerText;
+      if (state.ctaText) document.getElementById('cta-text').value = state.ctaText;
+      if (state.tickerEnabled !== undefined) {
+        document.getElementById('ticker-toggle').classList.toggle('active', state.tickerEnabled);
+      }
+      if (state.isRecording) {
+        startRecordingTimer();
+      }
+      if (state.isStreaming !== undefined) {
+        updateStreamingUI(state.isStreaming);
+      }
+      if (state.teleprompterText) {
+        document.getElementById('teleprompter-text').value = state.teleprompterText;
+      }
+      // Sync overlay states
+      if (state.clockEnabled !== undefined) {
+        document.querySelector('.overlay-btn[data-overlay="clock"]')?.classList.toggle('active', state.clockEnabled);
+      }
+      if (state.youtubeEnabled !== undefined) {
+        document.querySelector('.overlay-btn[data-overlay="youtube"]')?.classList.toggle('active', state.youtubeEnabled);
+      }
+      if (state.commentsEnabled !== undefined) {
+        document.querySelector('.overlay-btn[data-overlay="comments"]')?.classList.toggle('active', state.commentsEnabled);
+      }
+      if (state.viewersEnabled !== undefined) {
+        document.querySelector('.overlay-btn[data-overlay="viewers"]')?.classList.toggle('active', state.viewersEnabled);
+      }
+    }
+
+    function updateQualityIndicators(data) {
+      const fpsEl = document.getElementById('fps-value');
+      const bitrateEl = document.getElementById('bitrate-value');
+      const latencyEl = document.getElementById('latency-value');
+
+      if (data.fps !== undefined) {
+        fpsEl.textContent = data.fps;
+        fpsEl.className = 'value ' + (data.fps >= 25 ? 'good' : data.fps >= 15 ? 'warning' : 'bad');
+      }
+      if (data.bitrate !== undefined) {
+        const mbps = (data.bitrate / 1000000).toFixed(1);
+        bitrateEl.textContent = mbps + ' Mbps';
+        bitrateEl.className = 'value ' + (data.bitrate >= 2000000 ? 'good' : data.bitrate >= 1000000 ? 'warning' : 'bad');
+      }
+      if (data.latency !== undefined) {
+        latencyEl.textContent = data.latency + 'ms';
+        latencyEl.className = 'value ' + (data.latency <= 100 ? 'good' : data.latency <= 300 ? 'warning' : 'bad');
+      }
+    }
+
+    // Recording timer
+    function startRecordingTimer() {
+      if (isRecording) return;
+      isRecording = true;
+      recordingStartTime = Date.now();
+      document.getElementById('recording-timer').style.display = 'block';
+      document.getElementById('recording-card').classList.add('recording');
+      document.getElementById('btn-record-start').disabled = true;
+      document.getElementById('btn-record-stop').disabled = false;
+      document.getElementById('btn-record-pause').disabled = false;
+
+      recordingInterval = setInterval(() => {
+        const elapsed = Date.now() - recordingStartTime;
+        document.getElementById('recording-timer').textContent = formatTime(elapsed);
+      }, 1000);
+    }
+
+    function stopRecordingTimer() {
+      isRecording = false;
+      if (recordingInterval) clearInterval(recordingInterval);
+      document.getElementById('recording-timer').style.display = 'none';
+      document.getElementById('recording-card').classList.remove('recording');
+      document.getElementById('btn-record-start').disabled = false;
+      document.getElementById('btn-record-stop').disabled = true;
+      document.getElementById('btn-record-pause').disabled = true;
+    }
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      return [hours, minutes, seconds].map(v => v.toString().padStart(2, '0')).join(':');
+    }
+
+    // Consultation timer
+    function startConsultationTimer() {
+      if (consultationInterval && !consultationPaused) return;
+      consultationPaused = false;
+      consultationStartTime = Date.now() - consultationElapsed;
+
+      consultationInterval = setInterval(() => {
+        consultationElapsed = Date.now() - consultationStartTime;
+        document.getElementById('consultation-timer').textContent = formatTime(consultationElapsed);
+      }, 1000);
+    }
+
+    function pauseConsultationTimer() {
+      consultationPaused = true;
+      if (consultationInterval) clearInterval(consultationInterval);
+    }
+
+    function resetConsultationTimer() {
+      consultationPaused = false;
+      consultationElapsed = 0;
+      if (consultationInterval) clearInterval(consultationInterval);
+      consultationInterval = null;
+      document.getElementById('consultation-timer').textContent = '00:00:00';
+    }
+
+    // Ping studio to check connection
+    function pingStudio() {
+      sendCommand('ping');
+      setTimeout(() => {
+        if (!isConnected) {
+          updateConnectionStatus(false);
+        }
+      }, 3000);
+    }
+
+    // ===== Event Listeners =====
+
+    // Recording controls
+    document.getElementById('btn-record-start').addEventListener('click', (e) => {
+      e.currentTarget.disabled = true; // Prevent double-click
+      sendCommand('start-recording');
+      startRecordingTimer();
+    });
+
+    document.getElementById('btn-record-stop').addEventListener('click', (e) => {
+      e.currentTarget.disabled = true; // Prevent double-click
+      sendCommand('stop-recording');
+      stopRecordingTimer();
+    });
+
+    document.getElementById('btn-record-pause').addEventListener('click', () => {
+      sendCommand('pause-recording');
+    });
+
+    // Consultation controls
+    document.getElementById('btn-consult-start').addEventListener('click', () => {
+      startConsultationTimer();
+      sendCommand('consultation-start', { duration: parseInt(document.getElementById('consultation-duration').value) });
+    });
+
+    document.getElementById('btn-consult-pause').addEventListener('click', () => {
+      pauseConsultationTimer();
+      sendCommand('consultation-pause');
+    });
+
+    document.getElementById('btn-consult-reset').addEventListener('click', () => {
+      resetConsultationTimer();
+      sendCommand('consultation-reset');
+    });
+
+    // Quick actions
+    document.getElementById('btn-show-host').addEventListener('click', () => {
+      sendCommand('show-host-plate');
+      document.getElementById('btn-show-host').classList.add('active');
+      setTimeout(() => document.getElementById('btn-show-host').classList.remove('active'), 1000);
+    });
+
+    document.getElementById('btn-show-guest1').addEventListener('click', () => {
+      sendCommand('show-guest-plate', { guest: 1 });
+      document.getElementById('btn-show-guest1').classList.add('active');
+      setTimeout(() => document.getElementById('btn-show-guest1').classList.remove('active'), 1000);
+    });
+
+    document.getElementById('btn-show-guest2').addEventListener('click', () => {
+      sendCommand('show-guest-plate', { guest: 2 });
+      document.getElementById('btn-show-guest2').classList.add('active');
+      setTimeout(() => document.getElementById('btn-show-guest2').classList.remove('active'), 1000);
+    });
+
+    document.getElementById('btn-toggle-ticker').addEventListener('click', () => {
+      const toggle = document.getElementById('ticker-toggle');
+      toggle.classList.toggle('active');
+      sendCommand('toggle-ticker', { enabled: toggle.classList.contains('active') });
+    });
+
+    document.getElementById('btn-show-cta').addEventListener('click', () => {
+      sendCommand('show-cta');
+      document.getElementById('btn-show-cta').classList.add('active');
+      setTimeout(() => document.getElementById('btn-show-cta').classList.remove('active'), 1000);
+    });
+
+    document.getElementById('btn-hide-all').addEventListener('click', () => {
+      sendCommand('hide-all-overlays');
+    });
+
+    // Censor button (hold to activate)
+    const censorBtn = document.getElementById('btn-censor');
+    let censorActive = false;
+
+    censorBtn.addEventListener('mousedown', () => {
+      censorActive = true;
+      censorBtn.textContent = '🔴 ЦЕНЗУРА АКТИВНА';
+      censorBtn.classList.add('active');
+      sendCommand('censor', { active: true });
+    });
+
+    censorBtn.addEventListener('mouseup', () => {
+      censorActive = false;
+      censorBtn.textContent = '🔇 ЦЕНЗУРА (зажать)';
+      censorBtn.classList.remove('active');
+      sendCommand('censor', { active: false });
+    });
+
+    censorBtn.addEventListener('mouseleave', () => {
+      if (censorActive) {
+        censorActive = false;
+        censorBtn.textContent = '🔇 ЦЕНЗУРА (зажать)';
+        censorBtn.classList.remove('active');
+        sendCommand('censor', { active: false });
+      }
+    });
+
+    // Touch support for censor
+    censorBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      censorActive = true;
+      censorBtn.textContent = '🔴 ЦЕНЗУРА АКТИВНА';
+      censorBtn.classList.add('active');
+      sendCommand('censor', { active: true });
+    });
+
+    censorBtn.addEventListener('touchend', () => {
+      censorActive = false;
+      censorBtn.textContent = '🔇 ЦЕНЗУРА (зажать)';
+      censorBtn.classList.remove('active');
+      sendCommand('censor', { active: false });
+    });
+
+    // Host plate controls
+    document.getElementById('btn-host-show').addEventListener('click', () => {
+      const name = document.getElementById('host-name').value;
+      const title = document.getElementById('host-title').value;
+      sendCommand('show-host-plate', { name, title });
+    });
+
+    document.getElementById('btn-host-hide').addEventListener('click', () => {
+      sendCommand('hide-host-plate');
+    });
+
+    // Guest 1 plate controls
+    document.getElementById('btn-guest1-show').addEventListener('click', () => {
+      const name = document.getElementById('guest1-name').value;
+      const title = document.getElementById('guest1-title').value;
+      sendCommand('show-guest-plate', { guest: 1, name, title });
+    });
+
+    document.getElementById('btn-guest1-hide').addEventListener('click', () => {
+      sendCommand('hide-guest-plate', { guest: 1 });
+    });
+
+    // Guest 2 plate controls
+    document.getElementById('btn-guest2-show').addEventListener('click', () => {
+      const name = document.getElementById('guest2-name').value;
+      const title = document.getElementById('guest2-title').value;
+      sendCommand('show-guest-plate', { guest: 2, name, title });
+    });
+
+    document.getElementById('btn-guest2-hide').addEventListener('click', () => {
+      sendCommand('hide-guest-plate', { guest: 2 });
+    });
+
+    // Ticker controls
+    document.getElementById('ticker-toggle').addEventListener('click', function() {
+      this.classList.toggle('active');
+      sendCommand('toggle-ticker', { enabled: this.classList.contains('active') });
+    });
+
+    document.getElementById('btn-ticker-update').addEventListener('click', () => {
+      const text = document.getElementById('ticker-text').value;
+      sendCommand('update-ticker', { text });
+    });
+
+    // CTA controls
+    document.getElementById('btn-cta-show').addEventListener('click', () => {
+      const text = document.getElementById('cta-text').value;
+      sendCommand('show-cta', { text });
+    });
+
+    document.getElementById('btn-cta-hide').addEventListener('click', () => {
+      sendCommand('hide-cta');
+    });
+
+    // CTA color buttons
+    document.querySelectorAll('.color-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        sendCommand('set-cta-color', { color: btn.dataset.color });
+      });
+    });
+
+    // ===== Overlay Toggle Controls =====
+    document.querySelectorAll('.overlay-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const overlay = this.dataset.overlay;
+        this.classList.toggle('active');
+        const enabled = this.classList.contains('active');
+        sendCommand('toggle-overlay', { overlay, enabled });
+      });
+    });
+
+    // ===== Streaming Controls =====
+    let isStreaming = false;
+    const btnStreamStart = document.getElementById('btn-stream-start');
+    const btnStreamStop = document.getElementById('btn-stream-stop');
+    const streamingCard = document.getElementById('streaming-card');
+
+    btnStreamStart.addEventListener('click', () => {
+      btnStreamStart.disabled = true;
+      btnStreamStart.innerHTML = '<span class="spinner"></span> Запуск...';
+      sendCommand('start-stream');
+    });
+
+    btnStreamStop.addEventListener('click', () => {
+      btnStreamStop.disabled = true;
+      sendCommand('stop-stream');
+    });
+
+    function updateStreamingUI(streaming) {
+      isStreaming = streaming;
+      if (streaming) {
+        streamingCard.classList.add('recording');
+        btnStreamStart.disabled = true;
+        btnStreamStart.innerHTML = '🔴 LIVE';
+        btnStreamStop.disabled = false;
+      } else {
+        streamingCard.classList.remove('recording');
+        btnStreamStart.disabled = false;
+        btnStreamStart.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/></svg> Начать стрим`;
+        btnStreamStop.disabled = true;
+      }
+    }
+
+    // ===== Media Controls =====
+    document.getElementById('btn-show-splash').addEventListener('click', () => {
+      sendCommand('show-splash');
+      document.getElementById('btn-show-splash').classList.add('active');
+      setTimeout(() => document.getElementById('btn-show-splash').classList.remove('active'), 1000);
+    });
+
+    document.getElementById('btn-hide-splash').addEventListener('click', () => {
+      sendCommand('hide-splash');
+    });
+
+    document.getElementById('btn-play-intro').addEventListener('click', () => {
+      sendCommand('play-intro');
+      document.getElementById('btn-play-intro').classList.add('active');
+      setTimeout(() => document.getElementById('btn-play-intro').classList.remove('active'), 2000);
+    });
+
+    document.getElementById('btn-show-outro').addEventListener('click', () => {
+      sendCommand('show-outro');
+      document.getElementById('btn-show-outro').classList.add('active');
+      setTimeout(() => document.getElementById('btn-show-outro').classList.remove('active'), 1000);
+    });
+
+    // ===== Teleprompter =====
+    document.getElementById('btn-send-teleprompter').addEventListener('click', () => {
+      const text = document.getElementById('teleprompter-text').value;
+      const autoscroll = document.getElementById('teleprompter-autoscroll').classList.contains('active');
+      sendCommand('set-teleprompter', { text, autoscroll });
+      document.getElementById('btn-send-teleprompter').textContent = '✓ Отправлено';
+      setTimeout(() => {
+        document.getElementById('btn-send-teleprompter').textContent = '📤 Отправить';
+      }, 1500);
+    });
+
+    document.getElementById('btn-clear-teleprompter').addEventListener('click', () => {
+      document.getElementById('teleprompter-text').value = '';
+      sendCommand('clear-teleprompter');
+    });
+
+    document.getElementById('teleprompter-autoscroll').addEventListener('click', function() {
+      this.classList.toggle('active');
+    });
+
+    // ===== AI Format Generation =====
+    document.querySelectorAll('.format-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const format = this.dataset.format;
+        const iconEl = this.querySelector('.format-icon');
+        const labelEl = this.querySelector('.format-label');
+        const originalIcon = iconEl.textContent;
+        const originalLabel = labelEl.textContent;
+
+        // Show loading state
+        this.classList.add('loading');
+        iconEl.textContent = '⏳';
+        labelEl.textContent = 'Создание...';
+
+        // Send command with format
+        sendCommand('create-protocol', { format: format });
+
+        // Reset after timeout
+        setTimeout(() => {
+          this.classList.remove('loading');
+          this.classList.add('success');
+          iconEl.textContent = '✓';
+          labelEl.textContent = 'Готово';
+
+          setTimeout(() => {
+            this.classList.remove('success');
+            iconEl.textContent = originalIcon;
+            labelEl.textContent = originalLabel;
+          }, 2000);
+        }, 3000);
+      });
+    });
+
+    // Preview audio toggle
+    document.getElementById('btn-toggle-preview-audio').addEventListener('click', function() {
+      const video = document.getElementById('preview-video');
+      if (video.muted) {
+        video.muted = false;
+        video.volume = 1.0;
+        this.textContent = '🔊';
+        this.title = 'Звук включён';
+      } else {
+        video.muted = true;
+        this.textContent = '🔇';
+        this.title = 'Звук выключен';
+      }
+    });
+
+    // Audio Mixer controls
+    function setupMixer(id, label) {
+      const slider = document.getElementById(`volume-${id}`);
+      const valueEl = document.getElementById(`volume-${id}-val`);
+      const muteBtn = document.getElementById(`mute-${id}`);
+
+      slider.addEventListener('input', () => {
+        const val = slider.value;
+        valueEl.textContent = val + '%';
+        sendCommand('set-volume', { target: id, volume: parseInt(val) });
+      });
+
+      muteBtn.addEventListener('click', () => {
+        muteBtn.classList.toggle('muted');
+        const isMuted = muteBtn.classList.contains('muted');
+        sendCommand('set-mute', { target: id, muted: isMuted });
+        muteBtn.innerHTML = isMuted
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
+      });
+    }
+
+    setupMixer('host', 'Ведущий');
+    setupMixer('guest1', 'Гость 1');
+    setupMixer('guest2', 'Гость 2');
+    setupMixer('master', 'Мастер');
+
+    // Session display
+    if (sessionCode) {
+      const sessionInfo = document.getElementById('session-info');
+      sessionInfo.style.display = 'block';
+      document.getElementById('session-code-display').textContent = sessionCode;
+
+      document.getElementById('copy-session').addEventListener('click', function() {
+        navigator.clipboard.writeText(sessionCode);
+        this.textContent = '✓ Скопировано';
+        setTimeout(() => this.textContent = 'Копировать', 2000);
+      });
+
+      document.getElementById('change-session').addEventListener('click', () => {
+        localStorage.removeItem('producer_session');
+        location.reload();
+      });
+    }
+
+    // ===== WebRTC Video Preview =====
+    let producerPeer = null;
+    let videoConnection = null;
+    const previewVideo = document.getElementById('preview-video');
+    const previewPlaceholder = document.getElementById('preview-placeholder');
+    const previewStatus = document.getElementById('preview-status');
+    const btnConnectVideo = document.getElementById('btn-connect-video');
+    const tapToPlay = document.getElementById('tap-to-play');
+
+    // Mobile detection
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    // Handle tap-to-play for mobile
+    function showTapToPlay() {
+      tapToPlay.style.display = 'flex';
+    }
+
+    function hideTapToPlay() {
+      tapToPlay.style.display = 'none';
+    }
+
+    tapToPlay.addEventListener('click', () => {
+      hideTapToPlay();
+      if (previewVideo.srcObject) {
+        previewVideo.play().then(() => {
+          console.log('📹 Mobile: Video playing after tap');
+        }).catch(e => {
+          console.error('📹 Mobile play error:', e);
+        });
+      }
+    });
+
+    // iOS Safari specific: need to activate video element on user gesture
+    if (isIOS) {
+      document.addEventListener('touchstart', function iosUnlock() {
+        previewVideo.play().catch(() => {});
+        previewVideo.pause();
+        document.removeEventListener('touchstart', iosUnlock);
+        console.log('📹 iOS video element unlocked');
+      }, { once: true });
+    }
+
+    // Initialize PeerJS for producer
+    let producerPeerId = null;
+    let pendingVideoRequest = false; // Flag to track if video was requested before peer opened
+
+    function initProducerPeer() {
+      // Add random suffix to avoid "ID is taken" errors
+      const suffix = Math.random().toString(36).substr(2, 4);
+      producerPeerId = 'producer-' + sessionCode + '-' + suffix;
+
+      // ICE servers config with TURN for NAT traversal (metered.ca)
+      const iceConfig = {
+        iceServers: [
+          { urls: 'stun:stun.relay.metered.ca:80' },
+          { urls: 'stun:stun.l.google.com:19302' },
+          {
+            urls: 'turn:standard.relay.metered.ca:80',
+            username: '1edd4b210dd9f0f0017ac5dd',
+            credential: 'ZWolZtwtXm2gH48d'
+          },
+          {
+            urls: 'turn:standard.relay.metered.ca:80?transport=tcp',
+            username: '1edd4b210dd9f0f0017ac5dd',
+            credential: 'ZWolZtwtXm2gH48d'
+          },
+          {
+            urls: 'turn:standard.relay.metered.ca:443',
+            username: '1edd4b210dd9f0f0017ac5dd',
+            credential: 'ZWolZtwtXm2gH48d'
+          },
+          {
+            urls: 'turns:standard.relay.metered.ca:443?transport=tcp',
+            username: '1edd4b210dd9f0f0017ac5dd',
+            credential: 'ZWolZtwtXm2gH48d'
+          }
+        ]
+      };
+
+      producerPeer = new Peer(producerPeerId, {
+        debug: isMobile ? 3 : 2, // More debug on mobile
+        config: iceConfig
+      });
+
+      console.log('📹 Initializing peer for', isMobile ? 'MOBILE' : 'desktop', ':', producerPeerId);
+
+      producerPeer.on('open', (id) => {
+        console.log('📹 Producer peer ready:', id);
+        previewStatus.textContent = 'Готов к подключению';
+
+        // If video was requested before peer was ready, send now
+        if (pendingVideoRequest) {
+          pendingVideoRequest = false;
+          console.log('📹 Sending pending video request now that peer is open');
+          sendCommand('request-video', { producerPeerId: producerPeerId });
+        }
+      });
+
+      producerPeer.on('call', (call) => {
+        // Ignore if already connected
+        if (videoConnection && previewVideo.srcObject) {
+          console.log('📹 Ignoring duplicate call, already connected');
+          return;
+        }
+
+        console.log('📹 Incoming video call from studio');
+        previewStatus.textContent = 'Получение видео...';
+
+        // Answer without sending our video
+        call.answer();
+
+        // Connection state monitoring
+        call.peerConnection.oniceconnectionstatechange = () => {
+          const state = call.peerConnection.iceConnectionState;
+          console.log('📹 ICE state:', state);
+          if (state === 'failed' || state === 'disconnected') {
+            previewStatus.textContent = 'Переподключение...';
+          }
+        };
+
+        call.on('stream', (stream) => {
+          const tracks = stream.getTracks();
+          console.log('📹 Received stream, tracks:', tracks.map(t => `${t.kind}:${t.enabled}:${t.readyState}`));
+
+          // Check audio tracks
+          const audioTracks = stream.getAudioTracks();
+          console.log('🔊 Audio tracks:', audioTracks.length, audioTracks.map(t => t.label));
+
+          // Check if stream has active video
+          const videoTracks = stream.getVideoTracks();
+          if (videoTracks.length === 0) {
+            console.warn('📹 No video tracks in stream!');
+            previewStatus.textContent = 'Нет видео в потоке';
+            return;
+          }
+
+          // Log video track settings
+          const vt = videoTracks[0];
+          console.log('📹 Video track settings:', vt.getSettings ? vt.getSettings() : 'N/A');
+
+          // Set srcObject BEFORE showing
+          previewVideo.srcObject = stream;
+
+          // Enable audio for producer (unmute if has audio tracks)
+          if (audioTracks.length > 0) {
+            previewVideo.muted = false;
+            previewVideo.volume = 1.0;
+            console.log('🔊 Audio enabled for producer preview');
+          }
+
+          // Show video, hide placeholder using classes
+          previewVideo.classList.remove('hidden');
+          previewPlaceholder.classList.add('hidden');
+
+          console.log('📹 Video element state:', {
+            srcObject: !!previewVideo.srcObject,
+            videoWidth: previewVideo.videoWidth,
+            videoHeight: previewVideo.videoHeight,
+            readyState: previewVideo.readyState,
+            paused: previewVideo.paused,
+            display: getComputedStyle(previewVideo).display,
+            visibility: getComputedStyle(previewVideo).visibility,
+            opacity: getComputedStyle(previewVideo).opacity,
+            clientWidth: previewVideo.clientWidth,
+            clientHeight: previewVideo.clientHeight
+          });
+
+          // Ensure muted for autoplay (iOS requirement)
+          previewVideo.muted = true;
+
+          // Force play with mobile fallback (add small delay for mobile)
+          setTimeout(() => {
+            const playPromise = previewVideo.play();
+            if (playPromise !== undefined) {
+              playPromise.then(() => {
+                console.log('📹 Video playing successfully');
+                console.log('📹 After play - videoWidth:', previewVideo.videoWidth, 'videoHeight:', previewVideo.videoHeight);
+                hideTapToPlay();
+              }).catch(e => {
+                console.warn('📹 Video play error:', e.name, e.message);
+                // Show tap-to-play overlay on mobile
+                if (isMobile) {
+                  showTapToPlay();
+                  previewStatus.textContent = 'Нажмите для воспроизведения';
+                }
+              });
+            }
+          }, isMobile ? 100 : 0);
+
+          // Monitor video for actual frames
+          previewVideo.addEventListener('loadedmetadata', () => {
+            console.log('📹 loadedmetadata - dimensions:', previewVideo.videoWidth, 'x', previewVideo.videoHeight);
+          }, { once: true });
+
+          previewVideo.addEventListener('playing', () => {
+            console.log('📹 playing event fired - dimensions:', previewVideo.videoWidth, 'x', previewVideo.videoHeight);
+          }, { once: true });
+
+          btnConnectVideo.textContent = '✓ Видео подключено';
+          btnConnectVideo.classList.add('active');
+          btnConnectVideo.disabled = true;
+        });
+
+        call.on('close', () => {
+          console.log('📹 Video call closed');
+          previewVideo.classList.add('hidden');
+          previewPlaceholder.classList.remove('hidden');
+          previewStatus.textContent = 'Соединение закрыто';
+          btnConnectVideo.textContent = 'Подключить видео';
+          btnConnectVideo.classList.remove('active');
+          btnConnectVideo.disabled = false;
+        });
+
+        videoConnection = call;
+      });
+
+      producerPeer.on('error', (err) => {
+        console.error('Producer peer error:', err);
+        // If ID is taken, retry with new suffix
+        if (err.type === 'unavailable-id') {
+          console.log('Peer ID taken, retrying with new suffix...');
+          producerPeer.destroy();
+          producerPeer = null;
+          setTimeout(initProducerPeer, 500);
+          return;
+        }
+        previewStatus.textContent = 'Ошибка: ' + err.type;
+      });
+    }
+
+    // Request video from studio
+    btnConnectVideo.addEventListener('click', () => {
+      if (!sessionCode) {
+        alert('Нет кода сессии');
+        return;
+      }
+
+      btnConnectVideo.textContent = 'Подключение...';
+      btnConnectVideo.disabled = true;
+      previewStatus.textContent = 'Запрос видео...';
+
+      // Check if peer is already open and ready
+      if (producerPeer && !producerPeer.destroyed && producerPeer.open) {
+        // Peer is ready - send request immediately
+        console.log('📹 Peer already open, sending video request immediately');
+        sendCommand('request-video', { producerPeerId: producerPeerId });
+      } else {
+        // Peer not ready - set pending flag and initialize
+        console.log('📹 Peer not ready, setting pending request flag');
+        pendingVideoRequest = true;
+        if (!producerPeer || producerPeer.destroyed) {
+          initProducerPeer();
+        }
+        // Request will be sent from on('open') handler
+      }
+
+      // Timeout
+      setTimeout(() => {
+        if (!previewVideo.srcObject) {
+          btnConnectVideo.textContent = 'Подключить видео';
+          btnConnectVideo.disabled = false;
+          previewStatus.textContent = 'Нет ответа от студии. Попробуйте снова.';
+          pendingVideoRequest = false;
+        }
+      }, 15000); // Increased to 15s to allow for peer init
+    });
+
+    // Initialize
+    setupRemoteConnection();
+    const pingInterval = setInterval(pingStudio, 10000);
+
+    // Auto-init peer
+    if (sessionCode) {
+      setTimeout(initProducerPeer, 1000);
+    }
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      clearInterval(pingInterval);
+      if (producerPeer) {
+        producerPeer.destroy();
+      }
+      if (supabaseChannel) {
+        supabaseChannel.unsubscribe();
+      }
+    });
+  </script>
+</body>
+</html>

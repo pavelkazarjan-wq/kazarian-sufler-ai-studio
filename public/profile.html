@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Профиль — WebinarStudio</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: #e2e8f0;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .profile-card {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .profile-card h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .profile-card h2 svg {
+      width: 20px;
+      height: 20px;
+      opacity: 0.7;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-row.single {
+      grid-template-columns: 1fr;
+    }
+
+    .form-group {
+      margin-bottom: 0;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: #64748b;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .avatar-upload {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .avatar-preview {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      overflow: hidden;
+    }
+
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .avatar-btn {
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .avatar-btn:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .color-input {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .color-input input[type="color"] {
+      width: 50px;
+      height: 40px;
+      padding: 0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .color-input input[type="text"] {
+      flex: 1;
+    }
+
+    .save-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 20px;
+    }
+
+    .save-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.5);
+    }
+
+    .save-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 14px 24px;
+      background: #10b981;
+      color: white;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+
+    .toast.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.error {
+      background: #ef4444;
+    }
+
+    .subscription-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .subscription-badge.free {
+      background: linear-gradient(135deg, #64748b, #475569);
+    }
+
+    .subscription-badge.pro {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+
+    .subscription-badge.business {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    @media (max-width: 640px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      .header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Настройки профиля</h1>
+      <a href="/app.html" class="back-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Назад в студию
+      </a>
+    </div>
+
+    <!-- Basic Info -->
+    <div class="profile-card">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Основная информация
+      </h2>
+
+      <div class="avatar-upload">
+        <div class="avatar-preview" id="avatar-preview">
+          <span id="avatar-initials">...</span>
+        </div>
+        <div class="avatar-actions">
+          <input type="file" id="avatar-input" accept="image/*" style="display:none">
+          <button class="avatar-btn" onclick="document.getElementById('avatar-input').click()">Загрузить фото</button>
+          <button class="avatar-btn" onclick="removeAvatar()">Удалить</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="full-name">Полное имя</label>
+          <input type="text" id="full-name" placeholder="Иван Иванов">
+        </div>
+        <div class="form-group">
+          <label for="title">Специализация / должность</label>
+          <input type="text" id="title" placeholder="психолог, коуч, тренер...">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="phone">Телефон</label>
+          <input type="tel" id="phone" placeholder="+380...">
+        </div>
+        <div class="form-group">
+          <label for="email-display">Email</label>
+          <input type="email" id="email-display" disabled>
+        </div>
+      </div>
+    </div>
+
+    <!-- Social Links -->
+    <div class="profile-card">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Соцсети и ссылки
+      </h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="telegram">Telegram</label>
+          <input type="url" id="telegram" placeholder="https://t.me/username">
+        </div>
+        <div class="form-group">
+          <label for="instagram">Instagram</label>
+          <input type="url" id="instagram" placeholder="https://instagram.com/username">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="youtube">YouTube</label>
+          <input type="url" id="youtube" placeholder="https://youtube.com/@channel">
+        </div>
+        <div class="form-group">
+          <label for="facebook">Facebook</label>
+          <input type="url" id="facebook" placeholder="https://facebook.com/page">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="website">Сайт</label>
+          <input type="url" id="website" placeholder="https://yoursite.com">
+        </div>
+        <div class="form-group">
+          <label for="support-link">Ссылка поддержки (бот/чат)</label>
+          <input type="url" id="support-link" placeholder="https://t.me/YourBot">
+        </div>
+      </div>
+    </div>
+
+    <!-- Branding -->
+    <div class="profile-card">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="0.5"/><circle cx="17.5" cy="10.5" r="0.5"/><circle cx="8.5" cy="7.5" r="0.5"/><circle cx="6.5" cy="12.5" r="0.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/></svg>
+        Брендинг
+      </h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="brand-color">Цвет акцента</label>
+          <div class="color-input">
+            <input type="color" id="brand-color-picker" value="#3b82f6">
+            <input type="text" id="brand-color" placeholder="#3b82f6" value="#3b82f6">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="watermark">Водяной знак в записи</label>
+          <input type="text" id="watermark" placeholder="Ваше имя или бренд">
+        </div>
+      </div>
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label for="splash-text">Текст заставки перед началом</label>
+          <input type="text" id="splash-text" placeholder="Скоро начнём" value="Скоро начнём">
+        </div>
+      </div>
+    </div>
+
+    <!-- Legal -->
+    <div class="profile-card">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Юридические данные
+      </h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="legal-name">Юридическое имя / ФОП / ООО</label>
+          <input type="text" id="legal-name" placeholder="ФОП Іванов І.І.">
+        </div>
+        <div class="form-group">
+          <label for="legal-email">Email для документов</label>
+          <input type="email" id="legal-email" placeholder="legal@example.com">
+        </div>
+      </div>
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label for="legal-address">Адрес</label>
+          <input type="text" id="legal-address" placeholder="м. Київ, вул. ...">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="privacy-url">Политика конфиденциальности (URL)</label>
+          <input type="url" id="privacy-url" placeholder="https://...">
+        </div>
+        <div class="form-group">
+          <label for="offer-url">Договор оферты (URL)</label>
+          <input type="url" id="offer-url" placeholder="https://...">
+        </div>
+      </div>
+
+      <button class="save-btn" id="save-btn" onclick="saveProfile()">Сохранить изменения</button>
+    </div>
+
+    <!-- Subscription -->
+    <div class="profile-card">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Подписка
+      </h2>
+
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+        <span>Текущий план:</span>
+        <span class="subscription-badge free" id="subscription-badge">FREE</span>
+      </div>
+
+      <p style="color: #94a3b8; font-size: 14px; margin-bottom: 16px;">
+        Расширьте возможности: AI-анализ, неограниченные записи, детекция эмоций и многое другое.
+      </p>
+
+      <button class="save-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);" onclick="showUpgradePlans()">
+        Улучшить план
+      </button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="alert('Ошибка загрузки. Проверьте интернет.'); window.location.href='/login.html';"></script>
+  <script>
+    // Check if SDK loaded
+    if (!window.supabase) {
+      alert('Supabase SDK не загружен');
+      window.location.href = '/login.html';
+      throw new Error('Supabase SDK not loaded');
+    }
+
+    // Config loaded from secure endpoint
+    let SUPABASE_URL = '';
+    let SUPABASE_ANON_KEY = '';
+    let supabaseClient = null;
+    let currentUser = null;
+
+    // Initialize config
+    (async () => {
+      try {
+        const res = await fetch('/.netlify/functions/config');
+        if (!res.ok) throw new Error('Config fetch failed');
+        const config = await res.json();
+        SUPABASE_URL = config.supabaseUrl;
+        SUPABASE_ANON_KEY = config.supabaseAnonKey;
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        initProfile();
+      } catch (e) {
+        console.error('Config load failed:', e);
+        window.location.href = '/login.html';
+      }
+    })();
+
+    async function initProfile() {
+      let userProfile = null;
+      let profileLoaded = false;
+
+      // Disable save button until profile loads
+      document.getElementById('save-btn').disabled = true;
+      document.getElementById('save-btn').textContent = 'Загрузка...';
+
+      try {
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+        if (sessionError) throw sessionError;
+        if (!session) {
+          window.location.href = '/login.html';
+          return;
+        }
+        currentUser = session.user;
+        document.getElementById('email-display').value = currentUser.email;
+
+        // Load profile
+        const { data: profile, error: profileError } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .eq('id', currentUser.id)
+          .single();
+
+        if (profile) {
+          userProfile = profile;
+          populateForm(profile);
+          profileLoaded = true;
+          document.getElementById('save-btn').disabled = false;
+          document.getElementById('save-btn').textContent = 'Сохранить изменения';
+        } else {
+          // Create default profile if not exists
+          console.log('No profile found, creating default...');
+          const defaultProfile = {
+            id: currentUser.id,
+            full_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
+            title: 'психолог'
+          };
+          const { error: insertError } = await supabaseClient.from('profiles').insert(defaultProfile);
+          if (insertError) {
+            console.error('Profile creation error:', insertError);
+            showToast('Ошибка создания профиля', true);
+          } else {
+            userProfile = defaultProfile;
+            populateForm(defaultProfile);
+            profileLoaded = true;
+            document.getElementById('save-btn').disabled = false;
+            document.getElementById('save-btn').textContent = 'Сохранить изменения';
+            showToast('Профиль создан');
+          }
+        }
+      } catch (e) {
+        console.error('Profile load error:', e);
+        showToast('Ошибка загрузки профиля', true);
+      }
+    })();
+
+    function populateForm(profile) {
+      // Basic
+      document.getElementById('full-name').value = profile.full_name || '';
+      document.getElementById('title').value = profile.title || '';
+      document.getElementById('phone').value = profile.phone || '';
+
+      // Update avatar
+      updateAvatarPreview(profile.full_name, profile.photo_url);
+
+      // Social
+      document.getElementById('telegram').value = profile.telegram || '';
+      document.getElementById('instagram').value = profile.instagram || '';
+      document.getElementById('youtube').value = profile.youtube || '';
+      document.getElementById('facebook').value = profile.facebook || '';
+      document.getElementById('website').value = profile.website || '';
+      document.getElementById('support-link').value = profile.support_link || '';
+
+      // Branding
+      document.getElementById('brand-color').value = profile.brand_color || '#3b82f6';
+      document.getElementById('brand-color-picker').value = profile.brand_color || '#3b82f6';
+      document.getElementById('watermark').value = profile.watermark_text || '';
+      document.getElementById('splash-text').value = profile.splash_text || 'Скоро начнём';
+
+      // Legal
+      document.getElementById('legal-name').value = profile.legal_name || '';
+      document.getElementById('legal-email').value = profile.legal_email || '';
+      document.getElementById('legal-address').value = profile.legal_address || '';
+      document.getElementById('privacy-url').value = profile.privacy_policy_url || '';
+      document.getElementById('offer-url').value = profile.offer_url || '';
+
+      // Subscription
+      const badge = document.getElementById('subscription-badge');
+      const plan = profile.subscription_plan || 'free';
+      badge.textContent = plan.toUpperCase();
+      badge.className = 'subscription-badge ' + plan;
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
+    }
+
+    // Validate URL format
+    function isValidUrl(str) {
+      if (!str || str.trim() === '') return true; // Empty is valid (optional)
+      try {
+        const url = new URL(str);
+        return ['http:', 'https:'].includes(url.protocol);
+      } catch {
+        return false;
+      }
+    }
+
+    function updateAvatarPreview(name, photoUrl) {
+      const preview = document.getElementById('avatar-preview');
+
+      if (photoUrl) {
+        // Create image element safely (no innerHTML)
+        const img = document.createElement('img');
+        img.src = photoUrl;
+        img.alt = 'Avatar';
+        img.onerror = () => {
+          // Fallback to initials if image fails
+          updateAvatarPreview(name, null);
+        };
+        preview.innerHTML = '';
+        preview.appendChild(img);
+      } else if (name) {
+        const init = String(name).split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        const span = document.createElement('span');
+        span.id = 'avatar-initials';
+        span.textContent = init || '?';
+        preview.innerHTML = '';
+        preview.appendChild(span);
+      } else {
+        preview.innerHTML = '<span id="avatar-initials">?</span>';
+      }
+    }
+
+    // Color picker sync
+    document.getElementById('brand-color-picker').addEventListener('input', (e) => {
+      document.getElementById('brand-color').value = e.target.value;
+    });
+
+    document.getElementById('brand-color').addEventListener('input', (e) => {
+      const val = e.target.value;
+      if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+        document.getElementById('brand-color-picker').value = val;
+      }
+    });
+
+    // Avatar upload
+    document.getElementById('avatar-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // Validate file type and size
+      const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+      const MAX_SIZE_MB = 5;
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        showToast('Только JPG, PNG, WebP или GIF', true);
+        e.target.value = '';
+        return;
+      }
+
+      if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+        showToast(`Максимум ${MAX_SIZE_MB}MB`, true);
+        e.target.value = '';
+        return;
+      }
+
+      if (!currentUser) {
+        showToast('Ошибка: пользователь не загружен', true);
+        return;
+      }
+
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop().toLowerCase();
+      const fileName = `${currentUser.id}/avatar.${fileExt}`;
+
+      const { data, error } = await supabaseClient.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true });
+
+      if (error) {
+        showToast('Ошибка загрузки фото', true);
+        return;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabaseClient.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      const photoUrl = urlData.publicUrl + '?t=' + Date.now();
+
+      // Update preview
+      updateAvatarPreview(null, photoUrl);
+
+      // Save to profile
+      await supabaseClient.from('profiles').update({ photo_url: photoUrl }).eq('id', currentUser.id);
+      showToast('Фото обновлено');
+    });
+
+    async function removeAvatar() {
+      if (!currentUser) return;
+      updateAvatarPreview(document.getElementById('full-name').value, null);
+      const { error } = await supabaseClient.from('profiles').update({ photo_url: null }).eq('id', currentUser.id);
+      if (error) {
+        console.error('Remove avatar error:', error);
+        showToast('Ошибка удаления фото', true);
+      } else {
+        showToast('Фото удалено');
+      }
+    }
+
+    let isSaving = false;
+
+    async function saveProfile() {
+      // Prevent saving if profile hasn't loaded yet
+      if (!profileLoaded || !userProfile) {
+        showToast('Подождите загрузки профиля', true);
+        return;
+      }
+
+      // Prevent double-clicks
+      if (isSaving) return;
+
+      const btn = document.getElementById('save-btn');
+      const fullName = document.getElementById('full-name').value.trim();
+
+      // Validate required fields
+      if (!fullName) {
+        showToast('Укажите имя', true);
+        document.getElementById('full-name').focus();
+        return;
+      }
+
+      // Validate URLs
+      const urlFields = ['telegram', 'instagram', 'youtube', 'facebook', 'website', 'support-link', 'privacy-url', 'offer-url'];
+      for (const field of urlFields) {
+        const value = document.getElementById(field).value.trim();
+        if (value && !isValidUrl(value)) {
+          showToast(`Неверный URL: ${field}`, true);
+          document.getElementById(field).focus();
+          return;
+        }
+      }
+
+      // Validate brand color
+      const brandColor = document.getElementById('brand-color').value.trim();
+      if (brandColor && !/^#[0-9A-Fa-f]{6}$/.test(brandColor)) {
+        showToast('Неверный формат цвета (используйте #RRGGBB)', true);
+        return;
+      }
+
+      isSaving = true;
+      btn.disabled = true;
+      btn.textContent = 'Сохранение...';
+
+      const data = {
+        full_name: fullName,
+        title: document.getElementById('title').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        telegram: document.getElementById('telegram').value.trim(),
+        instagram: document.getElementById('instagram').value.trim(),
+        youtube: document.getElementById('youtube').value.trim(),
+        facebook: document.getElementById('facebook').value.trim(),
+        website: document.getElementById('website').value.trim(),
+        support_link: document.getElementById('support-link').value.trim(),
+        brand_color: brandColor || '#3b82f6',
+        watermark_text: document.getElementById('watermark').value.trim(),
+        splash_text: document.getElementById('splash-text').value.trim() || 'Скоро начнём',
+        legal_name: document.getElementById('legal-name').value.trim(),
+        legal_email: document.getElementById('legal-email').value.trim(),
+        legal_address: document.getElementById('legal-address').value.trim(),
+        privacy_policy_url: document.getElementById('privacy-url').value.trim(),
+        offer_url: document.getElementById('offer-url').value.trim()
+      };
+
+      try {
+        const { error } = await supabaseClient
+          .from('profiles')
+          .update(data)
+          .eq('id', currentUser.id);
+
+        if (error) {
+          showToast('Ошибка сохранения: ' + error.message, true);
+        } else {
+          userProfile = { ...userProfile, ...data };
+          showToast('Профиль сохранён');
+          // Update avatar preview with new name
+          updateAvatarPreview(data.full_name, userProfile?.photo_url);
+        }
+      } catch (e) {
+        showToast('Ошибка сети', true);
+      } finally {
+        isSaving = false;
+        btn.disabled = false;
+        btn.textContent = 'Сохранить изменения';
+      }
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast visible' + (isError ? ' error' : '');
+      setTimeout(() => {
+        toast.classList.remove('visible');
+      }, 3000);
+    }
+
+    function showUpgradePlans() {
+      // TODO: Implement upgrade modal/page
+      showToast('Скоро будет доступно');
+    }
+  </script>
+</body>
+</html>

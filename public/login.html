@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход — WebinarStudio</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e2e8f0;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+    }
+
+    .auth-card {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .auth-logo h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .auth-logo p {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.5);
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .auth-tab.active {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .auth-tab:hover:not(.active) {
+      color: #e2e8f0;
+    }
+
+    .auth-form {
+      display: none;
+    }
+
+    .auth-form.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .form-group input::placeholder {
+      color: #64748b;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 10px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.5);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .auth-footer a {
+      color: #3b82f6;
+      text-decoration: none;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .error-message.visible {
+      display: block;
+    }
+
+    .success-message {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .success-message.visible {
+      display: block;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 24px 0;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .social-login {
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-btn {
+      flex: 1;
+      padding: 12px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .social-btn:hover {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .social-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .password-toggle {
+      position: relative;
+    }
+
+    .password-toggle input {
+      padding-right: 44px;
+    }
+
+    .password-toggle button {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .password-toggle button:hover {
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <h1>WebinarStudio</h1>
+        <p>Платформа для онлайн-консультаций</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Вход</button>
+        <button class="auth-tab" data-tab="register">Регистрация</button>
+      </div>
+
+      <div id="error-message" class="error-message"></div>
+      <div id="success-message" class="success-message"></div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form active" autocomplete="on">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" name="email" autocomplete="email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Пароль</label>
+          <div class="password-toggle">
+            <input type="password" id="login-password" name="password" autocomplete="current-password" placeholder="••••••••" required>
+            <button type="button" onclick="togglePassword('login-password')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <label class="remember-me" style="display:flex;align-items:center;gap:8px;margin-bottom:16px;cursor:pointer;color:#94a3b8;font-size:14px;">
+          <input type="checkbox" id="remember-me" style="width:18px;height:18px;accent-color:#3b82f6;cursor:pointer;">
+          Запомнить меня
+        </label>
+        <button type="submit" class="submit-btn" id="login-btn">Войти</button>
+        <div class="auth-footer">
+          <a href="#" onclick="showResetPassword()">Забыли пароль?</a>
+        </div>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form">
+        <div class="form-group">
+          <label for="register-name">Полное имя</label>
+          <input type="text" id="register-name" placeholder="Иван Иванов" required>
+        </div>
+        <div class="form-group">
+          <label for="register-title">Специализация</label>
+          <input type="text" id="register-title" placeholder="психолог, коуч, тренер..." value="психолог">
+        </div>
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="register-password">Пароль</label>
+          <div class="password-toggle">
+            <input type="password" id="register-password" placeholder="минимум 6 символов" required minlength="6">
+            <button type="button" onclick="togglePassword('register-password')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn" id="register-btn">Создать аккаунт</button>
+        <div class="auth-footer">
+          Регистрируясь, вы соглашаетесь с <a href="#">условиями использования</a>
+        </div>
+      </form>
+
+      <!-- Reset Password Form -->
+      <form id="reset-form" class="auth-form">
+        <div class="form-group">
+          <label for="reset-email">Email для восстановления</label>
+          <input type="email" id="reset-email" placeholder="your@email.com" required>
+        </div>
+        <button type="submit" class="submit-btn">Отправить ссылку</button>
+        <div class="auth-footer">
+          <a href="#" onclick="showLogin()">Вернуться к входу</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Project Switcher -->
+    <div style="margin-top:20px;text-align:center;">
+      <a href="https://kazarian-ai-studio.netlify.app"
+         style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
+          <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+        Суфлер Студио
+      </a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Supabase init - load config from secure endpoint
+    let supabaseClient = null;
+    let SUPABASE_URL = '';
+    let SUPABASE_ANON_KEY = '';
+
+    (async () => {
+      try {
+        const configRes = await fetch('/.netlify/functions/config');
+        if (!configRes.ok) throw new Error('Config fetch failed');
+        const config = await configRes.json();
+        SUPABASE_URL = config.supabaseUrl;
+        SUPABASE_ANON_KEY = config.supabaseAnonKey;
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Check if already logged in
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+          window.location.href = '/app.html';
+        }
+      } catch (e) {
+        console.error('Config load failed:', e);
+      }
+    })();
+
+    // Tab switching
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.dataset.tab;
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`${tabName}-form`).classList.add('active');
+        hideMessages();
+      });
+    });
+
+    // Password toggle
+    function togglePassword(inputId) {
+      const input = document.getElementById(inputId);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    // Remember me - restore saved email on page load
+    (function() {
+      const savedEmail = localStorage.getItem('webinar_remember_email');
+      if (savedEmail) {
+        document.getElementById('login-email').value = savedEmail;
+        document.getElementById('remember-me').checked = true;
+      }
+    })();
+
+    // Messages
+    function showError(msg) {
+      const el = document.getElementById('error-message');
+      el.textContent = msg;
+      el.classList.add('visible');
+      document.getElementById('success-message').classList.remove('visible');
+    }
+
+    function showSuccess(msg) {
+      const el = document.getElementById('success-message');
+      el.textContent = msg;
+      el.classList.add('visible');
+      document.getElementById('error-message').classList.remove('visible');
+    }
+
+    function hideMessages() {
+      document.getElementById('error-message').classList.remove('visible');
+      document.getElementById('success-message').classList.remove('visible');
+    }
+
+    function showResetPassword() {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+      document.getElementById('reset-form').classList.add('active');
+      hideMessages();
+    }
+
+    function showLogin() {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+      document.querySelector('[data-tab="login"]').classList.add('active');
+      document.getElementById('login-form').classList.add('active');
+      hideMessages();
+    }
+
+    // Login
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('login-btn');
+      btn.disabled = true;
+      btn.textContent = 'Вход...';
+
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+        if (error) {
+          if (error.message.includes('Invalid login')) {
+            showError('Неверный email или пароль');
+          } else {
+            showError(error.message);
+          }
+          btn.disabled = false;
+          btn.textContent = 'Войти';
+          return;
+        }
+
+        // Remember me - save or clear email
+        const rememberMe = document.getElementById('remember-me').checked;
+        if (rememberMe) {
+          localStorage.setItem('webinar_remember_email', email);
+        } else {
+          localStorage.removeItem('webinar_remember_email');
+        }
+
+        // Success - redirect to app
+        window.location.href = '/app.html';
+
+      } catch (err) {
+        showError('Ошибка подключения');
+        btn.disabled = false;
+        btn.textContent = 'Войти';
+      }
+    });
+
+    // Register
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('register-btn');
+      btn.disabled = true;
+      btn.textContent = 'Создание...';
+
+      const name = document.getElementById('register-name').value;
+      const title = document.getElementById('register-title').value;
+      const email = document.getElementById('register-email').value;
+      const password = document.getElementById('register-password').value;
+
+      try {
+        // Register user
+        const { data, error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin + '/auth/callback.html',
+            data: {
+              full_name: name,
+              title: title
+            }
+          }
+        });
+
+        if (error) {
+          if (error.message.includes('already registered')) {
+            showError('Этот email уже зарегистрирован');
+          } else {
+            showError(error.message);
+          }
+          btn.disabled = false;
+          btn.textContent = 'Создать аккаунт';
+          return;
+        }
+
+        // Create profile in profiles table
+        if (data.user) {
+          await supabaseClient.from('profiles').insert({
+            id: data.user.id,
+            full_name: name,
+            title: title
+          });
+        }
+
+        // Check if email confirmation is required
+        if (data.session) {
+          // Auto-confirmed, redirect to app
+          window.location.href = '/app.html';
+        } else {
+          // Email confirmation required
+          showSuccess('Проверьте почту для подтверждения аккаунта');
+          btn.disabled = false;
+          btn.textContent = 'Создать аккаунт';
+        }
+
+      } catch (err) {
+        showError('Ошибка регистрации');
+        btn.disabled = false;
+        btn.textContent = 'Создать аккаунт';
+      }
+    });
+
+    // Reset password
+    document.getElementById('reset-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('reset-email').value;
+
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/auth/callback.html'
+      });
+
+      if (error) {
+        showError(error.message);
+      } else {
+        showSuccess('Ссылка для восстановления отправлена на почту');
+      }
+    });
+  </script>
+</body>
+</html>

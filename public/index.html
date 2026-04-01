@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebinarStudio</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <style>
+    body {
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .loader {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(59, 130, 246, 0.2);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="window.location.href='/login.html'"></script>
+  <script>
+    // Load config from secure endpoint
+    (async () => {
+      try {
+        // Fetch config from Netlify function
+        const configRes = await fetch('/.netlify/functions/config');
+        if (!configRes.ok) throw new Error('Config fetch failed');
+        const config = await configRes.json();
+
+        const SUPABASE_URL = config.supabaseUrl;
+        const SUPABASE_ANON_KEY = config.supabaseAnonKey;
+
+        // Check if Supabase SDK loaded
+        if (!window.supabase) {
+          console.error('Supabase SDK not loaded');
+          window.location.href = '/login.html';
+          return;
+        }
+
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Check for local session token first (fast check)
+        const storageKey = `sb-${SUPABASE_URL.split('//')[1].split('.')[0]}-auth-token`;
+        const localAuth = localStorage.getItem(storageKey);
+        const hasLocalSession = localAuth && JSON.parse(localAuth)?.access_token;
+
+        // Add timeout for slow networks (increased to 15s)
+        const timeout = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), 15000)
+        );
+        const sessionCheck = supabaseClient.auth.getSession();
+
+        const { data: { session }, error } = await Promise.race([sessionCheck, timeout]);
+        if (error) throw error;
+
+        window.location.href = session ? '/app.html' : '/login.html';
+      } catch (e) {
+        console.error('Auth check failed:', e);
+        // Fallback: check any local session
+        const keys = Object.keys(localStorage).filter(k => k.includes('-auth-token'));
+        const hasAnySession = keys.some(k => {
+          try { return JSON.parse(localStorage.getItem(k))?.access_token; } catch { return false; }
+        });
+        window.location.href = hasAnySession ? '/app.html' : '/login.html';
+      }
+    })();
+  </script>
+</body>
+</html>
