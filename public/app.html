@@ -2579,9 +2579,7 @@
       if (authSupabase) return authSupabase;
       const config = await window.getSupabaseConfig();
       if (!config || !window.supabase) return null;
-      authSupabase = window.supabase.createClient(config.url, config.key, {
-        auth: { storageKey: 'sb-auth-token' }
-      });
+      authSupabase = window.supabase.createClient(config.url, config.key);
       return authSupabase;
     }
 
@@ -5311,9 +5309,7 @@
       (async () => {
         const config = await window.getSupabaseConfig();
         if (config && typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-          clientSupabase = window.supabase.createClient(config.url, config.key, {
-            auth: { storageKey: 'sb-client-token' }
-          });
+          clientSupabase = window.supabase.createClient(config.url, config.key);
           console.log('✅ Client Supabase initialized');
         }
       })();
@@ -9235,9 +9231,7 @@
       }
 
       if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-        supabase = window.supabase.createClient(config.url, config.key, {
-          auth: { storageKey: 'sb-main-token' }
-        });
+        supabase = window.supabase.createClient(config.url, config.key);
         console.log('✅ Supabase initialized');
 
         // Check authentication and load profile
