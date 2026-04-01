@@ -10441,6 +10441,9 @@
           splitSlideImage.style.display = 'none';
           splitScreenVideo.style.display = 'block';
           splitScreenVideo.srcObject = screenStream;
+          // Show content area when screen sharing (even in 3-participant mode)
+          const splitContent = document.querySelector('.split-content');
+          if (splitContent) splitContent.style.display = 'flex';
         }
 
         thumbnails.style.display = 'none';
@@ -10790,6 +10793,11 @@
               // Show invite second button
               const inviteSecondBtn = document.getElementById('btn-invite-second');
               if (inviteSecondBtn) inviteSecondBtn.style.display = 'flex';
+
+              // If Guest 2 already connected, relay Guest 1's stream to Guest 2
+              if (guestStreams[1] && peerConnections[1]) {
+                relayStreamToGuest(remoteStream, 1);
+              }
             } else if (guestSlot === 1) {
               // Second guest
               guestStream2 = remoteStream;
@@ -10803,6 +10811,13 @@
               if (inviteSecondBtn) inviteSecondBtn.style.display = 'none';
               // Enable 3-participant mode
               enableThreeParticipantMode();
+
+              // Relay Guest 2's stream to Guest 1
+              if (guestStreams[0] && peerConnections[0]) {
+                relayStreamToGuest(remoteStream, 0);
+                // Also relay Guest 1's stream to Guest 2
+                relayStreamToGuest(guestStreams[0], 1);
+              }
             }
 
             // Show hangup button, hide consultation button
@@ -10824,22 +10839,22 @@
 
           incomingCall.on('close', async () => {
             console.log(`🔴 Consultation: Call closed by client (slot ${guestSlot})`);
-            if (guestSlot === 0) {
-              // Stop recording and generate protocol
-              await stopConsultationRecording();
-              stopGuestConnection(0);
-            } else {
-              stopGuestConnection(1);
-            }
+            stopGuestConnection(guestSlot);
 
             // Check if all guests disconnected
             if (!guestStreams[0] && !guestStreams[1]) {
-              // Hide hangup button, show consultation button
+              // All guests left - stop recording and end session
+              await stopConsultationRecording();
               document.getElementById('btn-hangup').style.display = 'none';
               document.getElementById('btn-consultation').style.display = 'flex';
               document.getElementById('btn-invite-second').style.display = 'none';
+              disableThreeParticipantMode();
             } else if (guestStreams[0] && !guestStreams[1]) {
-              // First guest still connected, show invite button
+              // Only guest 1 connected
+              disableThreeParticipantMode();
+              document.getElementById('btn-invite-second').style.display = 'flex';
+            } else if (!guestStreams[0] && guestStreams[1]) {
+              // Only guest 2 connected - keep session going
               document.getElementById('btn-invite-second').style.display = 'flex';
             }
           });
@@ -11240,6 +11255,12 @@
       const canvasArea = document.getElementById('canvas-area');
       if (canvasArea) canvasArea.classList.add('three-participants');
 
+      // Hide content area when no content (only show 3 video feeds)
+      const splitContent = document.querySelector('.split-content');
+      if (splitContent && !screenStream && slides.length === 0) {
+        splitContent.style.display = 'none';
+      }
+
       // Switch to split view mode for 3 participants
       if (viewMode !== 'split') {
         viewMode = 'split';
@@ -11252,6 +11273,49 @@
       }
 
       console.log('✅ 3-participant mode enabled');
+    }
+
+    // Relay one guest's stream to another guest
+    // This allows guests to see and hear each other
+    function relayStreamToGuest(stream, targetSlot) {
+      if (!stream || !consultationPeer) {
+        console.log('❌ Cannot relay: missing stream or peer');
+        return;
+      }
+
+      const targetConnection = peerConnections[targetSlot];
+      if (!targetConnection || !targetConnection.peerConnection) {
+        console.log(`❌ Cannot relay: no connection to guest ${targetSlot + 1}`);
+        return;
+      }
+
+      try {
+        const pc = targetConnection.peerConnection;
+        const senders = pc.getSenders();
+
+        // Add video track
+        const videoTrack = stream.getVideoTracks()[0];
+        if (videoTrack) {
+          // Check if we already have this track
+          const existingVideoSender = senders.find(s => s.track && s.track.kind === 'video' && s.track.id !== consultStream?.getVideoTracks()[0]?.id);
+          if (!existingVideoSender) {
+            pc.addTrack(videoTrack, stream);
+            console.log(`📺 Relayed video to guest ${targetSlot + 1}`);
+          }
+        }
+
+        // Add audio track
+        const audioTrack = stream.getAudioTracks()[0];
+        if (audioTrack) {
+          const existingAudioSender = senders.find(s => s.track && s.track.kind === 'audio' && s.track.id !== consultStream?.getAudioTracks()[0]?.id);
+          if (!existingAudioSender) {
+            pc.addTrack(audioTrack, stream);
+            console.log(`🎙️ Relayed audio to guest ${targetSlot + 1}`);
+          }
+        }
+      } catch (err) {
+        console.error(`❌ Error relaying to guest ${targetSlot + 1}:`, err);
+      }
     }
 
     // Disable 3-participant layout
