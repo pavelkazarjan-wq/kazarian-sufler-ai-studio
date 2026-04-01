@@ -1924,7 +1924,7 @@
 
     // Login with Supabase
     async function authLogin() {
-      const sb = initAuthSupabase();
+      const sb = await initAuthSupabase();
       if (!sb) {
         showAuthError('Ошибка инициализации. Обновите страницу.');
         return;
@@ -1965,7 +1965,7 @@
 
     // Register with Supabase
     async function authRegister() {
-      const sb = initAuthSupabase();
+      const sb = await initAuthSupabase();
       if (!sb) {
         showAuthError('Ошибка инициализации. Обновите страницу.');
         return;
@@ -2047,7 +2047,7 @@
 
     // Logout
     async function authLogout() {
-      const sb = initAuthSupabase();
+      const sb = await initAuthSupabase();
       if (!sb) return;
 
       try {
@@ -2074,7 +2074,7 @@
 
     // Check existing session on load
     async function checkExistingSession() {
-      const sb = initAuthSupabase();
+      const sb = await initAuthSupabase();
       if (!sb) return;
 
       try {

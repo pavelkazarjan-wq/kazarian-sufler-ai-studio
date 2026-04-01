@@ -2616,7 +2616,7 @@
 
     // Login with Supabase
     async function authLogin() {
-      const sb = initAuthSupabase();
+      const sb = await initAuthSupabase();
       if (!sb) {
         showAuthError('Ошибка инициализации. Обновите страницу.');
         return;
@@ -2657,7 +2657,7 @@
 
     // Register with Supabase
     async function authRegister() {
-      const sb = initAuthSupabase();
+      const sb = await initAuthSupabase();
       if (!sb) {
         showAuthError('Ошибка инициализации. Обновите страницу.');
         return;
@@ -2750,7 +2750,7 @@
 
     // Logout
     async function authLogout() {
-      const sb = initAuthSupabase();
+      const sb = await initAuthSupabase();
       if (!sb) return;
 
       try {
@@ -2788,7 +2788,7 @@
 
     // Check existing session on load
     async function checkExistingSession() {
-      const sb = initAuthSupabase();
+      const sb = await initAuthSupabase();
       if (!sb) return;
 
       try {
@@ -5333,46 +5333,42 @@
 
         registrationInProgress = true;
         try {
-          // Generate unique browser instance ID for this client
-          let browserId = sessionStorage.getItem('client_browser_id');
-          if (!browserId) {
-            browserId = 'br_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
-            sessionStorage.setItem('client_browser_id', browserId);
+          // Check if THIS browser tab already registered for this session (local check)
+          const localRecordKey = `waiting_record_${sessionId}`;
+          const localRecordId = sessionStorage.getItem(localRecordKey);
+
+          if (localRecordId) {
+            // Verify the record still exists and is valid
+            const { data: existingLocal } = await clientSupabase
+              .from('waiting_clients')
+              .select('id, status')
+              .eq('id', localRecordId)
+              .single();
+
+            if (existingLocal && ['waiting', 'admitted'].includes(existingLocal.status)) {
+              waitingRecordId = existingLocal.id;
+              console.log('✅ Found existing registration for this tab:', existingLocal.id);
+              registrationInProgress = false;
+              return existingLocal;
+            }
           }
 
-          // Check if THIS browser already has a record for this session
-          const { data: existing } = await clientSupabase
-            .from('waiting_clients')
-            .select('id, status')
-            .eq('session_id', sessionId)
-            .eq('browser_id', browserId)
-            .in('status', ['waiting', 'admitted', 'scheduled'])
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
-
-          if (existing) {
-            waitingRecordId = existing.id;
-            console.log('✅ Found existing registration for this browser:', existing.id, 'status:', existing.status);
-            registrationInProgress = false;
-            return existing;
-          }
-
-          // Create new registration for this browser/client
+          // Create new registration (each browser/tab gets its own record)
           const { data, error } = await clientSupabase
             .from('waiting_clients')
             .insert([{
               session_id: sessionId,
               client_name: clientName || 'Клиент',
               status: 'waiting',
-              scheduled_time: null,
-              browser_id: browserId
+              scheduled_time: null
             }])
             .select()
             .single();
 
           if (error) throw error;
           waitingRecordId = data.id;
+          // Save to sessionStorage so this tab remembers its record
+          sessionStorage.setItem(`waiting_record_${sessionId}`, data.id);
           console.log('✅ Registered in waiting_clients:', data.id);
           registrationInProgress = false;
           return data;
@@ -9276,15 +9272,15 @@
           userProfile = defaultProfile;
           applyUserProfile(userProfile);
         }
-      })();
 
-      // Listen for auth state changes
-      supabase.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_OUT') {
-          window.location.href = '/login.html';
-        }
-      });
-    }
+        // Listen for auth state changes
+        supabase.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_OUT') {
+            window.location.href = '/login.html';
+          }
+        });
+      }
+    })();
 
     // Apply user profile to UI - replaces all hardcoded values
     function applyUserProfile(profile) {
