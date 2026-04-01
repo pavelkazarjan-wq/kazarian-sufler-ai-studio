@@ -8820,6 +8820,21 @@
     let consultationAudioChunks = [];
     let consultationStartTime = null;
     let consultationAudioCtx = null; // Track AudioContext for cleanup
+    let consultationAudioDest = null; // Track destination for adding new sources
+
+    // Add a new audio stream to the recording mix (for dynamically adding guests)
+    function addAudioToRecording(stream, label) {
+      if (!consultationAudioCtx || !consultationAudioDest || !stream) return;
+      try {
+        if (stream.getAudioTracks().length > 0) {
+          const source = consultationAudioCtx.createMediaStreamSource(stream);
+          source.connect(consultationAudioDest);
+          console.log(`🎙️ ${label} audio added to recording`);
+        }
+      } catch (err) {
+        console.error(`Failed to add ${label} audio:`, err);
+      }
+    }
 
     // Start recording consultation audio (host + guest mixed)
     function startConsultationRecording() {
@@ -8832,7 +8847,8 @@
         }
 
         consultationAudioCtx = new AudioContext({ sampleRate: 48000 });
-        const destination = consultationAudioCtx.createMediaStreamDestination();
+        consultationAudioDest = consultationAudioCtx.createMediaStreamDestination();
+        const destination = consultationAudioDest;
 
         // Add host audio (consultStream)
         if (consultStream && consultStream.getAudioTracks().length > 0) {
@@ -10811,6 +10827,9 @@
               if (inviteSecondBtn) inviteSecondBtn.style.display = 'none';
               // Enable 3-participant mode
               enableThreeParticipantMode();
+
+              // Add Guest 2 audio to recording (if recording in progress)
+              addAudioToRecording(remoteStream, 'Guest 2');
 
               // Relay Guest 2's stream to Guest 1
               if (guestStreams[0] && peerConnections[0]) {
@@ -15469,59 +15488,112 @@ ${presentationText.slice(0, 8000)}
           ctx.lineTo(W, contentH);
           ctx.stroke();
         } else {
-          // Horizontal: camera left/right
-          const halfW = W / 2;
-          const isCamRight = splitLayout === 'cam-right';
-          const camX = isCamRight ? halfW : 0;
-          const slideX = isCamRight ? 0 : halfW;
+          // Check if 3-participant mode (host + 2 guests)
+          const splitGuest2Video = document.getElementById('split-guest-video-2');
+          const has3Participants = guestStream && guestStream2 && splitGuestVideo.videoWidth > 0 && splitGuest2Video && splitGuest2Video.videoWidth > 0;
 
-          // Camera (square)
-          if (cameraStream && splitCamera.videoWidth > 0) {
-            const squareSize = Math.min(halfW, H);
-            const x = camX + (halfW - squareSize) / 2;
-            const y = (H - squareSize) / 2;
-            const vw = splitCamera.videoWidth, vh = splitCamera.videoHeight;
-            const cropSize = Math.min(vw, vh);
-            const sx = (vw - cropSize) / 2, sy = (vh - cropSize) / 2;
-            ctx.drawImage(splitCamera, sx, sy, cropSize, cropSize, x, y, squareSize, squareSize);
-          }
+          if (has3Participants) {
+            // 3-participant horizontal: host | guest1 | guest2
+            const thirdW = W / 3;
 
-          // Content - CINEMA VIDEO FIRST
-          if (cinemaVideoLoaded && cinemaVideo && cinemaVideo.readyState >= 2) {
-            const vw = cinemaVideo.videoWidth, vh = cinemaVideo.videoHeight;
-            const scale = Math.min(halfW / vw, H / vh);
-            const w = vw * scale, h = vh * scale;
-            ctx.drawImage(cinemaVideo, slideX + (halfW - w) / 2, (H - h) / 2, w, h);
-          } else if (guestStream && splitGuestVideo.videoWidth > 0) {
-            const squareSize = Math.min(halfW, H);
-            const x = slideX + (halfW - squareSize) / 2;
-            const y = (H - squareSize) / 2;
-            const vw = splitGuestVideo.videoWidth, vh = splitGuestVideo.videoHeight;
-            const cropSize = Math.min(vw, vh);
-            const sx = (vw - cropSize) / 2, sy = (vh - cropSize) / 2;
-            ctx.drawImage(splitGuestVideo, sx, sy, cropSize, cropSize, x, y, squareSize, squareSize);
-          } else if (screenStream && splitScreenVideo.videoWidth > 0) {
-            // Screen share - CONTAIN mode (show ALL content)
-            const vw = splitScreenVideo.videoWidth, vh = splitScreenVideo.videoHeight;
-            const scale = Math.min(halfW / vw, H / vh);
-            const w = vw * scale, h = vh * scale;
-            ctx.drawImage(splitScreenVideo, slideX + (halfW - w) / 2, (H - h) / 2, w, h);
-          } else if (slides.length > 0) {
-            const slideSource = slides[currentSlide].type === 'pdf' ? splitSlideCanvas : splitSlideImage;
-            if (slideSource.width > 0) {
-              const scale = Math.min(halfW / slideSource.width, H / slideSource.height);
-              const w = slideSource.width * scale, h = slideSource.height * scale;
-              ctx.drawImage(slideSource, slideX + (halfW - w) / 2, (H - h) / 2, w, h);
+            // Host (left)
+            if (cameraStream && splitCamera.videoWidth > 0) {
+              const squareSize = Math.min(thirdW, H);
+              const x = (thirdW - squareSize) / 2;
+              const y = (H - squareSize) / 2;
+              const vw = splitCamera.videoWidth, vh = splitCamera.videoHeight;
+              const cropSize = Math.min(vw, vh);
+              const sx = (vw - cropSize) / 2, sy = (vh - cropSize) / 2;
+              ctx.drawImage(splitCamera, sx, sy, cropSize, cropSize, x, y, squareSize, squareSize);
             }
-          }
 
-          // Divider
-          ctx.strokeStyle = '#3b82f6';
-          ctx.lineWidth = 4;
-          ctx.beginPath();
-          ctx.moveTo(halfW, 0);
-          ctx.lineTo(halfW, H);
-          ctx.stroke();
+            // Guest 1 (center)
+            {
+              const squareSize = Math.min(thirdW, H);
+              const x = thirdW + (thirdW - squareSize) / 2;
+              const y = (H - squareSize) / 2;
+              const vw = splitGuestVideo.videoWidth, vh = splitGuestVideo.videoHeight;
+              const cropSize = Math.min(vw, vh);
+              const sx = (vw - cropSize) / 2, sy = (vh - cropSize) / 2;
+              ctx.drawImage(splitGuestVideo, sx, sy, cropSize, cropSize, x, y, squareSize, squareSize);
+            }
+
+            // Guest 2 (right)
+            {
+              const squareSize = Math.min(thirdW, H);
+              const x = thirdW * 2 + (thirdW - squareSize) / 2;
+              const y = (H - squareSize) / 2;
+              const vw = splitGuest2Video.videoWidth, vh = splitGuest2Video.videoHeight;
+              const cropSize = Math.min(vw, vh);
+              const sx = (vw - cropSize) / 2, sy = (vh - cropSize) / 2;
+              ctx.drawImage(splitGuest2Video, sx, sy, cropSize, cropSize, x, y, squareSize, squareSize);
+            }
+
+            // Dividers
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(thirdW, 0);
+            ctx.lineTo(thirdW, H);
+            ctx.moveTo(thirdW * 2, 0);
+            ctx.lineTo(thirdW * 2, H);
+            ctx.stroke();
+
+          } else {
+            // Standard 2-participant horizontal: camera left/right
+            const halfW = W / 2;
+            const isCamRight = splitLayout === 'cam-right';
+            const camX = isCamRight ? halfW : 0;
+            const slideX = isCamRight ? 0 : halfW;
+
+            // Camera (square)
+            if (cameraStream && splitCamera.videoWidth > 0) {
+              const squareSize = Math.min(halfW, H);
+              const x = camX + (halfW - squareSize) / 2;
+              const y = (H - squareSize) / 2;
+              const vw = splitCamera.videoWidth, vh = splitCamera.videoHeight;
+              const cropSize = Math.min(vw, vh);
+              const sx = (vw - cropSize) / 2, sy = (vh - cropSize) / 2;
+              ctx.drawImage(splitCamera, sx, sy, cropSize, cropSize, x, y, squareSize, squareSize);
+            }
+
+            // Content - CINEMA VIDEO FIRST
+            if (cinemaVideoLoaded && cinemaVideo && cinemaVideo.readyState >= 2) {
+              const vw = cinemaVideo.videoWidth, vh = cinemaVideo.videoHeight;
+              const scale = Math.min(halfW / vw, H / vh);
+              const w = vw * scale, h = vh * scale;
+              ctx.drawImage(cinemaVideo, slideX + (halfW - w) / 2, (H - h) / 2, w, h);
+            } else if (guestStream && splitGuestVideo.videoWidth > 0) {
+              const squareSize = Math.min(halfW, H);
+              const x = slideX + (halfW - squareSize) / 2;
+              const y = (H - squareSize) / 2;
+              const vw = splitGuestVideo.videoWidth, vh = splitGuestVideo.videoHeight;
+              const cropSize = Math.min(vw, vh);
+              const sx = (vw - cropSize) / 2, sy = (vh - cropSize) / 2;
+              ctx.drawImage(splitGuestVideo, sx, sy, cropSize, cropSize, x, y, squareSize, squareSize);
+            } else if (screenStream && splitScreenVideo.videoWidth > 0) {
+              // Screen share - CONTAIN mode (show ALL content)
+              const vw = splitScreenVideo.videoWidth, vh = splitScreenVideo.videoHeight;
+              const scale = Math.min(halfW / vw, H / vh);
+              const w = vw * scale, h = vh * scale;
+              ctx.drawImage(splitScreenVideo, slideX + (halfW - w) / 2, (H - h) / 2, w, h);
+            } else if (slides.length > 0) {
+              const slideSource = slides[currentSlide].type === 'pdf' ? splitSlideCanvas : splitSlideImage;
+              if (slideSource.width > 0) {
+                const scale = Math.min(halfW / slideSource.width, H / slideSource.height);
+                const w = slideSource.width * scale, h = slideSource.height * scale;
+                ctx.drawImage(slideSource, slideX + (halfW - w) / 2, (H - h) / 2, w, h);
+              }
+            }
+
+            // Divider
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(halfW, 0);
+            ctx.lineTo(halfW, H);
+            ctx.stroke();
+          }
         }
       } else {
         // Single view
