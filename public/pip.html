@@ -4760,6 +4760,11 @@
           }
 
           try {
+            // Check if video is ready
+            if (!myVideo || !myVideo.videoWidth || !myVideo.videoHeight) {
+              throw new Error('Камера ещё не готова. Подождите пару секунд.');
+            }
+
             photoBtn.textContent = '📸 Создаю...';
             photoBtn.disabled = true;
 
@@ -4834,7 +4839,8 @@
             console.error('Photo generation error:', err);
             photoBtn.textContent = '📸 Фото';
             photoBtn.disabled = false;
-            alert('Не удалось создать фото: ' + err.message);
+            const errMsg = err?.message || err?.error || (typeof err === 'string' ? err : 'Неизвестная ошибка');
+            alert('Не удалось создать фото: ' + errMsg);
           }
         };
 
