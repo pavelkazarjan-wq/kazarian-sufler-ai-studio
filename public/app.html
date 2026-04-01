@@ -15488,12 +15488,68 @@ ${presentationText.slice(0, 8000)}
           ctx.lineTo(W, contentH);
           ctx.stroke();
         } else {
-          // Check if 3-participant mode (host + 2 guests)
+          // Check participants and content
           const splitGuest2Video = document.getElementById('split-guest-video-2');
-          const has3Participants = guestStream && guestStream2 && splitGuestVideo.videoWidth > 0 && splitGuest2Video && splitGuest2Video.videoWidth > 0;
+          const has2Guests = guestStream && guestStream2 && splitGuestVideo.videoWidth > 0 && splitGuest2Video && splitGuest2Video.videoWidth > 0;
+          const hasContent = (screenStream && splitScreenVideo.videoWidth > 0) || slides.length > 0;
 
-          if (has3Participants) {
-            // 3-participant horizontal: host | guest1 | guest2
+          if (has2Guests && hasContent) {
+            // 4-element mode: host + content + guest1 + guest2
+            // Layout: 2x2 grid (top: host, content; bottom: guest1, guest2)
+            const halfW = W / 2;
+            const halfH = H / 2;
+
+            // Host (top-left)
+            if (cameraStream && splitCamera.videoWidth > 0) {
+              const vw = splitCamera.videoWidth, vh = splitCamera.videoHeight;
+              const scale = Math.min(halfW / vw, halfH / vh);
+              const w = vw * scale, h = vh * scale;
+              ctx.drawImage(splitCamera, (halfW - w) / 2, (halfH - h) / 2, w, h);
+            }
+
+            // Content (top-right)
+            if (screenStream && splitScreenVideo.videoWidth > 0) {
+              const vw = splitScreenVideo.videoWidth, vh = splitScreenVideo.videoHeight;
+              const scale = Math.min(halfW / vw, halfH / vh);
+              const w = vw * scale, h = vh * scale;
+              ctx.drawImage(splitScreenVideo, halfW + (halfW - w) / 2, (halfH - h) / 2, w, h);
+            } else if (slides.length > 0) {
+              const slideSource = slides[currentSlide].type === 'pdf' ? splitSlideCanvas : splitSlideImage;
+              if (slideSource.width > 0) {
+                const scale = Math.min(halfW / slideSource.width, halfH / slideSource.height);
+                const w = slideSource.width * scale, h = slideSource.height * scale;
+                ctx.drawImage(slideSource, halfW + (halfW - w) / 2, (halfH - h) / 2, w, h);
+              }
+            }
+
+            // Guest 1 (bottom-left)
+            {
+              const vw = splitGuestVideo.videoWidth, vh = splitGuestVideo.videoHeight;
+              const scale = Math.min(halfW / vw, halfH / vh);
+              const w = vw * scale, h = vh * scale;
+              ctx.drawImage(splitGuestVideo, (halfW - w) / 2, halfH + (halfH - h) / 2, w, h);
+            }
+
+            // Guest 2 (bottom-right)
+            {
+              const vw = splitGuest2Video.videoWidth, vh = splitGuest2Video.videoHeight;
+              const scale = Math.min(halfW / vw, halfH / vh);
+              const w = vw * scale, h = vh * scale;
+              ctx.drawImage(splitGuest2Video, halfW + (halfW - w) / 2, halfH + (halfH - h) / 2, w, h);
+            }
+
+            // Grid lines
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(halfW, 0);
+            ctx.lineTo(halfW, H);
+            ctx.moveTo(0, halfH);
+            ctx.lineTo(W, halfH);
+            ctx.stroke();
+
+          } else if (has2Guests) {
+            // 3-participant horizontal (no content): host | guest1 | guest2
             const thirdW = W / 3;
 
             // Host (left)
