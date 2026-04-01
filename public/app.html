@@ -10452,6 +10452,23 @@
         if (screenVideoTrack) {
           screenVideoTrack.onended = stopScreenShare;
         }
+
+        // Send screen share to consultation clients
+        if (peerConnections && peerConnections.length > 0) {
+          for (const call of peerConnections) {
+            if (call && call.peerConnection) {
+              const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+              if (sender && screenVideoTrack) {
+                sender.replaceTrack(screenVideoTrack).then(() => {
+                  console.log('📺 Screen share sent to consultation client');
+                }).catch(err => {
+                  console.error('Failed to send screen share:', err);
+                });
+              }
+            }
+          }
+        }
+
         updateViewMode();
         updateClearButton();
       } catch (err) {
@@ -10468,6 +10485,25 @@
       screenVideo.style.display = 'none';
       splitScreenVideo.srcObject = null;
       splitScreenVideo.style.display = 'none';
+
+      // Revert consultation clients back to camera
+      if (peerConnections && peerConnections.length > 0 && consultStream) {
+        const cameraTrack = consultStream.getVideoTracks()[0];
+        if (cameraTrack) {
+          for (const call of peerConnections) {
+            if (call && call.peerConnection) {
+              const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+              if (sender) {
+                sender.replaceTrack(cameraTrack).then(() => {
+                  console.log('📹 Camera restored for consultation client');
+                }).catch(err => {
+                  console.error('Failed to restore camera:', err);
+                });
+              }
+            }
+          }
+        }
+      }
 
       if (slides.length === 0 && !guestStream && !guestStream2) {
         placeholder.style.display = 'block';
