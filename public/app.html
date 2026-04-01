@@ -10619,7 +10619,7 @@
 
       // Handle waiting room data connections
       let waitingGuest = null;
-      let waitingDataConn = null;
+      // Note: waitingDataConn is global (defined above) so admit button can access it
 
       consultationPeer.on('connection', (conn) => {
         console.log('📡 Data connection from client');
