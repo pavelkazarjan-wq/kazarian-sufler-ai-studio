@@ -769,6 +769,13 @@
         SUPABASE_URL = config.supabaseUrl;
         SUPABASE_ANON_KEY = config.supabaseAnonKey;
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Initialize chat after supabase is ready
+        if (typeof initChatChannel === 'function') {
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get('session')) {
+            initChatChannel();
+          }
+        }
       } catch (e) {
         console.error('Config load failed:', e);
         showError('Ошибка конфигурации', 'Не удалось загрузить настройки. Попробуйте обновить страницу.');
@@ -1226,14 +1233,11 @@
       chatInput.focus();
     });
 
-    // Initialize chat
-    if (sessionCode) {
-      initChatChannel();
-
+    // Initialize chat - moved to async config loader above
+    // Chat will be initialized after supabaseClient is ready
+    if (sessionCode && viewerName) {
       // If name is saved, don't show modal initially
-      if (viewerName) {
-        nameModal.classList.add('hidden');
-      }
+      nameModal.classList.add('hidden');
     }
   </script>
 </body>
