@@ -1937,6 +1937,11 @@
       producerPeerId = 'producer-' + sessionCode + '-' + suffix;
 
       // ICE servers config with TURN for NAT traversal (metered.ca)
+      // PeerJS server config - MUST match studio (app.html)
+      const PEERJS_HOST = 'stream.tgcombain.org.ua';
+      const PEERJS_PORT = 443;
+      const PEERJS_PATH = '/peerjs';
+
       const iceConfig = {
         iceServers: [
           { urls: 'stun:stun.relay.metered.ca:80' },
@@ -1965,7 +1970,11 @@
       };
 
       producerPeer = new Peer(producerPeerId, {
-        debug: isMobile ? 3 : 2, // More debug on mobile
+        host: PEERJS_HOST,
+        port: PEERJS_PORT,
+        path: PEERJS_PATH,
+        secure: true,
+        debug: isMobile ? 3 : 2,
         config: iceConfig
       });
 
