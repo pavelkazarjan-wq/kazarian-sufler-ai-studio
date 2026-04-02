@@ -6283,8 +6283,15 @@
             }
           }
 
-          // For producer/other peers
-          sendProducerResponse({ action: 'video-error', message: 'Продюсер ещё не подключен. Попробуйте снова.' });
+          // If it's a producer peer, retry the connection
+          if (failedPeerId && failedPeerId.startsWith('producer-')) {
+            console.log('📹 Producer peer not available, retrying:', failedPeerId);
+            retryProducerCall(failedPeerId);
+            return;
+          }
+
+          // For other peers
+          sendProducerResponse({ action: 'video-error', message: 'Peer ещё не подключен. Попробуйте снова.' });
           return;
         }
 
@@ -8404,11 +8411,43 @@
       }
     }
 
+    // Producer retry tracking
+    const producerRetryState = { count: 0, peerId: null };
+    const MAX_PRODUCER_RETRIES = 8;
+
+    function retryProducerCall(producerPeerId) {
+      if (producerRetryState.peerId !== producerPeerId) {
+        producerRetryState.count = 0;
+        producerRetryState.peerId = producerPeerId;
+      }
+
+      if (producerRetryState.count >= MAX_PRODUCER_RETRIES) {
+        console.warn('📹 Giving up on producer after', MAX_PRODUCER_RETRIES, 'retries');
+        sendProducerResponse({ action: 'video-error', message: 'Не удалось подключиться к продюсеру' });
+        producerRetryState.count = 0;
+        return;
+      }
+
+      producerRetryState.count++;
+      const delay = Math.min(1500 * producerRetryState.count, 5000);
+      console.log(`📹 Producer retry ${producerRetryState.count}/${MAX_PRODUCER_RETRIES} in ${delay}ms`);
+      sendProducerResponse({ action: 'video-retry', message: `Попытка ${producerRetryState.count}...` });
+
+      setTimeout(() => sendVideoToProducer(producerPeerId), delay);
+    }
+
     // Send video stream to producer
     function sendVideoToProducer(producerPeerId) {
-      if (!studioPeer) {
+      if (!studioPeer || studioPeer.destroyed) {
         console.error('Studio PeerJS not initialized, trying to init...');
         initStudioPeer();
+        setTimeout(() => sendVideoToProducer(producerPeerId), 1500);
+        return;
+      }
+
+      // Check if peer is open
+      if (!studioPeer.open) {
+        console.log('📹 Studio peer not open yet, waiting...');
         setTimeout(() => sendVideoToProducer(producerPeerId), 1000);
         return;
       }
@@ -8427,26 +8466,18 @@
         }
 
         try {
+          console.log('📹 Calling producer:', producerPeerId);
           const call = studioPeer.call(producerPeerId, streamToSend);
 
           if (!call) {
             console.error('📹 Failed to create call - peer may not exist');
-            sendProducerResponse({ action: 'video-error', message: 'Продюсер недоступен' });
+            retryProducerCall(producerPeerId);
             return;
           }
 
           call.on('error', (err) => {
             console.error('Video call error:', err.type || err);
-            // Retry on peer-unavailable (producer not registered yet)
-            if (err.type === 'peer-unavailable' && !window._producerRetryCount) {
-              window._producerRetryCount = 1;
-              console.log('📹 Producer not available, retrying in 2s...');
-              sendProducerResponse({ action: 'video-retry', message: 'Повторное подключение...' });
-              setTimeout(() => {
-                window._producerRetryCount = 0;
-                sendVideoToProducer(producerPeerId);
-              }, 2000);
-            }
+            retryProducerCall(producerPeerId);
           });
 
           call.on('close', () => {
