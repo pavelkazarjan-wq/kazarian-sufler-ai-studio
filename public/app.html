@@ -14790,12 +14790,17 @@ ${presentationText.slice(0, 8000)}
     }
 
     // Initialize producer listener after supabase is ready
-    setTimeout(() => {
-      if (typeof setupProducerListener === 'function') {
+    function initProducerWhenReady() {
+      // Check if supabase is initialized
+      if (supabase && typeof setupProducerListener === 'function') {
         setupProducerListener();
         console.log('🎬 Producer session code:', producerSessionCode);
+      } else {
+        // Retry until supabase is ready
+        setTimeout(initProducerWhenReady, 500);
       }
-    }, 1000);
+    }
+    setTimeout(initProducerWhenReady, 500);
 
     btnProducer?.addEventListener('click', (e) => {
       e.stopPropagation();
