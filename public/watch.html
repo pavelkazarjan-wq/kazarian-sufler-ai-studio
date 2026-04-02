@@ -810,6 +810,11 @@
     let viewerPeer = null;
     let isMuted = false;
 
+    // PeerJS server config - MUST match studio (app.html)
+    const PEERJS_HOST = 'stream.tgcombain.org.ua';
+    const PEERJS_PORT = 443;
+    const PEERJS_PATH = '/peerjs';
+
     // ICE servers config
     const iceConfig = {
       iceServers: [
@@ -840,6 +845,10 @@
       const viewerId = 'viewer-' + sessionCode + '-' + Math.random().toString(36).substr(2, 6);
 
       viewerPeer = new Peer(viewerId, {
+        host: PEERJS_HOST,
+        port: PEERJS_PORT,
+        path: PEERJS_PATH,
+        secure: true,
         debug: 2,
         config: iceConfig
       });
