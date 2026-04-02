@@ -2125,6 +2125,55 @@
       });
     }
 
+    // Video request retry logic
+    let videoRequestInterval = null;
+    let videoRequestAttempts = 0;
+    const MAX_VIDEO_RETRIES = 10;
+
+    function startVideoRequest() {
+      if (videoRequestInterval) clearInterval(videoRequestInterval);
+      videoRequestAttempts = 0;
+
+      const tryRequestVideo = () => {
+        // Stop if video is already connected
+        if (previewVideo.srcObject) {
+          clearInterval(videoRequestInterval);
+          videoRequestInterval = null;
+          btnConnectVideo.textContent = '✓ Видео подключено';
+          btnConnectVideo.classList.add('active');
+          return;
+        }
+
+        videoRequestAttempts++;
+        if (videoRequestAttempts > MAX_VIDEO_RETRIES) {
+          clearInterval(videoRequestInterval);
+          videoRequestInterval = null;
+          btnConnectVideo.textContent = 'Подключить видео';
+          btnConnectVideo.disabled = false;
+          previewStatus.textContent = 'Студия не отвечает. Проверьте, открыта ли студия.';
+          return;
+        }
+
+        previewStatus.textContent = `Запрос видео... (${videoRequestAttempts}/${MAX_VIDEO_RETRIES})`;
+
+        if (producerPeer && !producerPeer.destroyed && producerPeer.open) {
+          console.log(`📹 Video request attempt ${videoRequestAttempts}/${MAX_VIDEO_RETRIES}`);
+          sendCommand('request-video', { producerPeerId: producerPeerId });
+        } else {
+          console.log('📹 Peer not ready, reinitializing...');
+          if (!producerPeer || producerPeer.destroyed) {
+            initProducerPeer();
+          }
+          pendingVideoRequest = true;
+        }
+      };
+
+      // First request immediately
+      tryRequestVideo();
+      // Then retry every 3 seconds
+      videoRequestInterval = setInterval(tryRequestVideo, 3000);
+    }
+
     // Request video from studio
     btnConnectVideo.addEventListener('click', () => {
       if (!sessionCode) {
@@ -2134,32 +2183,8 @@
 
       btnConnectVideo.textContent = 'Подключение...';
       btnConnectVideo.disabled = true;
-      previewStatus.textContent = 'Запрос видео...';
 
-      // Check if peer is already open and ready
-      if (producerPeer && !producerPeer.destroyed && producerPeer.open) {
-        // Peer is ready - send request immediately
-        console.log('📹 Peer already open, sending video request immediately');
-        sendCommand('request-video', { producerPeerId: producerPeerId });
-      } else {
-        // Peer not ready - set pending flag and initialize
-        console.log('📹 Peer not ready, setting pending request flag');
-        pendingVideoRequest = true;
-        if (!producerPeer || producerPeer.destroyed) {
-          initProducerPeer();
-        }
-        // Request will be sent from on('open') handler
-      }
-
-      // Timeout
-      setTimeout(() => {
-        if (!previewVideo.srcObject) {
-          btnConnectVideo.textContent = 'Подключить видео';
-          btnConnectVideo.disabled = false;
-          previewStatus.textContent = 'Нет ответа от студии. Попробуйте снова.';
-          pendingVideoRequest = false;
-        }
-      }, 15000); // Increased to 15s to allow for peer init
+      startVideoRequest();
     });
 
     // Initialize when supabase is ready
