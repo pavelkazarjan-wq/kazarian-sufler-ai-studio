@@ -450,6 +450,25 @@
     }
     body.broadcast-mode .split-view video {
       border-radius: 0 !important;
+      object-fit: contain !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    body.broadcast-mode .split-left video {
+      object-fit: cover !important;
+    }
+    body.broadcast-mode .split-right video,
+    body.broadcast-mode .split-third video {
+      object-fit: contain !important;
+    }
+    /* Maintain 16:9 aspect ratio in broadcast mode */
+    body.broadcast-mode .split-left,
+    body.broadcast-mode .split-right,
+    body.broadcast-mode .split-third {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      overflow: hidden !important;
     }
     body.broadcast-mode .pip-view {
       display: block !important;
