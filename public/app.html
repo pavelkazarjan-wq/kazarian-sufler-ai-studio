@@ -8491,11 +8491,10 @@
           params.encodings = [{}];
         }
 
-        // Set high bitrate parameters to prevent downscaling
-        // Note: minBitrate is not standard, but maxBitrate and scaleResolutionDownBy are
-        params.encodings[0].maxBitrate = 5000000; // 5 Mbps max
-        params.encodings[0].maxFramerate = 30;
-        params.encodings[0].scaleResolutionDownBy = 1.0; // Don't scale down!
+        // Set moderate bitrate for smooth preview (2 Mbps is enough for monitoring)
+        params.encodings[0].maxBitrate = 2000000; // 2 Mbps max (reduced from 5 for smoother playback)
+        params.encodings[0].maxFramerate = 24; // 24fps is enough for preview
+        params.encodings[0].scaleResolutionDownBy = 1.0; // Don't scale down
 
         // Set priority to high for better quality
         params.encodings[0].priority = 'high';
