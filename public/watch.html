@@ -1253,7 +1253,12 @@
     if (window.supabaseReady) {
       initChatWhenReady();
     } else {
-      window.onSupabaseReady = initChatWhenReady;
+      // Chain with existing callback (don't overwrite!)
+      const existingChatCallback = window.onSupabaseReady;
+      window.onSupabaseReady = () => {
+        initChatWhenReady();
+        if (existingChatCallback) existingChatCallback();
+      };
     }
 
     if (sessionCode && viewerName) {
