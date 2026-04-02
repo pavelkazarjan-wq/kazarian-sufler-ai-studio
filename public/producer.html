@@ -1178,16 +1178,25 @@
       SUPABASE_URL = config.supabaseUrl;
       SUPABASE_ANON_KEY = config.supabaseAnonKey;
       supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('✅ Supabase initialized');
       return supabaseClient;
     }
 
-    // Auth guard - check if user is logged in
+    // Signal when supabase is ready
+    let supabaseReady = false;
+    let onSupabaseReady = null;
+
+    // Auth guard - check if user is logged in (waits for config)
     (async () => {
+      await loadConfig();
+      supabaseReady = true;
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) {
         window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.href);
         return;
       }
+      // Signal ready
+      if (onSupabaseReady) onSupabaseReady();
     })();
 
     // Get session code from URL or generate new
@@ -2143,14 +2152,22 @@
       }, 15000); // Increased to 15s to allow for peer init
     });
 
-    // Initialize
-    setupRemoteConnection();
-    const pingInterval = setInterval(pingStudio, 10000);
-
-    // Auto-init peer
-    if (sessionCode) {
-      setTimeout(initProducerPeer, 1000);
+    // Initialize when supabase is ready
+    function initWhenReady() {
+      setupRemoteConnection();
+      // Auto-init peer
+      if (sessionCode) {
+        setTimeout(initProducerPeer, 1000);
+      }
     }
+
+    if (supabaseReady) {
+      initWhenReady();
+    } else {
+      onSupabaseReady = initWhenReady;
+    }
+
+    const pingInterval = setInterval(pingStudio, 10000);
 
     // Cleanup on page unload
     window.addEventListener('beforeunload', () => {

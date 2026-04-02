@@ -11513,8 +11513,13 @@
       };
 
       cinemaVideo.onerror = (err) => {
-        console.error('🎬 Video load error:', err);
-        alert('Error loading video file');
+        const error = cinemaVideo.error;
+        const errorMsg = error ? `Code ${error.code}: ${error.message || 'Unknown error'}` : 'Unknown error';
+        console.error('🎬 Video load error:', errorMsg, err);
+        // Don't show alert if video already loaded (metadata available)
+        if (!cinemaVideoLoaded) {
+          alert('Ошибка загрузки видео: ' + errorMsg);
+        }
       };
 
       // Reset file input for re-selection
