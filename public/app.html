@@ -12368,10 +12368,13 @@
 
     document.getElementById('btn-hide-guest2-plate').addEventListener('click', () => {
       if (guest2PlateTimeout) clearTimeout(guest2PlateTimeout);
-      guest2Plate.classList.add('hiding');
-      setTimeout(() => {
-        guest2Plate.classList.remove('active', 'hiding');
-      }, 500);
+      const guest2PlateEl = document.getElementById('guest-plate-2');
+      if (guest2PlateEl) {
+        guest2PlateEl.classList.add('hiding');
+        setTimeout(() => {
+          guest2PlateEl.classList.remove('active', 'hiding');
+        }, 500);
+      }
     });
 
     // Disconnect guest buttons
@@ -12980,15 +12983,44 @@
 
     // Hide all overlays
     document.getElementById('btn-hide-all-overlays').addEventListener('click', () => {
+      // Hide ticker
       ticker.classList.remove('active');
-      hostPlate.classList.remove('active', 'hiding');
-      guestPlate.classList.remove('active', 'hiding');
-      hideCta();
-      hideSplash();
       document.getElementById('ticker-toggle').classList.remove('active');
       overlayState.tickerEnabled = false;
+
+      // Hide host plate
+      hostPlate.classList.remove('active', 'hiding');
       if (hostPlateTimeout) clearTimeout(hostPlateTimeout);
+
+      // Hide guest 1 plate
+      guestPlate.classList.remove('active', 'hiding');
       if (guestPlateTimeout) clearTimeout(guestPlateTimeout);
+
+      // Hide guest 2 plate
+      const guest2PlateEl = document.getElementById('guest-plate-2');
+      if (guest2PlateEl) guest2PlateEl.classList.remove('active', 'hiding');
+      if (guest2PlateTimeout) clearTimeout(guest2PlateTimeout);
+
+      // Hide CTA and splash
+      hideCta();
+      hideSplash();
+
+      // Hide clock overlay
+      const clockOverlay = document.getElementById('clock-overlay');
+      if (clockOverlay) {
+        clockOverlay.classList.remove('active');
+        document.getElementById('clock-overlay-toggle')?.classList.remove('active');
+        overlayState.clockEnabled = false;
+      }
+
+      // Hide logo overlay
+      const logoOverlay = document.getElementById('logo-overlay');
+      if (logoOverlay) {
+        logoOverlay.classList.remove('active');
+        document.getElementById('logo-overlay-toggle')?.classList.remove('active');
+        overlayState.logoEnabled = false;
+      }
+
       saveOverlaySettings();
     });
 
