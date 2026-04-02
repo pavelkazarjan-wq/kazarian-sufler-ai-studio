@@ -1032,9 +1032,22 @@
       }
     });
 
-    // Start
-    if (sessionCode) {
-      initViewer();
+    // Start - wait for supabase to be ready
+    function initWhenReady() {
+      if (sessionCode) {
+        initViewer();
+      }
+    }
+
+    if (window.supabaseReady) {
+      initWhenReady();
+    } else {
+      // Chain with existing onSupabaseReady or set new one
+      const existingCallback = window.onSupabaseReady;
+      window.onSupabaseReady = () => {
+        initWhenReady();
+        if (existingCallback) existingCallback();
+      };
     }
 
     // Mobile tap to play

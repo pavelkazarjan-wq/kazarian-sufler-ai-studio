@@ -6402,8 +6402,21 @@
         });
 
         call.on('error', (err) => {
-          console.error('Viewer call error:', err);
+          console.error('Viewer call error:', err.type || err);
           connectedViewers.delete(viewerId);
+
+          // Retry on peer-unavailable (viewer peer not registered yet)
+          if (err.type === 'peer-unavailable') {
+            const retryKey = `_viewerRetry_${viewerId}`;
+            if (!window[retryKey]) {
+              window[retryKey] = 1;
+              console.log('👁️ Viewer not ready, retrying in 2s:', viewerId);
+              setTimeout(() => {
+                window[retryKey] = 0;
+                sendStreamToViewer(viewerId);
+              }, 2000);
+            }
+          }
         });
 
         console.log('📺 Sending stream to viewer:', viewerId);
