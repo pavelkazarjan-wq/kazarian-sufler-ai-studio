@@ -7275,11 +7275,11 @@
     function startProducerPreview() {
       if (producerPreviewRAF || producerPreviewInterval) return; // Already running
 
-      // Create canvas if not exists
+      // Create canvas if not exists - use lower resolution for better performance
       if (!producerPreviewCanvas) {
         producerPreviewCanvas = document.createElement('canvas');
-        producerPreviewCanvas.width = 1280;
-        producerPreviewCanvas.height = 720;
+        producerPreviewCanvas.width = 960;  // Reduced from 1280 for performance
+        producerPreviewCanvas.height = 540; // Reduced from 720 for performance
         producerPreviewCtx = producerPreviewCanvas.getContext('2d', {
           alpha: false, // No transparency for better performance
           desynchronized: true // Allow async rendering
@@ -7292,12 +7292,12 @@
 
       // Use requestAnimationFrame for smooth rendering
       let lastFrameTime = 0;
-      const targetFrameTime = 1000 / 30; // 30 FPS target
+      const targetFrameTime = 1000 / 20; // 20 FPS target (reduced from 30)
 
       function renderLoop(timestamp) {
         producerPreviewRAF = requestAnimationFrame(renderLoop);
 
-        // Throttle to ~30 FPS
+        // Throttle to ~20 FPS
         const elapsed = timestamp - lastFrameTime;
         if (elapsed < targetFrameTime) return;
         lastFrameTime = timestamp - (elapsed % targetFrameTime);
@@ -7316,8 +7316,8 @@
       }
       producerPreviewRAF = requestAnimationFrame(renderLoop);
 
-      // Create stream from canvas - use fixed 30fps for consistent encoding
-      producerPreviewStream = producerPreviewCanvas.captureStream(30);
+      // Create stream from canvas - use lower framerate for smoother streaming
+      producerPreviewStream = producerPreviewCanvas.captureStream(20);
 
       // Log canvas dimensions
       console.log('📺 Canvas dimensions:', producerPreviewCanvas.width, 'x', producerPreviewCanvas.height);
@@ -7328,11 +7328,11 @@
         const settings = videoTracks[0].getSettings();
         console.log('📺 Video track settings:', JSON.stringify(settings));
 
-        // Try to apply constraints for better quality
+        // Apply constraints matching our lower resolution
         videoTracks[0].applyConstraints({
-          width: { ideal: 1280, min: 1280 },
-          height: { ideal: 720, min: 720 },
-          frameRate: { ideal: 30, min: 24 }
+          width: { ideal: 960 },
+          height: { ideal: 540 },
+          frameRate: { ideal: 20, max: 20 }
         }).then(() => {
           console.log('📺 Constraints applied successfully');
           const newSettings = videoTracks[0].getSettings();
@@ -7721,15 +7721,24 @@
         const camX = camOnLeft ? 0 : halfW;
         const contentX = camOnLeft ? halfW : 0;
 
-        // Draw camera half
+        // Draw camera half - SQUARE with center crop + mirror
         const cvw = camVid.videoWidth || 1;
         const cvh = camVid.videoHeight || 1;
-        const camScale = Math.min(halfW / cvw, H / cvh);
-        const camDw = cvw * camScale;
-        const camDh = cvh * camScale;
-        const camDrawX = camX + (halfW - camDw) / 2;
-        const camDrawY = (H - camDh) / 2;
-        producerPreviewCtx.drawImage(camVid, camDrawX, camDrawY, camDw, camDh);
+        // Calculate square size to fit in half
+        const squareSize = Math.min(halfW * 0.95, H * 0.95);
+        // Crop source to square from center
+        const cropSize = Math.min(cvw, cvh);
+        const srcX = (cvw - cropSize) / 2;
+        const srcY = (cvh - cropSize) / 2;
+        // Position square in center of half
+        const camDrawX = camX + (halfW - squareSize) / 2;
+        const camDrawY = (H - squareSize) / 2;
+        // Mirror camera horizontally
+        producerPreviewCtx.save();
+        producerPreviewCtx.translate(camDrawX + squareSize, camDrawY);
+        producerPreviewCtx.scale(-1, 1);
+        producerPreviewCtx.drawImage(camVid, srcX, srcY, cropSize, cropSize, 0, 0, squareSize, squareSize);
+        producerPreviewCtx.restore();
 
         // Draw content half
         if (hasScreen) {
@@ -15089,15 +15098,21 @@ ${presentationText.slice(0, 8000)}
                   // Draw split view
                   const halfW = 640;
                   if (cameraStream && splitCamera.videoWidth > 0) {
-                    const squareSize = Math.min(halfW, 720);
+                    const squareSize = Math.min(halfW * 0.95, 720 * 0.95);
                     const camX = splitLayout === 'cam-right' ? halfW : 0;
                     const drawX = camX + (halfW - squareSize) / 2;
                     const drawY = (720 - squareSize) / 2;
+                    // Crop source to square from center
+                    const vw = splitCamera.videoWidth;
+                    const vh = splitCamera.videoHeight;
+                    const cropSize = Math.min(vw, vh);
+                    const srcX = (vw - cropSize) / 2;
+                    const srcY = (vh - cropSize) / 2;
                     // Mirror camera horizontally
                     tempCtx.save();
                     tempCtx.translate(drawX + squareSize, drawY);
                     tempCtx.scale(-1, 1);
-                    tempCtx.drawImage(splitCamera, 0, 0, squareSize, squareSize);
+                    tempCtx.drawImage(splitCamera, srcX, srcY, cropSize, cropSize, 0, 0, squareSize, squareSize);
                     tempCtx.restore();
                   }
                   // Draw slide/content on other side
