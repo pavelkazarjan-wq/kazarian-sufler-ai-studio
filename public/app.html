@@ -6469,11 +6469,35 @@
           retryViewerCall(viewerId);
         });
 
-        // Track successful connection
+        // Track successful connection and optimize encoding
         call.on('stream', () => {
           console.log('👁️ Viewer stream established:', viewerId);
           pendingViewerCalls.delete(viewerId);
         });
+
+        // Optimize encoding for viewers (lower bitrate = smoother playback)
+        setTimeout(() => {
+          try {
+            const senders = call.peerConnection?.getSenders();
+            if (senders) {
+              senders.forEach(sender => {
+                if (sender.track?.kind === 'video') {
+                  const params = sender.getParameters();
+                  if (!params.encodings) params.encodings = [{}];
+                  // Lower bitrate for viewers (1.5 Mbps max)
+                  params.encodings[0].maxBitrate = 1500000;
+                  params.encodings[0].maxFramerate = 24;
+                  params.encodings[0].scaleResolutionDownBy = 1.0;
+                  sender.setParameters(params).then(() => {
+                    console.log('👁️ Viewer encoding optimized:', viewerId);
+                  }).catch(e => console.warn('Could not optimize viewer encoding:', e));
+                }
+              });
+            }
+          } catch (e) {
+            console.warn('Viewer optimization error:', e);
+          }
+        }, 1000);
 
         console.log('📺 Sending stream to viewer:', viewerId);
         updateViewerCount();
