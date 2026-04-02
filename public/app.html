@@ -6257,9 +6257,35 @@
       studioPeer.on('error', (err) => {
         console.error('Studio peer error:', err.type, err.message || '');
 
-        // Handle peer-unavailable - producer not registered yet
+        // Handle peer-unavailable - extract peer ID from error message
         if (err.type === 'peer-unavailable') {
-          console.log('📹 Target peer not available - they may not be connected yet');
+          // PeerJS error message format: "Could not connect to peer <peerId>"
+          const match = err.message && err.message.match(/peer\s+(\S+)/i);
+          const failedPeerId = match ? match[1] : null;
+
+          console.log('📹 Target peer not available:', failedPeerId || 'unknown');
+
+          // If it's a viewer peer, retry the connection
+          if (failedPeerId && failedPeerId.startsWith('viewer-')) {
+            const retryKey = `_viewerRetry_${failedPeerId}`;
+            const retryCount = window[retryKey] || 0;
+            const MAX_VIEWER_RETRIES = 5;
+
+            if (retryCount < MAX_VIEWER_RETRIES) {
+              window[retryKey] = retryCount + 1;
+              const delay = 1500 * (retryCount + 1); // Exponential backoff
+              console.log(`👁️ Viewer ${failedPeerId} not ready, retry ${retryCount + 1}/${MAX_VIEWER_RETRIES} in ${delay}ms`);
+              setTimeout(() => {
+                sendStreamToViewer(failedPeerId);
+              }, delay);
+            } else {
+              console.warn(`👁️ Giving up on viewer ${failedPeerId} after ${MAX_VIEWER_RETRIES} retries`);
+              window[retryKey] = 0; // Reset for future attempts
+            }
+            return;
+          }
+
+          // For producer/other peers
           sendProducerResponse({ action: 'video-error', message: 'Продюсер ещё не подключен. Попробуйте снова.' });
           return;
         }
