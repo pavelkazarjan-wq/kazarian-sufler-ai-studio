@@ -2208,8 +2208,12 @@ ${input}
       });
     });
 
-    const regressionPrompts = {
-      men: `Ты — генератор мужских регрессий Павла Казарьяна.
+    // Function to get regression prompt with psychologist name from profile
+    function getRegressionPrompt(type) {
+      const psychologistName = document.getElementById('sidebar-name')?.textContent || 'психолога';
+
+      const prompts = {
+        men: `Ты — профессиональный генератор мужских регрессий для ${psychologistName}.
 
 МУЖСКАЯ ВЕТКА РЕГРЕССИИ
 Ключевая тема: Сила, ответственность, право быть, агрессия, действие, опора, отец, статус, границы
@@ -2223,7 +2227,7 @@ ${input}
 
 ЦЕЛЬ: вернуть право на силу, восстановить стержень`,
 
-      women: `Ты — генератор женских регрессий Павла Казарьяна.
+        women: `Ты — профессиональный генератор женских регрессий для ${psychologistName}.
 
 ЖЕНСКАЯ ВЕТКА РЕГРЕССИИ
 Ключевая тема: Ценность, принятие, любовь, тело, границы, материнство, сексуальность
@@ -2237,7 +2241,7 @@ ${input}
 
 ЦЕЛЬ: вернуть чувство ценности, разрешить желания`,
 
-      family: `Ты — генератор родовых регрессий Павла Казарьяна.
+        family: `Ты — профессиональный генератор родовых регрессий для ${psychologistName}.
 
 РОДОВАЯ ВЕТКА РЕГРЕССИИ
 Ключевая тема: Лояльность, чужая судьба, долг, запрет на счастье, повторение сценариев
@@ -2250,7 +2254,7 @@ ${input}
 
 ЦЕЛЬ: вернуть себе свою жизнь, снять чужую ответственность`,
 
-      body: `Ты — генератор телесных регрессий Павла Казарьяна.
+        body: `Ты — профессиональный генератор телесных регрессий для ${psychologistName}.
 
 ТЕЛЕСНАЯ ВЕТКА РЕГРЕССИИ
 Ключевая тема: Симптом, болезнь, боль, зажим, психосоматика
@@ -2263,7 +2267,7 @@ ${input}
 
 ЦЕЛЬ: освободить тело от чужой задачи`,
 
-      'past-lives': `Ты — генератор регрессий в прошлые жизни Павла Казарьяна.
+        'past-lives': `Ты — профессиональный генератор регрессий в прошлые жизни для ${psychologistName}.
 
 РЕГРЕССИЯ ПРОШЛЫХ ЖИЗНЕЙ
 Ключевая тема: Символическая память, архетипические роли, экзистенциальные сценарии
@@ -2278,7 +2282,10 @@ ${input}
 7. Возвращение
 
 ЦЕЛЬ: обнаружить старое решение, развязать сценарий`
-    };
+      };
+
+      return prompts[type] || prompts.men;
+    }
 
     async function generateRegression() {
       // Rate limiting
@@ -2310,7 +2317,7 @@ ${input}
       loading.classList.add('visible');
       result.classList.remove('visible');
 
-      const systemPrompt = regressionPrompts[selectedRegressionType] || regressionPrompts.men;
+      const systemPrompt = getRegressionPrompt(selectedRegressionType);
 
       const prompt = `${systemPrompt}
 
