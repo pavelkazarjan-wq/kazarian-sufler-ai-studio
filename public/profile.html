@@ -1601,9 +1601,9 @@
         <div class="page-header">
           <h1 class="page-title">Календарь сессий</h1>
           <div class="header-actions">
-            <button class="btn btn-secondary" onclick="connectGoogleCalendar()" id="google-cal-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
-              <span class="btn-text">Google</span>
+            <button class="btn btn-secondary" onclick="toggleTodoist()" id="todoist-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <span class="btn-text">Todoist</span>
             </button>
             <button class="btn btn-ai" onclick="startVoiceInput()" id="voice-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
@@ -3343,7 +3343,6 @@ ${input}
 
     // ============ CALENDAR FUNCTIONALITY ============
     const SESSIONS_KEY = 'psychologist_sessions';
-    const GOOGLE_CAL_KEY = 'google_calendar_connected';
 
     let currentCalendarDate = new Date();
     let selectedCalendarDate = new Date();
@@ -3616,10 +3615,8 @@ ${input}
       renderCalendar();
       closeSessionModal();
 
-      // Sync to Google Calendar if connected
-      if (localStorage.getItem(GOOGLE_CAL_KEY) === 'true') {
-        syncToGoogleCalendar(sessionData);
-      }
+      // Sync to Todoist if enabled
+      syncToTodoist(sessionData);
     }
 
     function editSession(id) {
@@ -3632,9 +3629,9 @@ ${input}
       const sessions = getSessions();
       const session = sessions.find(s => s.id === id);
 
-      // Delete from Google Calendar if connected
-      if (session?.googleEventId) {
-        deleteFromGoogleCalendar(session.googleEventId);
+      // Delete from Todoist if synced
+      if (session?.todoistTaskId) {
+        deleteFromTodoist(session.todoistTaskId);
       }
 
       const filteredSessions = sessions.filter(s => s.id !== id);
@@ -3643,81 +3640,67 @@ ${input}
       showToast('Сессия удалена');
     }
 
-    // Google Calendar Integration
-    const GCAL_TOKENS_KEY = 'google_calendar_tokens';
+    // Todoist Integration
+    const TODOIST_ENABLED_KEY = 'todoist_enabled';
+    let todoistConnected = false;
 
-    function getGoogleCalendarTokens() {
+    async function checkTodoistConnection() {
       try {
-        return JSON.parse(localStorage.getItem(GCAL_TOKENS_KEY));
-      } catch (e) {
-        return null;
-      }
-    }
-
-    function saveGoogleCalendarTokens(tokens) {
-      localStorage.setItem(GCAL_TOKENS_KEY, JSON.stringify(tokens));
-      localStorage.setItem(GOOGLE_CAL_KEY, 'true');
-    }
-
-    function clearGoogleCalendarTokens() {
-      localStorage.removeItem(GCAL_TOKENS_KEY);
-      localStorage.removeItem(GOOGLE_CAL_KEY);
-    }
-
-    async function connectGoogleCalendar() {
-      const tokens = getGoogleCalendarTokens();
-
-      if (tokens) {
-        // Already connected - ask to disconnect
-        if (confirm(`Google Calendar подключён (${tokens.email || 'аккаунт'}).\n\nОтключить?`)) {
-          clearGoogleCalendarTokens();
-          document.getElementById('google-cal-btn').classList.remove('google-connected');
-          document.getElementById('google-cal-btn').querySelector('.btn-text').textContent = 'Google';
-          showToast('Google Calendar отключён');
-        }
-        return;
-      }
-
-      // Start OAuth flow
-      try {
-        const userId = currentUser?.id || 'default';
-        const response = await fetch(`/.netlify/functions/google-calendar-auth?user_id=${userId}`);
-
-        if (!response.ok) {
-          const error = await response.json();
-          if (error.message?.includes('not configured')) {
-            showToast('Google Calendar ещё не настроен администратором', true);
-            return;
-          }
-          throw new Error(error.error || 'Auth failed');
-        }
+        const response = await fetch('/.netlify/functions/todoist-sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'check' })
+        });
 
         const data = await response.json();
+        todoistConnected = data.success && data.connected;
 
-        if (data.authUrl) {
-          // Redirect to Google OAuth
-          window.location.href = data.authUrl;
+        if (todoistConnected) {
+          localStorage.setItem(TODOIST_ENABLED_KEY, 'true');
+          document.getElementById('todoist-btn').classList.add('google-connected');
+          document.getElementById('todoist-btn').querySelector('.btn-text').textContent = 'Todoist ✓';
         }
 
+        return todoistConnected;
       } catch (err) {
-        console.error('Google Calendar auth error:', err);
-        showToast('Ошибка подключения Google Calendar', true);
+        console.error('Todoist check error:', err);
+        return false;
       }
     }
 
-    async function syncToGoogleCalendar(session) {
-      const tokens = getGoogleCalendarTokens();
-      if (!tokens?.access_token) return;
+    async function toggleTodoist() {
+      const isEnabled = localStorage.getItem(TODOIST_ENABLED_KEY) === 'true';
+
+      if (isEnabled) {
+        // Disable sync
+        localStorage.removeItem(TODOIST_ENABLED_KEY);
+        document.getElementById('todoist-btn').classList.remove('google-connected');
+        document.getElementById('todoist-btn').querySelector('.btn-text').textContent = 'Todoist';
+        showToast('Синхронизация с Todoist отключена');
+        todoistConnected = false;
+      } else {
+        // Check connection and enable
+        showToast('Проверяю подключение к Todoist...');
+        const connected = await checkTodoistConnection();
+
+        if (connected) {
+          showToast('Todoist подключён! Сессии будут синхронизироваться.');
+        } else {
+          showToast('Todoist не настроен. Обратитесь к администратору.', true);
+        }
+      }
+    }
+
+    async function syncToTodoist(session) {
+      if (localStorage.getItem(TODOIST_ENABLED_KEY) !== 'true') return;
 
       try {
-        const response = await fetch('/.netlify/functions/google-calendar-sync', {
+        const response = await fetch('/.netlify/functions/todoist-sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'create',
-            session: session,
-            accessToken: tokens.access_token,
-            refreshToken: tokens.refresh_token
+            session: session
           })
         });
 
@@ -3728,80 +3711,37 @@ ${input}
 
         const data = await response.json();
 
-        // Update tokens if refreshed
-        if (data.newAccessToken) {
-          tokens.access_token = data.newAccessToken;
-          saveGoogleCalendarTokens(tokens);
-        }
-
-        // Save Google event ID with session
-        if (data.eventId) {
+        // Save Todoist task ID with session
+        if (data.taskId) {
           const sessions = getSessions();
           const idx = sessions.findIndex(s => s.id === session.id);
           if (idx !== -1) {
-            sessions[idx].googleEventId = data.eventId;
+            sessions[idx].todoistTaskId = data.taskId;
             saveSessionsToStorage(sessions);
           }
         }
 
-        console.log('Synced to Google Calendar:', data.eventId);
+        console.log('Synced to Todoist:', data.taskId);
 
       } catch (err) {
-        console.error('Google Calendar sync error:', err);
-        // Don't show error to user - silent sync
+        console.error('Todoist sync error:', err);
       }
     }
 
-    async function deleteFromGoogleCalendar(googleEventId) {
-      const tokens = getGoogleCalendarTokens();
-      if (!tokens?.access_token || !googleEventId) return;
+    async function deleteFromTodoist(taskId) {
+      if (!taskId) return;
 
       try {
-        await fetch('/.netlify/functions/google-calendar-sync', {
+        await fetch('/.netlify/functions/todoist-sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'delete',
-            eventId: googleEventId,
-            accessToken: tokens.access_token,
-            refreshToken: tokens.refresh_token
+            taskId: taskId
           })
         });
       } catch (err) {
-        console.error('Google Calendar delete error:', err);
-      }
-    }
-
-    function checkGoogleCalendarStatus() {
-      // Check URL for OAuth callback tokens
-      const urlParams = new URLSearchParams(window.location.search);
-      const encodedTokens = urlParams.get('gcal_tokens');
-      const gcalError = urlParams.get('gcal_error');
-
-      if (encodedTokens) {
-        try {
-          const tokens = JSON.parse(atob(decodeURIComponent(encodedTokens)));
-          saveGoogleCalendarTokens(tokens);
-          showToast(`Google Calendar подключён! (${tokens.email || ''})`);
-
-          // Clean URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-        } catch (e) {
-          console.error('Failed to parse tokens:', e);
-        }
-      }
-
-      if (gcalError) {
-        showToast('Ошибка подключения Google Calendar: ' + gcalError, true);
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-
-      // Update button state
-      const tokens = getGoogleCalendarTokens();
-      if (tokens) {
-        document.getElementById('google-cal-btn').classList.add('google-connected');
-        const email = tokens.email ? ` (${tokens.email.split('@')[0]})` : '';
-        document.getElementById('google-cal-btn').querySelector('.btn-text').textContent = 'Google' + email;
+        console.error('Todoist delete error:', err);
       }
     }
 
@@ -3814,7 +3754,7 @@ ${input}
 
     // Initialize calendar
     renderCalendar();
-    checkGoogleCalendarStatus();
+    checkTodoistConnection();
     // ============ END CALENDAR ============
 
     // ============ VOICE INPUT FOR CALENDAR ============
