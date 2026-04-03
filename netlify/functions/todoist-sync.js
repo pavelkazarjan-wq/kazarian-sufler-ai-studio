@@ -1,6 +1,6 @@
 // Todoist API Integration for Calendar Sessions
+// Per-user API keys - each user provides their own Todoist API key
 
-const TODOIST_API_KEY = process.env.TODOIST_API_KEY;
 const TODOIST_API_URL = 'https://api.todoist.com/rest/v2';
 
 const ALLOWED_ORIGINS = [
@@ -30,17 +30,20 @@ exports.handler = async (event, context) => {
     };
   }
 
-  if (!TODOIST_API_KEY) {
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: 'Todoist API key not configured' })
-    };
-  }
-
   try {
     const body = JSON.parse(event.body);
-    const { action, session, taskId } = body;
+    const { action, session, taskId, apiKey } = body;
+
+    // API key must be provided by the user
+    if (!apiKey) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'API key required', needsSetup: true })
+      };
+    }
+
+    const TODOIST_API_KEY = apiKey;
 
     const sessionTypeLabels = {
       primary: 'Первичная',

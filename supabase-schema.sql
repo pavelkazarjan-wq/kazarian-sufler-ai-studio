@@ -202,3 +202,11 @@ BEGIN
         BETWEEN NOW() AND NOW() + (minutes_before || ' minutes')::interval;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- =============================================
+-- 15. Todoist Integration
+-- =============================================
+
+-- Add todoist API key to profiles for task sync
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS todoist_api_key TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS todoist_enabled BOOLEAN DEFAULT false;
