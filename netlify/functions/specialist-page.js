@@ -173,6 +173,7 @@ exports.handler = async (event, context) => {
         image: site.profiles.photo_url
       },
       legal: {
+        offer: getLocalizedField('offer'),
         privacy_policy: getLocalizedField('privacy_policy'),
         disclaimer: getLocalizedField('disclaimer')
       },
