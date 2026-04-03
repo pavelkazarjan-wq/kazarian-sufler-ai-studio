@@ -4370,12 +4370,108 @@ ${input}
       training: 'Тренинг'
     };
 
+    // Sessions cache
+    let sessionsCache = null;
+
+    // Get sessions (sync, uses cache)
     function getSessions() {
+      if (sessionsCache !== null) return sessionsCache;
       try {
         return JSON.parse(localStorage.getItem(SESSIONS_KEY)) || [];
       } catch (e) {
         return [];
       }
+    }
+
+    // Load sessions from Supabase and update cache
+    async function loadSessionsFromSupabase() {
+      if (!currentUser) return;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('calendar_sessions')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .order('session_date', { ascending: true });
+
+        if (error) throw error;
+
+        // Transform to local format
+        sessionsCache = (data || []).map(s => ({
+          id: s.id,
+          date: s.session_date,
+          time: s.session_time,
+          client: s.client_name,
+          type: s.session_type,
+          duration: s.duration,
+          notes: s.notes,
+          todoistTaskId: s.todoist_task_id,
+          createdAt: s.created_at
+        }));
+
+        // Also save to localStorage as backup
+        saveSessionsToStorage(sessionsCache);
+        renderCalendar();
+      } catch (e) {
+        console.error('Error loading sessions from Supabase:', e);
+      }
+    }
+
+    // Save session to Supabase
+    async function saveSessionToSupabase(sessionData) {
+      if (!currentUser) return null;
+
+      const supabaseData = {
+        user_id: currentUser.id,
+        client_name: sessionData.client,
+        session_type: sessionData.type,
+        session_date: sessionData.date,
+        session_time: sessionData.time,
+        duration: sessionData.duration,
+        notes: sessionData.notes,
+        todoist_task_id: sessionData.todoistTaskId || null
+      };
+
+      // Check if this is an update (UUID) or new session
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionData.id);
+
+      if (isUUID) {
+        // Update existing
+        const { data, error } = await supabaseClient
+          .from('calendar_sessions')
+          .update(supabaseData)
+          .eq('id', sessionData.id)
+          .eq('user_id', currentUser.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return data?.id;
+      } else {
+        // Insert new
+        const { data, error } = await supabaseClient
+          .from('calendar_sessions')
+          .insert(supabaseData)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return data?.id;
+      }
+    }
+
+    // Delete session from Supabase
+    async function deleteSessionFromSupabase(sessionId) {
+      if (!currentUser) return;
+
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId);
+      if (!isUUID) return;
+
+      await supabaseClient
+        .from('calendar_sessions')
+        .delete()
+        .eq('id', sessionId)
+        .eq('user_id', currentUser.id);
     }
 
     function saveSessionsToStorage(sessions) {
@@ -4717,7 +4813,7 @@ ${input}
       document.getElementById('session-modal').classList.remove('visible');
     }
 
-    function saveSession() {
+    async function saveSession() {
       const date = document.getElementById('session-date').value;
       const time = document.getElementById('session-time').value;
       const client = sanitizeInput(document.getElementById('session-client').value);
@@ -4730,7 +4826,6 @@ ${input}
         return;
       }
 
-      const sessions = getSessions();
       const editId = document.getElementById('session-edit-id').value;
 
       const sessionData = {
@@ -4744,16 +4839,31 @@ ${input}
         createdAt: new Date().toISOString()
       };
 
-      if (editId) {
-        const idx = sessions.findIndex(s => s.id === editId);
-        if (idx !== -1) sessions[idx] = sessionData;
-        showToast('Сессия обновлена');
-      } else {
-        sessions.push(sessionData);
-        showToast('Сессия добавлена');
+      try {
+        // Save to Supabase and get the real ID
+        const supabaseId = await saveSessionToSupabase(sessionData);
+        if (supabaseId) {
+          sessionData.id = supabaseId;
+        }
+
+        // Update cache and localStorage
+        const sessions = getSessions();
+        if (editId) {
+          const idx = sessions.findIndex(s => s.id === editId || s.id === supabaseId);
+          if (idx !== -1) sessions[idx] = sessionData;
+          showToast('Сессия обновлена');
+        } else {
+          sessions.push(sessionData);
+          showToast('Сессия добавлена');
+        }
+        sessionsCache = sessions;
+        saveSessionsToStorage(sessions);
+
+      } catch (e) {
+        console.error('Error saving session:', e);
+        showToast('Ошибка сохранения', true);
       }
 
-      saveSessionsToStorage(sessions);
       renderCalendar();
       closeSessionModal();
 
@@ -4765,7 +4875,7 @@ ${input}
       openSessionModal(id);
     }
 
-    function deleteSession(id) {
+    async function deleteSession(id) {
       if (!confirm('Удалить эту сессию?')) return;
 
       const sessions = getSessions();
@@ -4776,7 +4886,12 @@ ${input}
         deleteFromTodoist(session.todoistTaskId);
       }
 
+      // Delete from Supabase
+      await deleteSessionFromSupabase(id);
+
+      // Update cache
       const filteredSessions = sessions.filter(s => s.id !== id);
+      sessionsCache = filteredSessions;
       saveSessionsToStorage(filteredSessions);
       renderCalendar();
       showToast('Сессия удалена');
@@ -5267,6 +5382,7 @@ ${input}
 
     // Initialize calendar
     renderCalendar();
+    loadSessionsFromSupabase(); // Load sessions from Supabase and update calendar
     checkTodoistConnection();
     checkTelegramConnection();
     // ============ END CALENDAR ============

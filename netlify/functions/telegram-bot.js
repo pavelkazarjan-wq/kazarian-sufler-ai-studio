@@ -51,7 +51,7 @@ exports.handler = async (event, context) => {
         return sendReminder(botToken, chatId, message, headers);
 
       case 'send-reminders':
-        return sendAllReminders(headers);
+        return sendAllReminders(body.reminderType || '1h', headers);
 
       case 'test-message':
         return testMessage(botToken, chatId, headers);
@@ -304,12 +304,13 @@ async function testMessage(botToken, chatId, headers) {
 }
 
 // Send all pending reminders (called by scheduler)
-async function sendAllReminders(headers) {
+// reminderType: '12h' for 12 hours before, '1h' for 1 hour before
+async function sendAllReminders(reminderType, headers) {
   const supabase = createSupabaseClient();
 
   // Get sessions needing reminders using the function
   const { data: sessions, error } = await supabase.rpc('get_calendar_reminders', {
-    minutes_before: 60
+    reminder_type: reminderType
   });
 
   if (error) {
@@ -317,7 +318,7 @@ async function sendAllReminders(headers) {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message })
+      body: JSON.stringify({ error: error.message, reminderType })
     };
   }
 
@@ -325,7 +326,7 @@ async function sendAllReminders(headers) {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ sent: 0 })
+      body: JSON.stringify({ sent: 0, reminderType })
     };
   }
 
@@ -337,19 +338,29 @@ async function sendAllReminders(headers) {
     training: 'Тренинг'
   };
 
+  const timeText = reminderType === '12h' ? '12 часов' : 'час';
+
   let sent = 0;
   for (const session of sessions) {
-    const time = new Date(session.session_datetime).toLocaleTimeString('ru-RU', {
+    const sessionDate = new Date(session.session_datetime);
+    const dateStr = sessionDate.toLocaleDateString('ru-RU', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long'
+    });
+    const timeStr = sessionDate.toLocaleTimeString('ru-RU', {
       hour: '2-digit',
       minute: '2-digit'
     });
 
+    const emoji = reminderType === '12h' ? '📅' : '⏰';
     const message =
-      `Напоминание о сессии\n\n` +
-      `Клиент: ${session.client_name || 'Не указан'}\n` +
-      `Тип: ${sessionTypes[session.session_type] || 'Сессия'}\n` +
-      `Время: ${time}\n\n` +
-      `Сессия начнётся через час!`;
+      `${emoji} <b>Напоминание о сессии</b>\n\n` +
+      `👤 Клиент: ${session.client_name || 'Не указан'}\n` +
+      `📋 Тип: ${sessionTypes[session.session_type] || 'Сессия'}\n` +
+      `📆 Дата: ${dateStr}\n` +
+      `🕐 Время: ${timeStr}\n\n` +
+      `Сессия начнётся через ${timeText}!`;
 
     const result = await sendTelegramMessage(
       session.telegram_bot_token,
@@ -358,10 +369,11 @@ async function sendAllReminders(headers) {
     );
 
     if (result) {
-      // Mark reminder as sent
+      // Mark correct reminder as sent
+      const updateField = reminderType === '12h' ? 'reminder_12h_sent' : 'reminder_1h_sent';
       await supabase
         .from('calendar_sessions')
-        .update({ reminder_sent: true })
+        .update({ [updateField]: true })
         .eq('id', session.session_id);
       sent++;
     }
@@ -370,7 +382,7 @@ async function sendAllReminders(headers) {
   return {
     statusCode: 200,
     headers,
-    body: JSON.stringify({ sent })
+    body: JSON.stringify({ sent, reminderType })
   };
 }
 

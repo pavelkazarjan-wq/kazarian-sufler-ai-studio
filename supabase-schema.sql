@@ -146,10 +146,15 @@ CREATE TABLE IF NOT EXISTS calendar_sessions (
   duration INTEGER DEFAULT 60,
   notes TEXT,
   todoist_task_id TEXT,
-  reminder_sent BOOLEAN DEFAULT false,
+  reminder_12h_sent BOOLEAN DEFAULT false,
+  reminder_1h_sent BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Migration: Add new reminder columns if table exists
+ALTER TABLE calendar_sessions ADD COLUMN IF NOT EXISTS reminder_12h_sent BOOLEAN DEFAULT false;
+ALTER TABLE calendar_sessions ADD COLUMN IF NOT EXISTS reminder_1h_sent BOOLEAN DEFAULT false;
 
 -- RLS for calendar_sessions
 ALTER TABLE calendar_sessions ENABLE ROW LEVEL SECURITY;
@@ -169,7 +174,8 @@ CREATE TRIGGER update_calendar_sessions_updated_at
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- 14. Function to get upcoming calendar sessions for reminders
-CREATE OR REPLACE FUNCTION get_calendar_reminders(minutes_before INTEGER DEFAULT 60)
+-- reminder_type: '12h' for 12 hours before, '1h' for 1 hour before
+CREATE OR REPLACE FUNCTION get_calendar_reminders(reminder_type TEXT DEFAULT '1h')
 RETURNS TABLE (
   session_id UUID,
   user_id UUID,
@@ -180,7 +186,19 @@ RETURNS TABLE (
   telegram_bot_token TEXT,
   notifications_enabled BOOLEAN
 ) AS $$
+DECLARE
+  time_window_start INTERVAL;
+  time_window_end INTERVAL;
 BEGIN
+  -- Set time windows based on reminder type
+  IF reminder_type = '12h' THEN
+    time_window_start := INTERVAL '11 hours 30 minutes';
+    time_window_end := INTERVAL '12 hours 30 minutes';
+  ELSE
+    time_window_start := INTERVAL '30 minutes';
+    time_window_end := INTERVAL '1 hour 30 minutes';
+  END IF;
+
   RETURN QUERY
   SELECT
     cs.id as session_id,
@@ -194,12 +212,16 @@ BEGIN
   FROM calendar_sessions cs
   JOIN profiles p ON cs.user_id = p.id
   WHERE
-    cs.reminder_sent = false
+    -- Check correct reminder flag based on type
+    CASE
+      WHEN reminder_type = '12h' THEN cs.reminder_12h_sent = false
+      ELSE cs.reminder_1h_sent = false
+    END
     AND p.telegram_chat_id IS NOT NULL
     AND p.telegram_bot_token IS NOT NULL
     AND p.telegram_notifications_enabled = true
     AND (cs.session_date + cs.session_time)::timestamp with time zone
-        BETWEEN NOW() AND NOW() + (minutes_before || ' minutes')::interval;
+        BETWEEN NOW() + time_window_start AND NOW() + time_window_end;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
