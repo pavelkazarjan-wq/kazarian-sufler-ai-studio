@@ -119,7 +119,7 @@ exports.handler = async (event, context) => {
       specialist: {
         name: site.profiles.full_name,
         title: site.profiles.title,
-        photo: site.profiles.photo_url,
+        photo: site.site_photo_url || site.profiles.photo_url,
         headline: getLocalizedField('headline'),
         bio: getLocalizedField('bio'),
         specializations: site.specializations || [],

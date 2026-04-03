@@ -2717,6 +2717,38 @@
           </div>
         </div>
 
+        <!-- Site Photo -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Фото для сайта
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+            Загрузите качественное фото для публичной страницы. Рекомендуемый размер: 800x1000 px (портрет).
+          </p>
+          <div style="display: flex; gap: 20px; align-items: flex-start;">
+            <div id="site-photo-preview" style="width: 200px; height: 250px; background: #1e293b; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #334155;">
+              <span style="color: #64748b; font-size: 13px; text-align: center; padding: 20px;">Фото не загружено</span>
+            </div>
+            <div style="flex: 1;">
+              <input type="file" id="site-photo-input" accept="image/*" style="display: none;" onchange="uploadSitePhoto(this)">
+              <button class="btn btn-secondary" onclick="document.getElementById('site-photo-input').click()" style="width: 100%; margin-bottom: 12px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Загрузить фото
+              </button>
+              <button class="btn btn-secondary" onclick="removeSitePhoto()" style="width: 100%; color: #ef4444;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Удалить
+              </button>
+              <p style="font-size: 12px; color: #64748b; margin-top: 12px;">
+                Форматы: JPG, PNG. Максимум: 5 MB
+              </p>
+            </div>
+          </div>
+        </div>
+
         <!-- Basic Info -->
         <div class="card">
           <div class="card-header">
@@ -2798,6 +2830,71 @@
           <div class="form-group">
             <label>Название видео</label>
             <input type="text" id="site-video-title" placeholder="Приветственное видео">
+          </div>
+        </div>
+
+        <!-- Legal Documents -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Юридические документы
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">
+            Эти тексты будут показаны во всплывающих окнах при клике на ссылки в футере сайта.
+          </p>
+
+          <!-- Legal Language tabs -->
+          <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+            <button class="btn btn-secondary legal-lang-tab active" data-lang="uk">UA</button>
+            <button class="btn btn-secondary legal-lang-tab" data-lang="ru">RU</button>
+            <button class="btn btn-secondary legal-lang-tab" data-lang="en">EN</button>
+          </div>
+
+          <div class="legal-lang-content" data-lang="uk">
+            <div class="form-group">
+              <label>Договір оферти (укр)</label>
+              <textarea id="site-offer-uk" rows="6" placeholder="Текст договору оферти..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Політика конфіденційності (укр)</label>
+              <textarea id="site-privacy-uk" rows="6" placeholder="Текст політики конфіденційності..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Відмова від відповідальності (укр)</label>
+              <textarea id="site-disclaimer-uk" rows="6" placeholder="Текст відмови від відповідальності..."></textarea>
+            </div>
+          </div>
+
+          <div class="legal-lang-content" data-lang="ru" style="display: none;">
+            <div class="form-group">
+              <label>Договор оферты (рус)</label>
+              <textarea id="site-offer-ru" rows="6" placeholder="Текст договора оферты..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Политика конфиденциальности (рус)</label>
+              <textarea id="site-privacy-ru" rows="6" placeholder="Текст политики конфиденциальности..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Отказ от ответственности (рус)</label>
+              <textarea id="site-disclaimer-ru" rows="6" placeholder="Текст отказа от ответственности..."></textarea>
+            </div>
+          </div>
+
+          <div class="legal-lang-content" data-lang="en" style="display: none;">
+            <div class="form-group">
+              <label>Terms of Service (eng)</label>
+              <textarea id="site-offer-en" rows="6" placeholder="Terms of service text..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Privacy Policy (eng)</label>
+              <textarea id="site-privacy-en" rows="6" placeholder="Privacy policy text..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Disclaimer (eng)</label>
+              <textarea id="site-disclaimer-en" rows="6" placeholder="Disclaimer text..."></textarea>
+            </div>
           </div>
         </div>
 
@@ -6498,6 +6595,7 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
     // ============ MY SITE SECTION ============
     let siteData = null;
     let siteServices = [];
+    let sitePhotoUrl = null;
 
     // Language tabs for site editor
     document.querySelectorAll('.site-lang-tab').forEach(tab => {
@@ -6510,6 +6608,73 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
         });
       });
     });
+
+    // Legal tabs
+    document.querySelectorAll('.legal-lang-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const lang = tab.dataset.lang;
+        document.querySelectorAll('.legal-lang-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.legal-lang-content').forEach(c => {
+          c.style.display = c.dataset.lang === lang ? 'block' : 'none';
+        });
+      });
+    });
+
+    // Site photo functions
+    async function uploadSitePhoto(input) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Файл слишком большой (макс. 5 MB)', true);
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        showToast('Выберите изображение', true);
+        return;
+      }
+
+      try {
+        showToast('Загрузка...');
+        const fileName = `site-photo-${Date.now()}.${file.name.split('.').pop()}`;
+        const filePath = `${currentUser.id}/${fileName}`;
+
+        const { data, error } = await supabaseClient.storage
+          .from('avatars')
+          .upload(filePath, file, { upsert: true });
+
+        if (error) throw error;
+
+        const { data: urlData } = supabaseClient.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+
+        sitePhotoUrl = urlData.publicUrl + '?t=' + Date.now();
+        updateSitePhotoPreview(sitePhotoUrl);
+        showToast('Фото загружено!');
+      } catch (e) {
+        console.error('Upload error:', e);
+        showToast('Ошибка загрузки: ' + e.message, true);
+      }
+    }
+
+    function updateSitePhotoPreview(url) {
+      const preview = document.getElementById('site-photo-preview');
+      if (url) {
+        preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;">`;
+        sitePhotoUrl = url;
+      } else {
+        preview.innerHTML = '<span style="color: #64748b; font-size: 13px; text-align: center; padding: 20px;">Фото не загружено</span>';
+        sitePhotoUrl = null;
+      }
+    }
+
+    function removeSitePhoto() {
+      updateSitePhotoPreview(null);
+      showToast('Фото удалено');
+    }
 
     // Theme selection
     document.querySelectorAll('.theme-option input').forEach(input => {
@@ -6593,6 +6758,22 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       document.getElementById('site-booking-enabled').checked = data.booking_enabled !== false;
       document.getElementById('site-payment-required').checked = data.payment_required || false;
 
+      // Legal documents
+      document.getElementById('site-offer-uk').value = data.offer_uk || '';
+      document.getElementById('site-offer-ru').value = data.offer_ru || '';
+      document.getElementById('site-offer-en').value = data.offer_en || '';
+      document.getElementById('site-privacy-uk').value = data.privacy_policy_uk || '';
+      document.getElementById('site-privacy-ru').value = data.privacy_policy_ru || '';
+      document.getElementById('site-privacy-en').value = data.privacy_policy_en || '';
+      document.getElementById('site-disclaimer-uk').value = data.disclaimer_uk || '';
+      document.getElementById('site-disclaimer-ru').value = data.disclaimer_ru || '';
+      document.getElementById('site-disclaimer-en').value = data.disclaimer_en || '';
+
+      // Site photo
+      if (data.site_photo_url) {
+        updateSitePhotoPreview(data.site_photo_url);
+      }
+
       // Update preview link
       if (data.slug && data.is_published) {
         const previewLink = document.getElementById('site-preview-link');
@@ -6650,7 +6831,21 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
         show_email: document.getElementById('site-show-email').checked,
 
         booking_enabled: document.getElementById('site-booking-enabled').checked,
-        payment_required: document.getElementById('site-payment-required').checked
+        payment_required: document.getElementById('site-payment-required').checked,
+
+        // Legal documents
+        offer_uk: document.getElementById('site-offer-uk').value,
+        offer_ru: document.getElementById('site-offer-ru').value,
+        offer_en: document.getElementById('site-offer-en').value,
+        privacy_policy_uk: document.getElementById('site-privacy-uk').value,
+        privacy_policy_ru: document.getElementById('site-privacy-ru').value,
+        privacy_policy_en: document.getElementById('site-privacy-en').value,
+        disclaimer_uk: document.getElementById('site-disclaimer-uk').value,
+        disclaimer_ru: document.getElementById('site-disclaimer-ru').value,
+        disclaimer_en: document.getElementById('site-disclaimer-en').value,
+
+        // Site photo
+        site_photo_url: sitePhotoUrl
       };
 
       try {
