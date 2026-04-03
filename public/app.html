@@ -4876,7 +4876,7 @@
             position: relative;
           }
           .client-video-box video {
-            width: 100%; height: 100%; object-fit: cover;
+            width: 100%; height: 100%; object-fit: contain;
             background: #000; display: block;
           }
           .client-video-label {
@@ -10641,20 +10641,34 @@
           screenVideoTrack.onended = stopScreenShare;
         }
 
-        // Send screen share to consultation clients
+        // Send COMPOSITE stream (camera + screen) to consultation clients
+        // This way clients see both the host AND the screen share
         if (peerConnections && peerConnections.length > 0) {
-          for (const call of peerConnections) {
-            if (call && call.peerConnection) {
-              const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-              if (sender && screenVideoTrack) {
-                sender.replaceTrack(screenVideoTrack).then(() => {
-                  console.log('📺 Screen share sent to consultation client');
-                }).catch(err => {
-                  console.error('Failed to send screen share:', err);
-                });
+          // Start producer preview if not running (it composites camera + screen)
+          if (!producerPreviewStream) {
+            startProducerPreview();
+          }
+
+          // Wait a bit for producer preview to start
+          setTimeout(() => {
+            if (producerPreviewStream) {
+              const compositeTrack = producerPreviewStream.getVideoTracks()[0];
+              if (compositeTrack) {
+                for (const call of peerConnections) {
+                  if (call && call.peerConnection) {
+                    const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+                    if (sender) {
+                      sender.replaceTrack(compositeTrack).then(() => {
+                        console.log('📺 Composite stream (camera+screen) sent to consultation client');
+                      }).catch(err => {
+                        console.error('Failed to send composite stream:', err);
+                      });
+                    }
+                  }
+                }
               }
             }
-          }
+          }, 500);
         }
 
         updateViewMode();
@@ -10674,18 +10688,30 @@
       splitScreenVideo.srcObject = null;
       splitScreenVideo.style.display = 'none';
 
-      // Revert consultation clients back to camera
-      if (peerConnections && peerConnections.length > 0 && consultStream) {
-        const cameraTrack = consultStream.getVideoTracks()[0];
-        if (cameraTrack) {
+      // Revert consultation clients back to camera (or composite if still in 3-participant mode)
+      if (peerConnections && peerConnections.length > 0) {
+        // Use producer preview if guests are still connected, otherwise use camera
+        let trackToSend = null;
+
+        if (guestStreams.some(s => s) && producerPreviewStream) {
+          // Still have guests - use composite stream (shows all participants)
+          trackToSend = producerPreviewStream.getVideoTracks()[0];
+          console.log('📹 Reverting to composite stream (guests still connected)');
+        } else if (consultStream) {
+          // No guests - use direct camera
+          trackToSend = consultStream.getVideoTracks()[0];
+          console.log('📹 Reverting to camera stream');
+        }
+
+        if (trackToSend) {
           for (const call of peerConnections) {
             if (call && call.peerConnection) {
               const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
               if (sender) {
-                sender.replaceTrack(cameraTrack).then(() => {
-                  console.log('📹 Camera restored for consultation client');
+                sender.replaceTrack(trackToSend).then(() => {
+                  console.log('📹 Video restored for consultation client');
                 }).catch(err => {
-                  console.error('Failed to restore camera:', err);
+                  console.error('Failed to restore video:', err);
                 });
               }
             }

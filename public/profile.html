@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Профиль — WebinarStudio</title>
+  <title>Кабинет психолога — WebinarStudio</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,21 +17,32 @@
       color: #e2e8f0;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-
-    .header {
+    .app-container {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 40px;
+      min-height: 100vh;
     }
 
-    .header h1 {
-      font-size: 28px;
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: rgba(15, 23, 42, 0.95);
+      border-right: 1px solid rgba(255,255,255,0.1);
+      padding: 20px 0;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 10px;
+    }
+
+    .sidebar-logo {
+      font-size: 18px;
       font-weight: 700;
       background: linear-gradient(135deg, #3b82f6, #8b5cf6);
       -webkit-background-clip: text;
@@ -39,48 +50,532 @@
       background-clip: text;
     }
 
-    .back-btn {
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      margin: 10px 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+    }
+
+    .sidebar-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .sidebar-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .sidebar-user-info {
+      overflow: hidden;
+    }
+
+    .sidebar-user-name {
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-user-role {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 10px 12px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      cursor: pointer;
+      margin-bottom: 4px;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: #e2e8f0;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+      color: #3b82f6;
+    }
+
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+      opacity: 0.7;
+    }
+
+    .nav-item.active svg {
+      opacity: 1;
+    }
+
+    .sidebar-footer {
+      padding: 10px 12px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 20px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      color: #e2e8f0;
-      text-decoration: none;
-      font-size: 14px;
       transition: all 0.2s;
+      text-decoration: none;
     }
 
-    .back-btn:hover {
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: #e2e8f0;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .btn-secondary:hover {
       background: rgba(255,255,255,0.15);
-      border-color: rgba(255,255,255,0.2);
     }
 
-    .profile-card {
+    .btn-ai {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+    }
+
+    .btn-ai:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px -10px rgba(139, 92, 246, 0.5);
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
       background: rgba(30, 41, 59, 0.8);
       backdrop-filter: blur(20px);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 20px;
-      padding: 32px;
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .stat-icon svg {
+      width: 20px;
+      height: 20px;
+      color: white;
+    }
+
+    .stat-icon.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .stat-icon.green { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .stat-icon.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    /* Cards */
+    .card {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 24px;
       margin-bottom: 24px;
     }
 
-    .profile-card h2 {
-      font-size: 18px;
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 16px;
       font-weight: 600;
-      margin-bottom: 24px;
-      color: #e2e8f0;
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .profile-card h2 svg {
+    .card-title svg {
       width: 20px;
       height: 20px;
       opacity: 0.7;
+    }
+
+    /* AI Assistant */
+    .ai-assistant {
+      border: 2px solid rgba(139, 92, 246, 0.3);
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.05));
+    }
+
+    .ai-input-group {
+      margin-bottom: 16px;
+    }
+
+    .ai-input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .ai-textarea {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      color: #e2e8f0;
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 100px;
+      transition: all 0.2s;
+    }
+
+    .ai-textarea:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    }
+
+    .ai-textarea::placeholder {
+      color: #64748b;
+    }
+
+    .ai-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .ai-option {
+      padding: 8px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      font-size: 13px;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ai-option:hover, .ai-option.active {
+      background: rgba(139, 92, 246, 0.2);
+      border-color: #8b5cf6;
+      color: #e2e8f0;
+    }
+
+    .ai-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .ai-result {
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      display: none;
+    }
+
+    .ai-result.visible {
+      display: block;
+    }
+
+    .ai-result-section {
+      margin-bottom: 20px;
+    }
+
+    .ai-result-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .ai-result-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #8b5cf6;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ai-result-content {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+    }
+
+    .ai-result-content ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .ai-result-content li {
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .ai-result-content li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #8b5cf6;
+    }
+
+    .ai-loading {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 40px;
+      color: #94a3b8;
+    }
+
+    .ai-loading.visible {
+      display: flex;
+    }
+
+    .ai-spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(139, 92, 246, 0.2);
+      border-top-color: #8b5cf6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Sessions List */
+    .session-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.4);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+
+    .session-item:hover {
+      background: rgba(15, 23, 42, 0.6);
+    }
+
+    .session-time {
+      text-align: center;
+      padding: 10px 16px;
+      background: rgba(59, 130, 246, 0.2);
+      border-radius: 10px;
+      min-width: 80px;
+    }
+
+    .session-time-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #3b82f6;
+    }
+
+    .session-time-label {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .session-info {
+      flex: 1;
+    }
+
+    .session-client {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .session-topic {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .session-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .session-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .session-btn-start {
+      background: #10b981;
+      color: white;
+    }
+
+    .session-btn-prepare {
+      background: rgba(139, 92, 246, 0.2);
+      color: #8b5cf6;
+    }
+
+    /* Notes */
+    .note-item {
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.4);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      border-left: 3px solid #3b82f6;
+    }
+
+    .note-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .note-client {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .note-date {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .note-text {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #64748b;
+    }
+
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    /* Settings Form (hidden by default) */
+    .settings-section {
+      display: none;
+    }
+
+    .settings-section.active {
+      display: block;
     }
 
     .form-row {
@@ -92,10 +587,6 @@
 
     .form-row.single {
       grid-template-columns: 1fr;
-    }
-
-    .form-group {
-      margin-bottom: 0;
     }
 
     .form-group label {
@@ -120,21 +611,14 @@
     }
 
     .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
+    .form-group textarea:focus {
       outline: none;
       border-color: #3b82f6;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
 
-    .form-group input::placeholder,
-    .form-group textarea::placeholder {
+    .form-group input::placeholder {
       color: #64748b;
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 80px;
     }
 
     .avatar-upload {
@@ -204,31 +688,7 @@
       flex: 1;
     }
 
-    .save-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      border: none;
-      border-radius: 10px;
-      color: white;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 20px;
-    }
-
-    .save-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.5);
-    }
-
-    .save-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
+    /* Toast */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -255,227 +715,541 @@
       background: #ef4444;
     }
 
-    .subscription-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      color: white;
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
-    .subscription-badge.free {
-      background: linear-gradient(135deg, #64748b, #475569);
-    }
-
-    .subscription-badge.pro {
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-    }
-
-    .subscription-badge.business {
-      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    }
-
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
       .form-row {
         grid-template-columns: 1fr;
       }
-      .header {
+      .page-header {
         flex-direction: column;
         gap: 16px;
-        text-align: center;
       }
+    }
+
+    /* History Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay.visible {
+      display: flex;
+    }
+
+    .modal {
+      background: #1e293b;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 700px;
+      max-height: 80vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: rgba(255,255,255,0.1);
+      color: #e2e8f0;
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .history-item {
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .history-item:hover {
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .history-item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .history-item-topic {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .history-item-date {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .history-item-preview {
+      font-size: 13px;
+      color: #94a3b8;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>Настройки профиля</h1>
-      <a href="/app.html" class="back-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Назад в студию
-      </a>
-    </div>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">WebinarStudio</div>
+      </div>
 
-    <!-- Basic Info -->
-    <div class="profile-card">
-      <h2>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Основная информация
-      </h2>
-
-      <div class="avatar-upload">
-        <div class="avatar-preview" id="avatar-preview">
-          <span id="avatar-initials">...</span>
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebar-avatar">
+          <span id="sidebar-initials">...</span>
         </div>
-        <div class="avatar-actions">
-          <input type="file" id="avatar-input" accept="image/*" style="display:none">
-          <button class="avatar-btn" onclick="document.getElementById('avatar-input').click()">Загрузить фото</button>
-          <button class="avatar-btn" onclick="removeAvatar()">Удалить</button>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebar-name">Загрузка...</div>
+          <div class="sidebar-user-role" id="sidebar-role">психолог</div>
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="full-name">Полное имя</label>
-          <input type="text" id="full-name" placeholder="Иван Иванов">
+      <nav class="sidebar-nav">
+        <div class="nav-item active" data-section="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Дашборд
         </div>
-        <div class="form-group">
-          <label for="title">Специализация / должность</label>
-          <input type="text" id="title" placeholder="психолог, коуч, тренер...">
+        <div class="nav-item" data-section="ai-assistant">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 3 3v1a2 2 0 0 1-2 2h-1v5a4 4 0 0 1-8 0v-5H7a2 2 0 0 1-2-2v-1a3 3 0 0 1 3-3V6a4 4 0 0 1 4-4z"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></svg>
+          AI-Помощник
         </div>
+        <div class="nav-item" data-section="sessions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Сессии
+        </div>
+        <div class="nav-item" data-section="notes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Заметки
+        </div>
+        <div class="nav-item" data-section="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Настройки
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="/app.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          В студию
+        </a>
       </div>
+    </aside>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="phone">Телефон</label>
-          <input type="tel" id="phone" placeholder="+380...">
-        </div>
-        <div class="form-group">
-          <label for="email-display">Email</label>
-          <input type="email" id="email-display" disabled>
-        </div>
-      </div>
-    </div>
-
-    <!-- Social Links -->
-    <div class="profile-card">
-      <h2>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        Соцсети и ссылки
-      </h2>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="telegram">Telegram</label>
-          <input type="url" id="telegram" placeholder="https://t.me/username">
-        </div>
-        <div class="form-group">
-          <label for="instagram">Instagram</label>
-          <input type="url" id="instagram" placeholder="https://instagram.com/username">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="youtube">YouTube</label>
-          <input type="url" id="youtube" placeholder="https://youtube.com/@channel">
-        </div>
-        <div class="form-group">
-          <label for="facebook">Facebook</label>
-          <input type="url" id="facebook" placeholder="https://facebook.com/page">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="website">Сайт</label>
-          <input type="url" id="website" placeholder="https://yoursite.com">
-        </div>
-        <div class="form-group">
-          <label for="support-link">Ссылка поддержки (бот/чат)</label>
-          <input type="url" id="support-link" placeholder="https://t.me/YourBot">
-        </div>
-      </div>
-    </div>
-
-    <!-- Branding -->
-    <div class="profile-card">
-      <h2>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="0.5"/><circle cx="17.5" cy="10.5" r="0.5"/><circle cx="8.5" cy="7.5" r="0.5"/><circle cx="6.5" cy="12.5" r="0.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/></svg>
-        Брендинг
-      </h2>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="brand-color">Цвет акцента</label>
-          <div class="color-input">
-            <input type="color" id="brand-color-picker" value="#3b82f6">
-            <input type="text" id="brand-color" placeholder="#3b82f6" value="#3b82f6">
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Dashboard Section -->
+      <section class="settings-section active" id="section-dashboard">
+        <div class="page-header">
+          <h1 class="page-title">Добро пожаловать!</h1>
+          <div class="header-actions">
+            <a href="/app.html" class="btn btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+              Начать консультацию
+            </a>
           </div>
         </div>
-        <div class="form-group">
-          <label for="watermark">Водяной знак в записи</label>
-          <input type="text" id="watermark" placeholder="Ваше имя или бренд">
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="stat-value" id="stat-clients">0</div>
+            <div class="stat-label">Клиентов</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="stat-value" id="stat-hours">0</div>
+            <div class="stat-label">Часов практики</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+            </div>
+            <div class="stat-value" id="stat-sessions">0</div>
+            <div class="stat-label">Консультаций</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div class="stat-value" id="stat-rating">—</div>
+            <div class="stat-label">Средняя оценка</div>
+          </div>
+        </div>
+
+        <!-- Quick AI Assistant -->
+        <div class="card ai-assistant">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 3 3v1a2 2 0 0 1-2 2h-1v5a4 4 0 0 1-8 0v-5H7a2 2 0 0 1-2-2v-1a3 3 0 0 1 3-3V6a4 4 0 0 1 4-4z"/></svg>
+              AI-Помощник подготовки к консультации
+            </div>
+            <button class="btn btn-secondary" onclick="showHistoryModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              История
+            </button>
+          </div>
+
+          <div class="ai-input-group">
+            <label>Опишите клиента и тему консультации</label>
+            <textarea class="ai-textarea" id="ai-input" placeholder="Например: Женщина 35 лет, тревожность, панические атаки. Первичная консультация. Запрос: научиться справляться с паникой."></textarea>
+          </div>
+
+          <div class="ai-options">
+            <span class="ai-option active" data-approach="integrative">Интегративный подход</span>
+            <span class="ai-option" data-approach="nlp">НЛП</span>
+            <span class="ai-option" data-approach="cbt">КПТ</span>
+            <span class="ai-option" data-approach="hypnosis">Гипнотерапия</span>
+            <span class="ai-option" data-approach="gestalt">Гештальт</span>
+          </div>
+
+          <div class="ai-actions">
+            <button class="btn btn-ai" onclick="generatePreparation()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Подготовить сессию
+            </button>
+            <button class="btn btn-secondary" onclick="clearAiResult()">Очистить</button>
+          </div>
+
+          <div class="ai-loading" id="ai-loading">
+            <div class="ai-spinner"></div>
+            <span>AI анализирует запрос...</span>
+          </div>
+
+          <div class="ai-result" id="ai-result">
+            <div class="ai-result-section" id="result-structure">
+              <div class="ai-result-title">📋 СТРУКТУРА СЕССИИ</div>
+              <div class="ai-result-content" id="result-structure-content"></div>
+            </div>
+            <div class="ai-result-section" id="result-techniques">
+              <div class="ai-result-title">🧠 РЕКОМЕНДОВАННЫЕ ТЕХНИКИ</div>
+              <div class="ai-result-content" id="result-techniques-content"></div>
+            </div>
+            <div class="ai-result-section" id="result-questions">
+              <div class="ai-result-title">❓ ВОПРОСЫ ДЛЯ КЛИЕНТА</div>
+              <div class="ai-result-content" id="result-questions-content"></div>
+            </div>
+            <div class="ai-result-section" id="result-risks">
+              <div class="ai-result-title">⚠️ ВОЗМОЖНЫЕ СОПРОТИВЛЕНИЯ</div>
+              <div class="ai-result-content" id="result-risks-content"></div>
+            </div>
+            <div class="ai-result-section" id="result-homework">
+              <div class="ai-result-title">📝 ДОМАШНЕЕ ЗАДАНИЕ</div>
+              <div class="ai-result-content" id="result-homework-content"></div>
+            </div>
+            <div style="margin-top: 16px; display: flex; gap: 12px;">
+              <button class="btn btn-secondary" onclick="saveToHistory()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Сохранить
+              </button>
+              <button class="btn btn-secondary" onclick="copyResult()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Копировать
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI Assistant Section (Full) -->
+      <section class="settings-section" id="section-ai-assistant">
+        <div class="page-header">
+          <h1 class="page-title">AI-Помощник</h1>
+        </div>
+        <div class="card">
+          <p style="color: #94a3b8;">Полная версия AI-помощника доступна на дашборде.</p>
+          <button class="btn btn-primary" style="margin-top: 16px;" onclick="switchSection('dashboard')">Перейти на дашборд</button>
+        </div>
+      </section>
+
+      <!-- Sessions Section -->
+      <section class="settings-section" id="section-sessions">
+        <div class="page-header">
+          <h1 class="page-title">Ближайшие сессии</h1>
+          <button class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Добавить сессию
+          </button>
+        </div>
+
+        <div class="card">
+          <div id="sessions-list">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <p>Нет запланированных сессий</p>
+              <p style="font-size: 13px; margin-top: 8px;">Добавьте сессию или начните консультацию сейчас</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notes Section -->
+      <section class="settings-section" id="section-notes">
+        <div class="page-header">
+          <h1 class="page-title">Заметки по сессиям</h1>
+          <button class="btn btn-secondary" onclick="addNote()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Новая заметка
+          </button>
+        </div>
+
+        <div class="card">
+          <div id="notes-list">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <p>Нет заметок</p>
+              <p style="font-size: 13px; margin-top: 8px;">Заметки помогают отслеживать прогресс клиентов</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings Section -->
+      <section class="settings-section" id="section-settings">
+        <div class="page-header">
+          <h1 class="page-title">Настройки профиля</h1>
+        </div>
+
+        <!-- Basic Info -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Основная информация
+            </div>
+          </div>
+
+          <div class="avatar-upload">
+            <div class="avatar-preview" id="avatar-preview">
+              <span id="avatar-initials">...</span>
+            </div>
+            <div class="avatar-actions">
+              <input type="file" id="avatar-input" accept="image/*" style="display:none">
+              <button class="avatar-btn" onclick="document.getElementById('avatar-input').click()">Загрузить фото</button>
+              <button class="avatar-btn" onclick="removeAvatar()">Удалить</button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="full-name">Полное имя</label>
+              <input type="text" id="full-name" placeholder="Иван Иванов">
+            </div>
+            <div class="form-group">
+              <label for="title">Специализация / должность</label>
+              <input type="text" id="title" placeholder="психолог, коуч, тренер...">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Телефон</label>
+              <input type="tel" id="phone" placeholder="+380...">
+            </div>
+            <div class="form-group">
+              <label for="email-display">Email</label>
+              <input type="email" id="email-display" disabled>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              Соцсети и ссылки
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="telegram">Telegram</label>
+              <input type="url" id="telegram" placeholder="https://t.me/username">
+            </div>
+            <div class="form-group">
+              <label for="instagram">Instagram</label>
+              <input type="url" id="instagram" placeholder="https://instagram.com/username">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="youtube">YouTube</label>
+              <input type="url" id="youtube" placeholder="https://youtube.com/@channel">
+            </div>
+            <div class="form-group">
+              <label for="facebook">Facebook</label>
+              <input type="url" id="facebook" placeholder="https://facebook.com/page">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="website">Сайт</label>
+              <input type="url" id="website" placeholder="https://yoursite.com">
+            </div>
+            <div class="form-group">
+              <label for="support-link">Ссылка поддержки (бот/чат)</label>
+              <input type="url" id="support-link" placeholder="https://t.me/YourBot">
+            </div>
+          </div>
+        </div>
+
+        <!-- Branding -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="0.5"/><circle cx="17.5" cy="10.5" r="0.5"/><circle cx="8.5" cy="7.5" r="0.5"/><circle cx="6.5" cy="12.5" r="0.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/></svg>
+              Брендинг
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="brand-color">Цвет акцента</label>
+              <div class="color-input">
+                <input type="color" id="brand-color-picker" value="#3b82f6">
+                <input type="text" id="brand-color" placeholder="#3b82f6" value="#3b82f6">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="watermark">Водяной знак в записи</label>
+              <input type="text" id="watermark" placeholder="Ваше имя или бренд">
+            </div>
+          </div>
+
+          <div class="form-row single">
+            <div class="form-group">
+              <label for="splash-text">Текст заставки перед началом</label>
+              <input type="text" id="splash-text" placeholder="Скоро начнём" value="Скоро начнём">
+            </div>
+          </div>
+        </div>
+
+        <!-- Legal -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Юридические данные
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="legal-name">Юридическое имя / ФОП / ООО</label>
+              <input type="text" id="legal-name" placeholder="ФОП Іванов І.І.">
+            </div>
+            <div class="form-group">
+              <label for="legal-email">Email для документов</label>
+              <input type="email" id="legal-email" placeholder="legal@example.com">
+            </div>
+          </div>
+
+          <div class="form-row single">
+            <div class="form-group">
+              <label for="legal-address">Адрес</label>
+              <input type="text" id="legal-address" placeholder="м. Київ, вул. ...">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="privacy-url">Политика конфиденциальности (URL)</label>
+              <input type="url" id="privacy-url" placeholder="https://...">
+            </div>
+            <div class="form-group">
+              <label for="offer-url">Договор оферты (URL)</label>
+              <input type="url" id="offer-url" placeholder="https://...">
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" id="save-btn" onclick="saveProfile()">Сохранить изменения</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- History Modal -->
+  <div class="modal-overlay" id="history-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">История подготовок</div>
+        <button class="modal-close" onclick="hideHistoryModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="history-list">
+        <div class="empty-state">
+          <p>История пуста</p>
         </div>
       </div>
-
-      <div class="form-row single">
-        <div class="form-group">
-          <label for="splash-text">Текст заставки перед началом</label>
-          <input type="text" id="splash-text" placeholder="Скоро начнём" value="Скоро начнём">
-        </div>
-      </div>
-    </div>
-
-    <!-- Legal -->
-    <div class="profile-card">
-      <h2>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        Юридические данные
-      </h2>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="legal-name">Юридическое имя / ФОП / ООО</label>
-          <input type="text" id="legal-name" placeholder="ФОП Іванов І.І.">
-        </div>
-        <div class="form-group">
-          <label for="legal-email">Email для документов</label>
-          <input type="email" id="legal-email" placeholder="legal@example.com">
-        </div>
-      </div>
-
-      <div class="form-row single">
-        <div class="form-group">
-          <label for="legal-address">Адрес</label>
-          <input type="text" id="legal-address" placeholder="м. Київ, вул. ...">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="privacy-url">Политика конфиденциальности (URL)</label>
-          <input type="url" id="privacy-url" placeholder="https://...">
-        </div>
-        <div class="form-group">
-          <label for="offer-url">Договор оферты (URL)</label>
-          <input type="url" id="offer-url" placeholder="https://...">
-        </div>
-      </div>
-
-      <button class="save-btn" id="save-btn" onclick="saveProfile()">Сохранить изменения</button>
-    </div>
-
-    <!-- Subscription -->
-    <div class="profile-card">
-      <h2>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        Подписка
-      </h2>
-
-      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-        <span>Текущий план:</span>
-        <span class="subscription-badge free" id="subscription-badge">FREE</span>
-      </div>
-
-      <p style="color: #94a3b8; font-size: 14px; margin-bottom: 16px;">
-        Расширьте возможности: AI-анализ, неограниченные записи, детекция эмоций и многое другое.
-      </p>
-
-      <button class="save-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);" onclick="showUpgradePlans()">
-        Улучшить план
-      </button>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="alert('Ошибка загрузки. Проверьте интернет.'); window.location.href='/login.html';"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     // Check if SDK loaded
     if (!window.supabase) {
@@ -484,15 +1258,137 @@
       throw new Error('Supabase SDK not loaded');
     }
 
-    // Config loaded from secure endpoint
+    // Config
     let SUPABASE_URL = '';
     let SUPABASE_ANON_KEY = '';
     let supabaseClient = null;
     let currentUser = null;
     let userProfile = null;
     let profileLoaded = false;
+    let aiHistory = [];
+    let selectedApproach = 'integrative';
+    let lastAiResult = null;
 
-    // Initialize config
+    // ============ SECURITY FUNCTIONS ============
+
+    // Rate limiting for AI requests
+    const rateLimiter = {
+      requests: [],
+      maxRequests: 10,
+      windowMs: 60000, // 1 minute
+      isAllowed() {
+        const now = Date.now();
+        this.requests = this.requests.filter(t => now - t < this.windowMs);
+        if (this.requests.length >= this.maxRequests) {
+          return false;
+        }
+        this.requests.push(now);
+        return true;
+      }
+    };
+
+    // Sanitize text input (remove potential XSS)
+    function sanitizeInput(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/[<>]/g, '') // Remove < and >
+        .replace(/javascript:/gi, '') // Remove javascript: protocol
+        .replace(/on\w+=/gi, '') // Remove event handlers
+        .trim()
+        .slice(0, 5000); // Limit length
+    }
+
+    // Validate URL format (strict)
+    function isValidUrl(str) {
+      if (!str || str.trim() === '') return true; // Empty is valid (optional)
+      try {
+        const url = new URL(str);
+        // Only allow http and https protocols
+        if (!['http:', 'https:'].includes(url.protocol)) return false;
+        // Block javascript: and data: URIs that might bypass
+        if (str.toLowerCase().includes('javascript:')) return false;
+        if (str.toLowerCase().includes('data:')) return false;
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    // Validate email format
+    function isValidEmail(str) {
+      if (!str || str.trim() === '') return true;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(str) && str.length < 255;
+    }
+
+    // Validate phone format
+    function isValidPhone(str) {
+      if (!str || str.trim() === '') return true;
+      // Allow digits, spaces, dashes, plus, parentheses
+      const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+      return phoneRegex.test(str) && str.length < 30;
+    }
+
+    // Validate hex color
+    function isValidColor(str) {
+      return /^#[0-9A-Fa-f]{6}$/.test(str);
+    }
+
+    // Safe DOM text setter (prevents XSS)
+    function setTextSafe(elementId, text) {
+      const el = document.getElementById(elementId);
+      if (el) el.textContent = sanitizeInput(text);
+    }
+
+    // Safe image URL (validate before use)
+    function isSafeImageUrl(url) {
+      if (!url) return false;
+      try {
+        const parsed = new URL(url);
+        // Only allow HTTPS for images (security)
+        if (parsed.protocol !== 'https:') return false;
+        // Block data: URIs
+        if (url.toLowerCase().startsWith('data:')) return false;
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    // Session check - verify user is still authenticated
+    async function verifySession() {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+          window.location.href = '/login.html';
+          return false;
+        }
+        // Verify session user matches current user
+        if (currentUser && session.user.id !== currentUser.id) {
+          console.error('Session mismatch detected');
+          window.location.href = '/login.html';
+          return false;
+        }
+        return true;
+      } catch (e) {
+        console.error('Session verification failed:', e);
+        return false;
+      }
+    }
+
+    // Verify profile ownership before save
+    async function verifyProfileOwnership(profileId) {
+      if (!currentUser || currentUser.id !== profileId) {
+        console.error('Profile ownership verification failed');
+        showToast('Ошибка безопасности: нет доступа к этому профилю', true);
+        return false;
+      }
+      return true;
+    }
+
+    // ============ END SECURITY FUNCTIONS ============
+
+    // Initialize
     (async () => {
       try {
         const res = await fetch('/.netlify/functions/config');
@@ -508,8 +1404,34 @@
       }
     })();
 
+    // Navigation
+    document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+      item.addEventListener('click', () => {
+        const section = item.dataset.section;
+        switchSection(section);
+      });
+    });
+
+    function switchSection(sectionName) {
+      // Update nav
+      document.querySelectorAll('.nav-item[data-section]').forEach(n => n.classList.remove('active'));
+      document.querySelector(`.nav-item[data-section="${sectionName}"]`)?.classList.add('active');
+
+      // Update sections
+      document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+      document.getElementById(`section-${sectionName}`)?.classList.add('active');
+    }
+
+    // AI Approach selection
+    document.querySelectorAll('.ai-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.ai-option').forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        selectedApproach = opt.dataset.approach;
+      });
+    });
+
     async function initProfile() {
-      // Disable save button until profile loads
       document.getElementById('save-btn').disabled = true;
       document.getElementById('save-btn').textContent = 'Загрузка...';
 
@@ -533,115 +1455,386 @@
         if (profile) {
           userProfile = profile;
           populateForm(profile);
+          updateSidebarUser(profile);
           profileLoaded = true;
           document.getElementById('save-btn').disabled = false;
           document.getElementById('save-btn').textContent = 'Сохранить изменения';
         } else {
-          // Create default profile if not exists
-          console.log('No profile found, creating default...');
+          // Create default profile
           const defaultProfile = {
             id: currentUser.id,
             full_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
             title: 'психолог'
           };
           const { error: insertError } = await supabaseClient.from('profiles').insert(defaultProfile);
-          if (insertError) {
-            console.error('Profile creation error:', insertError);
-            showToast('Ошибка создания профиля', true);
-          } else {
+          if (!insertError) {
             userProfile = defaultProfile;
             populateForm(defaultProfile);
+            updateSidebarUser(defaultProfile);
             profileLoaded = true;
             document.getElementById('save-btn').disabled = false;
             document.getElementById('save-btn').textContent = 'Сохранить изменения';
-            showToast('Профиль создан');
           }
         }
+
+        // Load AI history from localStorage
+        loadAiHistory();
+
+        // Load stats (mock for now)
+        loadStats();
+
       } catch (e) {
         console.error('Profile load error:', e);
         showToast('Ошибка загрузки профиля', true);
       }
     }
 
+    function updateSidebarUser(profile) {
+      // Use textContent for XSS safety
+      document.getElementById('sidebar-name').textContent = sanitizeInput(profile.full_name) || 'Пользователь';
+      document.getElementById('sidebar-role').textContent = sanitizeInput(profile.title) || 'психолог';
+
+      const avatar = document.getElementById('sidebar-avatar');
+      avatar.innerHTML = ''; // Clear safely
+
+      if (profile.photo_url && isSafeImageUrl(profile.photo_url)) {
+        // Create image element safely (not via innerHTML)
+        const img = document.createElement('img');
+        img.src = profile.photo_url;
+        img.alt = 'Avatar';
+        img.onerror = () => {
+          // Fallback to initials if image fails
+          avatar.innerHTML = '';
+          const span = document.createElement('span');
+          span.textContent = getInitials(profile.full_name);
+          avatar.appendChild(span);
+        };
+        avatar.appendChild(img);
+      } else {
+        const span = document.createElement('span');
+        span.textContent = getInitials(profile.full_name);
+        avatar.appendChild(span);
+      }
+    }
+
+    function getInitials(name) {
+      if (!name) return '?';
+      return String(name).split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?';
+    }
+
     function populateForm(profile) {
-      // Basic
       document.getElementById('full-name').value = profile.full_name || '';
       document.getElementById('title').value = profile.title || '';
       document.getElementById('phone').value = profile.phone || '';
-
-      // Update avatar
       updateAvatarPreview(profile.full_name, profile.photo_url);
-
-      // Social
       document.getElementById('telegram').value = profile.telegram || '';
       document.getElementById('instagram').value = profile.instagram || '';
       document.getElementById('youtube').value = profile.youtube || '';
       document.getElementById('facebook').value = profile.facebook || '';
       document.getElementById('website').value = profile.website || '';
       document.getElementById('support-link').value = profile.support_link || '';
-
-      // Branding
       document.getElementById('brand-color').value = profile.brand_color || '#3b82f6';
       document.getElementById('brand-color-picker').value = profile.brand_color || '#3b82f6';
       document.getElementById('watermark').value = profile.watermark_text || '';
       document.getElementById('splash-text').value = profile.splash_text || 'Скоро начнём';
-
-      // Legal
       document.getElementById('legal-name').value = profile.legal_name || '';
       document.getElementById('legal-email').value = profile.legal_email || '';
       document.getElementById('legal-address').value = profile.legal_address || '';
       document.getElementById('privacy-url').value = profile.privacy_policy_url || '';
       document.getElementById('offer-url').value = profile.offer_url || '';
-
-      // Subscription
-      const badge = document.getElementById('subscription-badge');
-      const plan = profile.subscription_plan || 'free';
-      badge.textContent = plan.toUpperCase();
-      badge.className = 'subscription-badge ' + plan;
-    }
-
-    // Escape HTML to prevent XSS
-    function escapeHtml(str) {
-      const div = document.createElement('div');
-      div.textContent = str || '';
-      return div.innerHTML;
-    }
-
-    // Validate URL format
-    function isValidUrl(str) {
-      if (!str || str.trim() === '') return true; // Empty is valid (optional)
-      try {
-        const url = new URL(str);
-        return ['http:', 'https:'].includes(url.protocol);
-      } catch {
-        return false;
-      }
     }
 
     function updateAvatarPreview(name, photoUrl) {
       const preview = document.getElementById('avatar-preview');
+      preview.innerHTML = ''; // Clear safely
 
-      if (photoUrl) {
-        // Create image element safely (no innerHTML)
+      if (photoUrl && isSafeImageUrl(photoUrl)) {
         const img = document.createElement('img');
         img.src = photoUrl;
         img.alt = 'Avatar';
-        img.onerror = () => {
-          // Fallback to initials if image fails
-          updateAvatarPreview(name, null);
-        };
-        preview.innerHTML = '';
+        img.onerror = () => updateAvatarPreview(name, null);
         preview.appendChild(img);
-      } else if (name) {
-        const init = String(name).split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      } else {
         const span = document.createElement('span');
         span.id = 'avatar-initials';
-        span.textContent = init || '?';
-        preview.innerHTML = '';
+        span.textContent = getInitials(name);
         preview.appendChild(span);
-      } else {
-        preview.innerHTML = '<span id="avatar-initials">?</span>';
       }
+    }
+
+    function loadStats() {
+      // Load from localStorage for now
+      const stats = JSON.parse(localStorage.getItem('psychologist_stats') || '{}');
+      document.getElementById('stat-clients').textContent = stats.clients || 0;
+      document.getElementById('stat-hours').textContent = stats.hours || 0;
+      document.getElementById('stat-sessions').textContent = stats.sessions || 0;
+      document.getElementById('stat-rating').textContent = stats.rating || '—';
+    }
+
+    // AI Assistant
+    async function generatePreparation() {
+      // Rate limiting check
+      if (!rateLimiter.isAllowed()) {
+        showToast('Слишком много запросов. Подождите минуту.', true);
+        return;
+      }
+
+      // Verify session before making API request
+      if (!await verifySession()) {
+        return;
+      }
+
+      const rawInput = document.getElementById('ai-input').value.trim();
+      const input = sanitizeInput(rawInput);
+
+      if (!input) {
+        showToast('Опишите клиента и тему консультации', true);
+        return;
+      }
+
+      // Limit input length for AI
+      if (input.length > 2000) {
+        showToast('Текст слишком длинный (максимум 2000 символов)', true);
+        return;
+      }
+
+      const loading = document.getElementById('ai-loading');
+      const result = document.getElementById('ai-result');
+      loading.classList.add('visible');
+      result.classList.remove('visible');
+
+      const approachNames = {
+        'integrative': 'интегративный подход',
+        'nlp': 'НЛП (нейро-лингвистическое программирование)',
+        'cbt': 'КПТ (когнитивно-поведенческая терапия)',
+        'hypnosis': 'гипнотерапия и эриксоновский гипноз',
+        'gestalt': 'гештальт-терапия'
+      };
+
+      const prompt = `Ты — опытный супервизор для психологов и психотерапевтов. Помоги подготовиться к консультации.
+
+Информация о клиенте и запрос:
+${input}
+
+Используемый подход: ${approachNames[selectedApproach]}
+
+Сформируй план подготовки к сессии в следующем формате:
+
+СТРУКТУРА СЕССИИ (с примерным таймингом для 60-минутной сессии):
+- Укажи этапы сессии с временными рамками
+- Что делать на каждом этапе
+
+РЕКОМЕНДОВАННЫЕ ТЕХНИКИ:
+- Перечисли 3-5 конкретных техник для данного случая
+- Кратко опиши каждую технику и когда её применить
+
+ВОПРОСЫ ДЛЯ КЛИЕНТА:
+- 5-7 ключевых вопросов для диагностики и работы
+- Вопросы должны быть открытыми и терапевтичными
+
+ВОЗМОЖНЫЕ СОПРОТИВЛЕНИЯ:
+- Какие защитные механизмы могут проявиться
+- Как с ними работать
+
+ДОМАШНЕЕ ЗАДАНИЕ:
+- 2-3 практики или упражнения для клиента между сессиями
+
+Отвечай на русском языке. Будь конкретным и практичным.`;
+
+      try {
+        const response = await fetch('/.netlify/functions/gemini-generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }]
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('AI request failed');
+        }
+
+        const data = await response.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Нет ответа';
+
+        // Parse response
+        parseAndDisplayResult(text, input);
+
+        loading.classList.remove('visible');
+        result.classList.add('visible');
+
+      } catch (err) {
+        console.error('AI error:', err);
+        loading.classList.remove('visible');
+        showToast('Ошибка AI: ' + err.message, true);
+      }
+    }
+
+    function parseAndDisplayResult(text, originalInput) {
+      lastAiResult = { text, input: originalInput, approach: selectedApproach, date: new Date().toISOString() };
+
+      // Simple parsing - split by sections
+      const sections = {
+        structure: '',
+        techniques: '',
+        questions: '',
+        risks: '',
+        homework: ''
+      };
+
+      const lines = text.split('\n');
+      let currentSection = '';
+
+      for (const line of lines) {
+        const lowerLine = line.toLowerCase();
+
+        if (lowerLine.includes('структура сессии') || lowerLine.includes('план сессии')) {
+          currentSection = 'structure';
+          continue;
+        } else if (lowerLine.includes('техник')) {
+          currentSection = 'techniques';
+          continue;
+        } else if (lowerLine.includes('вопрос')) {
+          currentSection = 'questions';
+          continue;
+        } else if (lowerLine.includes('сопротивлен') || lowerLine.includes('защитн')) {
+          currentSection = 'risks';
+          continue;
+        } else if (lowerLine.includes('домашн') || lowerLine.includes('задани')) {
+          currentSection = 'homework';
+          continue;
+        }
+
+        if (currentSection && sections[currentSection] !== undefined) {
+          sections[currentSection] += line + '\n';
+        }
+      }
+
+      // Display
+      document.getElementById('result-structure-content').textContent = sections.structure.trim() || 'Не определено';
+      document.getElementById('result-techniques-content').textContent = sections.techniques.trim() || 'Не определено';
+      document.getElementById('result-questions-content').textContent = sections.questions.trim() || 'Не определено';
+      document.getElementById('result-risks-content').textContent = sections.risks.trim() || 'Не определено';
+      document.getElementById('result-homework-content').textContent = sections.homework.trim() || 'Не определено';
+    }
+
+    function clearAiResult() {
+      document.getElementById('ai-input').value = '';
+      document.getElementById('ai-result').classList.remove('visible');
+      lastAiResult = null;
+    }
+
+    function saveToHistory() {
+      if (!lastAiResult) {
+        showToast('Нечего сохранять', true);
+        return;
+      }
+
+      aiHistory.unshift(lastAiResult);
+      if (aiHistory.length > 50) aiHistory.pop(); // Keep last 50
+      localStorage.setItem('ai_preparation_history', JSON.stringify(aiHistory));
+      showToast('Сохранено в историю');
+    }
+
+    function loadAiHistory() {
+      try {
+        aiHistory = JSON.parse(localStorage.getItem('ai_preparation_history') || '[]');
+      } catch (e) {
+        aiHistory = [];
+      }
+    }
+
+    function showHistoryModal() {
+      const modal = document.getElementById('history-modal');
+      const list = document.getElementById('history-list');
+      list.innerHTML = ''; // Clear safely
+
+      if (aiHistory.length === 0) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'empty-state';
+        emptyDiv.innerHTML = '<p>История пуста</p>';
+        list.appendChild(emptyDiv);
+      } else {
+        // Build DOM safely without innerHTML for user data
+        aiHistory.forEach((item, i) => {
+          const historyItem = document.createElement('div');
+          historyItem.className = 'history-item';
+          historyItem.onclick = () => loadFromHistory(i);
+
+          const header = document.createElement('div');
+          header.className = 'history-item-header';
+
+          const topic = document.createElement('div');
+          topic.className = 'history-item-topic';
+          topic.textContent = sanitizeInput(item.input || '').slice(0, 50) + (item.input && item.input.length > 50 ? '...' : '');
+
+          const date = document.createElement('div');
+          date.className = 'history-item-date';
+          try {
+            date.textContent = new Date(item.date).toLocaleDateString('ru-RU');
+          } catch {
+            date.textContent = 'Неизвестно';
+          }
+
+          const preview = document.createElement('div');
+          preview.className = 'history-item-preview';
+          preview.textContent = sanitizeInput(item.text || '').slice(0, 100) + '...';
+
+          header.appendChild(topic);
+          header.appendChild(date);
+          historyItem.appendChild(header);
+          historyItem.appendChild(preview);
+          list.appendChild(historyItem);
+        });
+      }
+
+      modal.classList.add('visible');
+    }
+
+    function hideHistoryModal() {
+      document.getElementById('history-modal').classList.remove('visible');
+    }
+
+    function loadFromHistory(index) {
+      // Security: Validate index
+      const safeIndex = parseInt(index, 10);
+      if (isNaN(safeIndex) || safeIndex < 0 || safeIndex >= aiHistory.length) {
+        console.error('Invalid history index');
+        return;
+      }
+
+      const item = aiHistory[safeIndex];
+      if (!item) return;
+
+      document.getElementById('ai-input').value = sanitizeInput(item.input || '');
+
+      // Set approach - validate approach value
+      const validApproaches = ['integrative', 'nlp', 'cbt', 'hypnosis', 'gestalt'];
+      const approach = validApproaches.includes(item.approach) ? item.approach : 'integrative';
+
+      document.querySelectorAll('.ai-option').forEach(o => o.classList.remove('active'));
+      document.querySelector(`.ai-option[data-approach="${approach}"]`)?.classList.add('active');
+      selectedApproach = approach;
+
+      parseAndDisplayResult(item.text, item.input);
+      document.getElementById('ai-result').classList.add('visible');
+      lastAiResult = item;
+
+      hideHistoryModal();
+      switchSection('dashboard');
+    }
+
+    function copyResult() {
+      if (!lastAiResult) return;
+      navigator.clipboard.writeText(lastAiResult.text).then(() => {
+        showToast('Скопировано в буфер обмена');
+      });
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
     }
 
     // Color picker sync
@@ -656,37 +1849,75 @@
       }
     });
 
-    // Avatar upload
+    // Avatar upload with security
     document.getElementById('avatar-input').addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
-      // Validate file type and size
+      // Security: Verify session
+      if (!await verifySession()) {
+        showToast('Сессия истекла. Войдите заново.', true);
+        e.target.value = '';
+        return;
+      }
+
+      // Strict file type validation
       const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+      const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
       const MAX_SIZE_MB = 5;
 
+      // Check MIME type
       if (!ALLOWED_TYPES.includes(file.type)) {
         showToast('Только JPG, PNG, WebP или GIF', true);
         e.target.value = '';
         return;
       }
 
+      // Check file extension
+      const fileExt = file.name.split('.').pop().toLowerCase();
+      if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
+        showToast('Недопустимое расширение файла', true);
+        e.target.value = '';
+        return;
+      }
+
+      // Check file size
       if (file.size > MAX_SIZE_MB * 1024 * 1024) {
         showToast(`Максимум ${MAX_SIZE_MB}MB`, true);
         e.target.value = '';
         return;
       }
 
-      if (!currentUser) {
-        showToast('Ошибка: пользователь не загружен', true);
+      // Validate file content (check magic bytes)
+      try {
+        const buffer = await file.slice(0, 4).arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        const isValidImage = (
+          // JPEG
+          (bytes[0] === 0xFF && bytes[1] === 0xD8) ||
+          // PNG
+          (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47) ||
+          // GIF
+          (bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46) ||
+          // WEBP (RIFF)
+          (bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46)
+        );
+        if (!isValidImage) {
+          showToast('Файл не является допустимым изображением', true);
+          e.target.value = '';
+          return;
+        }
+      } catch (err) {
+        showToast('Ошибка проверки файла', true);
+        e.target.value = '';
         return;
       }
 
-      // Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop().toLowerCase();
-      const fileName = `${currentUser.id}/avatar.${fileExt}`;
+      // Sanitize filename - only use user ID and safe extension
+      const safeExt = ALLOWED_EXTENSIONS.includes(fileExt) ? fileExt : 'jpg';
+      const fileName = `${currentUser.id}/avatar.${safeExt}`;
 
-      const { data, error } = await supabaseClient.storage
+      const { error } = await supabaseClient.storage
         .from('avatars')
         .upload(fileName, file, { upsert: true });
 
@@ -695,69 +1926,125 @@
         return;
       }
 
-      // Get public URL
       const { data: urlData } = supabaseClient.storage
         .from('avatars')
         .getPublicUrl(fileName);
 
       const photoUrl = urlData.publicUrl + '?t=' + Date.now();
-
-      // Update preview
       updateAvatarPreview(null, photoUrl);
-
-      // Save to profile
       await supabaseClient.from('profiles').update({ photo_url: photoUrl }).eq('id', currentUser.id);
+      userProfile = { ...userProfile, photo_url: photoUrl };
+      updateSidebarUser(userProfile);
       showToast('Фото обновлено');
+      e.target.value = ''; // Clear input
     });
 
     async function removeAvatar() {
       if (!currentUser) return;
-      updateAvatarPreview(document.getElementById('full-name').value, null);
-      const { error } = await supabaseClient.from('profiles').update({ photo_url: null }).eq('id', currentUser.id);
-      if (error) {
-        console.error('Remove avatar error:', error);
-        showToast('Ошибка удаления фото', true);
-      } else {
-        showToast('Фото удалено');
+
+      // Security: Verify session
+      if (!await verifySession()) {
+        showToast('Сессия истекла. Войдите заново.', true);
+        return;
       }
+
+      updateAvatarPreview(document.getElementById('full-name').value, null);
+      await supabaseClient.from('profiles').update({ photo_url: null }).eq('id', currentUser.id);
+      userProfile = { ...userProfile, photo_url: null };
+      updateSidebarUser(userProfile);
+      showToast('Фото удалено');
     }
 
+    // Save profile
     let isSaving = false;
 
     async function saveProfile() {
-      // Prevent saving if profile hasn't loaded yet
       if (!profileLoaded || !userProfile) {
         showToast('Подождите загрузки профиля', true);
         return;
       }
 
-      // Prevent double-clicks
       if (isSaving) return;
 
-      const btn = document.getElementById('save-btn');
-      const fullName = document.getElementById('full-name').value.trim();
+      // Security: Verify session before save
+      if (!await verifySession()) {
+        showToast('Сессия истекла. Войдите заново.', true);
+        return;
+      }
 
-      // Validate required fields
+      // Security: Verify profile ownership
+      if (!await verifyProfileOwnership(currentUser.id)) {
+        return;
+      }
+
+      const btn = document.getElementById('save-btn');
+
+      // Get and sanitize all inputs
+      const fullName = sanitizeInput(document.getElementById('full-name').value);
+      const title = sanitizeInput(document.getElementById('title').value);
+      const phone = document.getElementById('phone').value.trim();
+      const telegram = document.getElementById('telegram').value.trim();
+      const instagram = document.getElementById('instagram').value.trim();
+      const youtube = document.getElementById('youtube').value.trim();
+      const facebook = document.getElementById('facebook').value.trim();
+      const website = document.getElementById('website').value.trim();
+      const supportLink = document.getElementById('support-link').value.trim();
+      const brandColor = document.getElementById('brand-color').value.trim() || '#3b82f6';
+      const watermark = sanitizeInput(document.getElementById('watermark').value);
+      const splashText = sanitizeInput(document.getElementById('splash-text').value) || 'Скоро начнём';
+      const legalName = sanitizeInput(document.getElementById('legal-name').value);
+      const legalEmail = document.getElementById('legal-email').value.trim();
+      const legalAddress = sanitizeInput(document.getElementById('legal-address').value);
+      const privacyUrl = document.getElementById('privacy-url').value.trim();
+      const offerUrl = document.getElementById('offer-url').value.trim();
+
+      // Validation
       if (!fullName) {
         showToast('Укажите имя', true);
         document.getElementById('full-name').focus();
         return;
       }
 
-      // Validate URLs
-      const urlFields = ['telegram', 'instagram', 'youtube', 'facebook', 'website', 'support-link', 'privacy-url', 'offer-url'];
+      if (fullName.length > 100) {
+        showToast('Имя слишком длинное (максимум 100 символов)', true);
+        return;
+      }
+
+      // Validate phone
+      if (!isValidPhone(phone)) {
+        showToast('Неверный формат телефона', true);
+        document.getElementById('phone').focus();
+        return;
+      }
+
+      // Validate all URLs
+      const urlFields = [
+        { value: telegram, name: 'Telegram' },
+        { value: instagram, name: 'Instagram' },
+        { value: youtube, name: 'YouTube' },
+        { value: facebook, name: 'Facebook' },
+        { value: website, name: 'Сайт' },
+        { value: supportLink, name: 'Ссылка поддержки' },
+        { value: privacyUrl, name: 'Политика конфиденциальности' },
+        { value: offerUrl, name: 'Оферта' }
+      ];
+
       for (const field of urlFields) {
-        const value = document.getElementById(field).value.trim();
-        if (value && !isValidUrl(value)) {
-          showToast(`Неверный URL: ${field}`, true);
-          document.getElementById(field).focus();
+        if (!isValidUrl(field.value)) {
+          showToast(`Неверный URL: ${field.name}`, true);
           return;
         }
       }
 
-      // Validate brand color
-      const brandColor = document.getElementById('brand-color').value.trim();
-      if (brandColor && !/^#[0-9A-Fa-f]{6}$/.test(brandColor)) {
+      // Validate emails
+      if (!isValidEmail(legalEmail)) {
+        showToast('Неверный формат email для документов', true);
+        document.getElementById('legal-email').focus();
+        return;
+      }
+
+      // Validate color
+      if (!isValidColor(brandColor)) {
         showToast('Неверный формат цвета (используйте #RRGGBB)', true);
         return;
       }
@@ -768,22 +2055,22 @@
 
       const data = {
         full_name: fullName,
-        title: document.getElementById('title').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        telegram: document.getElementById('telegram').value.trim(),
-        instagram: document.getElementById('instagram').value.trim(),
-        youtube: document.getElementById('youtube').value.trim(),
-        facebook: document.getElementById('facebook').value.trim(),
-        website: document.getElementById('website').value.trim(),
-        support_link: document.getElementById('support-link').value.trim(),
-        brand_color: brandColor || '#3b82f6',
-        watermark_text: document.getElementById('watermark').value.trim(),
-        splash_text: document.getElementById('splash-text').value.trim() || 'Скоро начнём',
-        legal_name: document.getElementById('legal-name').value.trim(),
-        legal_email: document.getElementById('legal-email').value.trim(),
-        legal_address: document.getElementById('legal-address').value.trim(),
-        privacy_policy_url: document.getElementById('privacy-url').value.trim(),
-        offer_url: document.getElementById('offer-url').value.trim()
+        title: title,
+        phone: phone,
+        telegram: telegram,
+        instagram: instagram,
+        youtube: youtube,
+        facebook: facebook,
+        website: website,
+        support_link: supportLink,
+        brand_color: brandColor,
+        watermark_text: watermark,
+        splash_text: splashText,
+        legal_name: legalName,
+        legal_email: legalEmail,
+        legal_address: legalAddress,
+        privacy_policy_url: privacyUrl,
+        offer_url: offerUrl
       };
 
       try {
@@ -796,9 +2083,8 @@
           showToast('Ошибка сохранения: ' + error.message, true);
         } else {
           userProfile = { ...userProfile, ...data };
+          updateSidebarUser(userProfile);
           showToast('Профиль сохранён');
-          // Update avatar preview with new name
-          updateAvatarPreview(data.full_name, userProfile?.photo_url);
         }
       } catch (e) {
         showToast('Ошибка сети', true);
@@ -809,19 +2095,28 @@
       }
     }
 
+    // Notes
+    function addNote() {
+      showToast('Функция в разработке');
+    }
+
     function showToast(message, isError = false) {
       const toast = document.getElementById('toast');
       toast.textContent = message;
       toast.className = 'toast visible' + (isError ? ' error' : '');
-      setTimeout(() => {
-        toast.classList.remove('visible');
-      }, 3000);
+      setTimeout(() => toast.classList.remove('visible'), 3000);
     }
 
     function showUpgradePlans() {
-      // TODO: Implement upgrade modal/page
       showToast('Скоро будет доступно');
     }
+
+    // Close modal on outside click
+    document.getElementById('history-modal').addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        hideHistoryModal();
+      }
+    });
   </script>
 </body>
 </html>
