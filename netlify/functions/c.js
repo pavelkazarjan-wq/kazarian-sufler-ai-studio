@@ -1,12 +1,14 @@
 const { createClient } = require('@supabase/supabase-js');
 
-// Initialize Supabase
-const FALLBACK_URL = 'https://ngxbfuimddefjeufwcwf.supabase.co';
-const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neGJmdWltZGRlZmpldWZ3Y3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDQ5MjYsImV4cCI6MjA4MDc4MDkyNn0.xRRF3L8BCzM5qTKzODT3IfayIQ1x4u0sa-4ki3UbhkI';
+// Initialize Supabase - credentials MUST be in environment variables
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
 
-const supabaseUrl = process.env.SUPABASE_URL || FALLBACK_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || FALLBACK_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+if (!supabaseUrl || !supabaseKey) {
+  console.error('SUPABASE_URL and SUPABASE_SERVICE_KEY must be set in environment variables');
+}
+
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 exports.handler = async (event) => {
   // Get short code from path: /.netlify/functions/c/abc123
@@ -32,7 +34,7 @@ exports.handler = async (event) => {
     // Look up the short code in database (exact match only - safe)
     const { data, error } = await supabase
       .from('waiting_clients')
-      .select('link, token, session_id')
+      .select('link, token, session_id, expires_at')
       .eq('short_code', shortCode)
       .single();
 
@@ -40,11 +42,24 @@ exports.handler = async (event) => {
       // Try exact session_id match (safe - no wildcards)
       const { data: dataBySession } = await supabase
         .from('waiting_clients')
-        .select('link, token, session_id')
+        .select('link, token, session_id, expires_at')
         .eq('session_id', shortCode)
         .single();
 
       if (dataBySession && dataBySession.link) {
+        // Check expiration
+        if (dataBySession.expires_at && new Date(dataBySession.expires_at) < new Date()) {
+          return {
+            statusCode: 410,
+            headers: { 'Content-Type': 'text/html; charset=utf-8' },
+            body: `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Ссылка устарела</title></head>
+<body style="font-family:sans-serif;text-align:center;padding:50px;">
+<h1>⏰ Ссылка устарела</h1>
+<p>Срок действия этой консультации истёк. Обратитесь к специалисту за новой ссылкой.</p>
+</body></html>`
+          };
+        }
         return {
           statusCode: 302,
           headers: { Location: dataBySession.link }
@@ -59,6 +74,20 @@ exports.handler = async (event) => {
 <body style="font-family:sans-serif;text-align:center;padding:50px;">
 <h1>😔 Ссылка не найдена</h1>
 <p>Возможно, консультация была отменена или ссылка устарела.</p>
+</body></html>`
+      };
+    }
+
+    // Check expiration
+    if (data.expires_at && new Date(data.expires_at) < new Date()) {
+      return {
+        statusCode: 410,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        body: `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Ссылка устарела</title></head>
+<body style="font-family:sans-serif;text-align:center;padding:50px;">
+<h1>⏰ Ссылка устарела</h1>
+<p>Срок действия этой консультации истёк. Обратитесь к специалисту за новой ссылкой.</p>
 </body></html>`
       };
     }

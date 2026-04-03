@@ -873,8 +873,8 @@
     .split-content video,
     .split-content canvas,
     .split-content img {
-      max-width: 100%;
-      max-height: 100%;
+      width: 100%;
+      height: 100%;
       object-fit: contain;
     }
 
@@ -925,9 +925,9 @@
     }
     .split-right { background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     .split-left video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); background: #111; }
-    .split-right canvas, .split-right img { max-width: 100%; max-height: 100%; object-fit: contain; }
-    .split-right video { max-width: 100%; max-height: 100%; object-fit: contain; background: #111; }
-    #split-screen-video { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .split-right canvas, .split-right img { width: 100%; height: 100%; object-fit: contain; }
+    .split-right video { width: 100%; height: 100%; object-fit: contain; background: #111; }
+    #split-screen-video { width: 100%; height: 100%; object-fit: contain; }
     #split-guest-video { width: 100%; height: 100%; object-fit: cover; }
 
     #slide-container {
@@ -10596,12 +10596,23 @@
 
     async function startScreenShare() {
       try {
-        screenStream = await navigator.mediaDevices.getDisplayMedia({
+        // Chrome 109+: CaptureController prevents focus switch to shared tab
+        let controller;
+        const options = {
           video: { cursor: 'always' },
           audio: false,
-          selfBrowserSurface: 'exclude', // Don't show current tab in picker
-          preferCurrentTab: false // Don't switch to shared tab
-        });
+          selfBrowserSurface: 'exclude',
+          surfaceSwitching: 'exclude',
+          monitorTypeSurfaces: 'include'
+        };
+
+        if ('CaptureController' in window) {
+          controller = new CaptureController();
+          controller.setFocusBehavior('no-focus-change');
+          options.controller = controller;
+        }
+
+        screenStream = await navigator.mediaDevices.getDisplayMedia(options);
 
         placeholder.style.display = 'none';
         slideContainer.classList.add('active');
@@ -11222,15 +11233,28 @@
               // Enable 3-participant mode
               enableThreeParticipantMode();
 
-              // Add guest 2's audio to guest 1's connection so they can hear each other
+              // Cross-connect: Add guest 2's audio+video to guest 1's connection
               if (peerConnections[0] && peerConnections[0].peerConnection) {
-                const pc = peerConnections[0].peerConnection;
-                remoteStream.getAudioTracks().forEach(track => {
+                const pc1 = peerConnections[0].peerConnection;
+                remoteStream.getTracks().forEach(track => {
                   try {
-                    pc.addTrack(track.clone(), remoteStream);
-                    console.log('🔊 Added Guest 2 audio to Guest 1 connection');
+                    pc1.addTrack(track.clone(), remoteStream);
+                    console.log(`🔗 Added Guest 2 ${track.kind} to Guest 1 connection`);
                   } catch (e) {
-                    console.warn('Could not add audio track to Guest 1:', e);
+                    console.warn(`Could not add ${track.kind} track to Guest 1:`, e);
+                  }
+                });
+              }
+
+              // Cross-connect: Add guest 1's audio+video to guest 2's connection
+              if (guestStream && call.peerConnection) {
+                const pc2 = call.peerConnection;
+                guestStream.getTracks().forEach(track => {
+                  try {
+                    pc2.addTrack(track.clone(), guestStream);
+                    console.log(`🔗 Added Guest 1 ${track.kind} to Guest 2 connection`);
+                  } catch (e) {
+                    console.warn(`Could not add ${track.kind} track to Guest 2:`, e);
                   }
                 });
               }
@@ -12158,29 +12182,29 @@
             if (disconnectBtn2) disconnectBtn2.style.display = 'flex';
             hostStatusDot.classList.add('connected');
 
-            // Cross-connect audio: add guest 2's audio to guest 1, and guest 1's audio to guest 2
-            // Add guest 2's audio to guest 1's connection
+            // Cross-connect: add guest 2's audio+video to guest 1, and guest 1's to guest 2
+            // Add guest 2's tracks to guest 1's connection
             if (peerConnections[0] && peerConnections[0].peerConnection) {
               const pc1 = peerConnections[0].peerConnection;
-              remoteStream.getAudioTracks().forEach(track => {
+              remoteStream.getTracks().forEach(track => {
                 try {
                   pc1.addTrack(track.clone(), remoteStream);
-                  console.log('🔊 Added Guest 2 audio to Guest 1 connection');
+                  console.log(`🔗 Added Guest 2 ${track.kind} to Guest 1 connection`);
                 } catch (e) {
-                  console.warn('Could not add Guest 2 audio to Guest 1:', e);
+                  console.warn(`Could not add Guest 2 ${track.kind} to Guest 1:`, e);
                 }
               });
             }
 
-            // Add guest 1's audio to guest 2's connection
+            // Add guest 1's tracks to guest 2's connection
             if (guestStream && call.peerConnection) {
               const pc2 = call.peerConnection;
-              guestStream.getAudioTracks().forEach(track => {
+              guestStream.getTracks().forEach(track => {
                 try {
                   pc2.addTrack(track.clone(), guestStream);
-                  console.log('🔊 Added Guest 1 audio to Guest 2 connection');
+                  console.log(`🔗 Added Guest 1 ${track.kind} to Guest 2 connection`);
                 } catch (e) {
-                  console.warn('Could not add Guest 1 audio to Guest 2:', e);
+                  console.warn(`Could not add Guest 1 ${track.kind} to Guest 2:`, e);
                 }
               });
             }

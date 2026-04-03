@@ -1,8 +1,16 @@
 const fetch = require('node-fetch');
 
+const ALLOWED_ORIGINS = [
+  'https://kazarian-webinar-ai-studio.netlify.app',
+  'http://localhost:3000'
+];
+
 exports.handler = async (event, context) => {
+  const origin = event.headers.origin || event.headers.Origin || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+
   const headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS'
   };
@@ -18,7 +26,11 @@ exports.handler = async (event, context) => {
   try {
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
     if (!GEMINI_API_KEY) {
-      throw new Error('GEMINI_API_KEY not configured');
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: 'GEMINI_API_KEY not configured' })
+      };
     }
 
     const body = JSON.parse(event.body);
@@ -52,121 +64,108 @@ WHAT TO DO:
 4. Generate appropriate body/clothing that matches the scene lighting
 5. Keep all existing text overlay intact
 
-FACE MATCHING CHECKLIST:
-- Same eye color, shape, and position as second image
-- Same nose shape and size as second image
-- Same mouth and lips as second image
-- Same face contour and jawline as second image
-- Same skin tone and texture as second image
-- Same hair color, style, and hairline as second image
-- Same facial hair (if any) as second image
-
-OUTPUT REQUIREMENTS:
-- 9:16 vertical portrait format
-- Photorealistic quality matching template style
-- Two distinct people: psychologist LEFT (unchanged), client RIGHT (face from second image)
-- All text overlays preserved`;
+OUTPUT: Generate a photorealistic image in 9:16 vertical portrait format.`;
 
     // Prepare image data
     const templateImageData = templateImage.replace(/^data:image\/\w+;base64,/, '');
     const clientImageData = clientImage.replace(/^data:image\/\w+;base64,/, '');
 
-    // Image generation models
-    const models = [
-      'gemini-2.0-flash-exp-image-generation',
-      'gemini-3.1-flash-image-preview'
-    ];
+    // Use Gemini 2.0 Flash with image generation capability
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
 
-    let lastError = null;
-
-    for (const modelName of models) {
-      try {
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
-
-        const requestBody = {
-          contents: [{
-            parts: [
-              { text: prompt },
-              {
-                inline_data: {
-                  mime_type: 'image/jpeg',
-                  data: templateImageData
-                }
-              },
-              {
-                inline_data: {
-                  mime_type: 'image/jpeg',
-                  data: clientImageData
-                }
-              }
-            ]
-          }],
-          generationConfig: {
-            temperature: 0.9,
-            topK: 32,
-            topP: 1,
-            maxOutputTokens: 4096
-          }
-        };
-
-        console.log(`Trying model: ${modelName}`);
-
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody)
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          console.log(`Model ${modelName} failed:`, result.error?.message);
-          lastError = result.error?.message || 'Unknown error';
-          continue;
-        }
-
-        // Check for image in response
-        if (result.candidates && result.candidates[0]?.content?.parts) {
-          for (const part of result.candidates[0].content.parts) {
-            if (part.inlineData) {
-              return {
-                statusCode: 200,
-                headers,
-                body: JSON.stringify({
-                  success: true,
-                  image: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`,
-                  model: modelName
-                })
-              };
+    const requestBody = {
+      contents: [{
+        parts: [
+          { text: prompt },
+          {
+            inline_data: {
+              mime_type: 'image/jpeg',
+              data: templateImageData
+            }
+          },
+          {
+            inline_data: {
+              mime_type: 'image/jpeg',
+              data: clientImageData
             }
           }
+        ]
+      }],
+      generationConfig: {
+        temperature: 1,
+        topK: 32,
+        topP: 1,
+        maxOutputTokens: 8192,
+        responseModalities: ["TEXT", "IMAGE"]
+      }
+    };
 
-          // No image but got text response
-          const textResponse = result.candidates[0].content.parts
-            .filter(p => p.text)
-            .map(p => p.text)
-            .join('\n');
+    console.log('Calling Gemini 2.0 Flash with image generation...');
 
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error('Gemini API error:', result);
+      return {
+        statusCode: response.status,
+        headers,
+        body: JSON.stringify({
+          error: result.error?.message || `API error: ${response.status}`,
+          details: result.error
+        })
+      };
+    }
+
+    // Check for image in response
+    if (result.candidates && result.candidates[0]?.content?.parts) {
+      for (const part of result.candidates[0].content.parts) {
+        if (part.inlineData) {
+          console.log('Image generated successfully');
           return {
             statusCode: 200,
             headers,
             body: JSON.stringify({
-              success: false,
-              error: 'Model returned text instead of image',
-              text: textResponse,
-              model: modelName
+              success: true,
+              image: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`
             })
           };
         }
-
-      } catch (err) {
-        console.log(`Model ${modelName} error:`, err.message);
-        lastError = err.message;
-        continue;
       }
+
+      // No image but got text response - model can't generate images
+      const textResponse = result.candidates[0].content.parts
+        .filter(p => p.text)
+        .map(p => p.text)
+        .join('\n');
+
+      console.log('Model returned text instead of image:', textResponse.substring(0, 200));
+
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          error: 'Генерація зображень тимчасово недоступна. Модель повернула текст замість зображення.',
+          text: textResponse
+        })
+      };
     }
 
-    throw new Error(`All models failed. Last error: ${lastError}`);
+    // No candidates at all
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        success: false,
+        error: 'Модель не повернула результат. Спробуйте ще раз.'
+      })
+    };
 
   } catch (error) {
     console.error('Gemini photo error:', error);
@@ -174,7 +173,7 @@ OUTPUT REQUIREMENTS:
       statusCode: 500,
       headers,
       body: JSON.stringify({
-        error: error.message
+        error: error.message || 'Внутрішня помилка сервера'
       })
     };
   }

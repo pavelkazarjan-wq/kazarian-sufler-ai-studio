@@ -1,9 +1,18 @@
 const crypto = require('crypto');
 
+// Allowed origins for CORS
+const ALLOWED_ORIGINS = [
+  'https://kazarian-webinar-ai-studio.netlify.app',
+  'http://localhost:3000'
+];
+
 exports.handler = async (event, context) => {
-  // CORS headers
+  // CORS headers - restrict to allowed origins
+  const origin = event.headers.origin || event.headers.Origin || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+
   const headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS'
   };
@@ -42,11 +51,8 @@ exports.handler = async (event, context) => {
 
     // Check password
     if (password === AUTH_PASSWORD) {
-      // Generate session token (simple hash of timestamp + secret)
-      const token = crypto
-        .createHash('sha256')
-        .update(`${Date.now()}_${AUTH_PASSWORD}_${Math.random()}`)
-        .digest('hex');
+      // Generate session token with cryptographic entropy
+      const token = crypto.randomBytes(32).toString('hex');
 
       return {
         statusCode: 200,

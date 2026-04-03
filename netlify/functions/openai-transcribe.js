@@ -1,9 +1,16 @@
 // Using native fetch and Blob (Node 18+)
 
+const ALLOWED_ORIGINS = [
+  'https://kazarian-webinar-ai-studio.netlify.app',
+  'http://localhost:3000'
+];
+
 exports.handler = async (event, context) => {
-  // CORS headers
+  const origin = event.headers.origin || event.headers.Origin || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+
   const headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS'
   };
@@ -62,6 +69,8 @@ exports.handler = async (event, context) => {
     formData.append('file', audioBlob, 'audio.webm');
     formData.append('model', 'whisper-1');
     formData.append('language', language);
+    // Add prompt to provide context and prevent hallucinations on silent/quiet audio
+    formData.append('prompt', 'Это запись психологической консультации. Психолог и клиент обсуждают эмоции, чувства, отношения, терапию.');
 
     // Call OpenAI Whisper API
     const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {

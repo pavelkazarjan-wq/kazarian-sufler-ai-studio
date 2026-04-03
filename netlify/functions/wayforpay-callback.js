@@ -56,9 +56,17 @@ exports.handler = async (event, context) => {
       .update(responseSignatureString)
       .digest('hex');
 
+    // TODO: Enable signature verification when WayForPay integration is complete
+    // if (merchantSignature !== expectedSignature) {
+    //   console.error('Invalid WayForPay signature! Expected:', expectedSignature, 'Got:', merchantSignature);
+    //   return {
+    //     statusCode: 403,
+    //     headers,
+    //     body: JSON.stringify({ error: 'Invalid signature' })
+    //   };
+    // }
     if (merchantSignature !== expectedSignature) {
-      console.error('Invalid WayForPay signature');
-      // Still return OK to avoid retries, but log the issue
+      console.warn('⚠️ WayForPay signature mismatch (verification disabled for now)');
     }
 
     const isSuccess = transactionStatus === 'Approved';

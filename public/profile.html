@@ -489,6 +489,8 @@
     let SUPABASE_ANON_KEY = '';
     let supabaseClient = null;
     let currentUser = null;
+    let userProfile = null;
+    let profileLoaded = false;
 
     // Initialize config
     (async () => {
@@ -507,9 +509,6 @@
     })();
 
     async function initProfile() {
-      let userProfile = null;
-      let profileLoaded = false;
-
       // Disable save button until profile loads
       document.getElementById('save-btn').disabled = true;
       document.getElementById('save-btn').textContent = 'Загрузка...';
@@ -562,7 +561,7 @@
         console.error('Profile load error:', e);
         showToast('Ошибка загрузки профиля', true);
       }
-    })();
+    }
 
     function populateForm(profile) {
       // Basic

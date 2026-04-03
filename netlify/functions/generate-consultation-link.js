@@ -1,13 +1,16 @@
+const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const { addCalendarEvent } = require('./add-calendar-event');
 
-// Initialize Supabase with fallback
-const FALLBACK_URL = 'https://ngxbfuimddefjeufwcwf.supabase.co';
-const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neGJmdWltZGRlZmpldWZ3Y3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDQ5MjYsImV4cCI6MjA4MDc4MDkyNn0.xRRF3L8BCzM5qTKzODT3IfayIQ1x4u0sa-4ki3UbhkI';
+// Initialize Supabase - credentials MUST be in environment variables
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
 
-const supabaseUrl = process.env.SUPABASE_URL || FALLBACK_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || FALLBACK_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+if (!supabaseUrl || !supabaseKey) {
+  console.error('SUPABASE_URL and SUPABASE_SERVICE_KEY must be set in environment variables');
+}
+
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = [
@@ -111,9 +114,9 @@ exports.handler = async (event, context) => {
     clientPhone = String(clientPhone || '').slice(0, 20);
     notes = String(notes || '').slice(0, 1000);
 
-    // Generate unique session ID and short code with better entropy
-    const sessionId = 'cons-' + Date.now().toString(36) + Math.random().toString(36).substring(2, 10);
-    const shortCode = Date.now().toString(36).slice(-5) + Math.random().toString(36).substring(2, 5);
+    // Generate unique session ID and short code with cryptographic entropy
+    const sessionId = 'cons-' + crypto.randomBytes(12).toString('hex');
+    const shortCode = crypto.randomBytes(4).toString('hex');
 
     // Calculate expiration date
     const expiresAt = Date.now() + (validDays * 24 * 60 * 60 * 1000);

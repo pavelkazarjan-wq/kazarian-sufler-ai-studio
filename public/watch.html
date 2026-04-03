@@ -252,18 +252,43 @@
     @media (max-width: 768px) {
       .header { padding: 10px 16px; }
       .logo { font-size: 16px; }
-      .video-container { padding: 5px; flex: 1; }
+      .logo span { display: none; }
+      .video-container { padding: 8px; flex: 1; }
       .video-wrapper {
         border-radius: 12px;
         aspect-ratio: auto;
         height: 100%;
-        max-height: calc(100vh - 140px);
+        max-height: calc(100vh - 130px);
       }
       #live-video {
         object-fit: contain;
       }
       .controls { padding: 12px; gap: 12px; }
       .control-btn { width: 44px; height: 44px; }
+      .fullscreen-btn { opacity: 1; }
+      .quality-badge { opacity: 1; font-size: 11px; padding: 3px 8px; top: 8px; left: 8px; }
+      .placeholder h2 { font-size: 18px; }
+      .placeholder p { font-size: 13px; }
+      .placeholder-icon { width: 60px; height: 60px; }
+      .placeholder-icon svg { width: 30px; height: 30px; }
+    }
+
+    /* Small phones */
+    @media (max-width: 480px) {
+      .header { padding: 8px 12px; }
+      .logo-icon { width: 28px; height: 28px; }
+      .live-badge { padding: 4px 10px; font-size: 11px; }
+      .viewer-count { font-size: 12px; }
+      .video-container { padding: 4px; }
+      .video-wrapper {
+        border-radius: 8px;
+        max-height: calc(100vh - 110px);
+      }
+      .controls { padding: 10px 8px; gap: 10px; }
+      .control-btn { width: 40px; height: 40px; }
+      .control-btn svg { width: 20px; height: 20px; }
+      .fullscreen-btn { width: 36px; height: 36px; bottom: 8px; right: 8px; }
+      .quality-badge { top: 6px; left: 6px; }
     }
 
     /* Fullscreen */
@@ -573,23 +598,54 @@
     /* Mobile adjustments */
     @media (max-width: 768px) {
       .chat-container {
-        width: calc(100% - 32px);
-        right: 16px;
+        width: calc(100% - 24px);
+        right: 12px;
+        left: 12px;
         bottom: 70px;
-        max-height: 35vh;
-        background: rgba(15, 23, 42, 0.85);
+        max-height: 40vh;
+        background: rgba(15, 23, 42, 0.92);
       }
       .chat-messages {
-        max-height: 120px;
+        max-height: 150px;
         min-height: 80px;
       }
       .chat-input-area {
         padding: 8px;
       }
       .chat-input {
-        padding: 8px 12px;
-        font-size: 14px;
+        padding: 10px 14px;
+        font-size: 16px; /* Prevent iOS zoom */
       }
+      .chat-bubble {
+        bottom: 70px;
+        right: 12px;
+        width: 50px;
+        height: 50px;
+      }
+      .name-modal-content {
+        width: calc(100% - 40px);
+        max-width: 320px;
+      }
+      .name-modal input {
+        font-size: 16px; /* Prevent iOS zoom */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .chat-container {
+        width: calc(100% - 16px);
+        right: 8px;
+        left: 8px;
+        bottom: 60px;
+        border-radius: 12px;
+      }
+      .chat-header { padding: 10px 12px; }
+      .chat-header h3 { font-size: 13px; }
+      .chat-messages { max-height: 120px; padding: 8px; gap: 8px; }
+      .chat-text { font-size: 14px; padding-left: 28px; }
+      .chat-avatar { width: 20px; height: 20px; font-size: 10px; }
+      .chat-send-btn { width: 36px; height: 36px; }
+      .chat-bubble { bottom: 60px; right: 8px; width: 46px; height: 46px; }
     }
 
     /* Chat bubble for minimized state */
@@ -901,6 +957,7 @@
             }
           }).catch(e => {
             console.warn('Autoplay blocked, user interaction needed');
+            placeholder.classList.remove('hidden');
             statusTitle.textContent = 'Нажмите для воспроизведения';
             statusText.textContent = '';
             spinner.style.display = 'none';
