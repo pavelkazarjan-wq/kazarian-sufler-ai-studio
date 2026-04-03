@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Dynamic SEO -->
+  <title id="page-title">Психолог | Консультації</title>
+  <meta name="description" id="meta-desc" content="">
+  <meta property="og:title" id="og-title" content="">
+  <meta property="og:description" id="og-desc" content="">
+  <meta property="og:image" id="og-image" content="">
+  <meta property="og:type" content="profile">
+
+  <!-- Hreflang -->
+  <link rel="alternate" hreflang="uk" id="hreflang-uk" href="">
+  <link rel="alternate" hreflang="ru" id="hreflang-ru" href="">
+  <link rel="alternate" hreflang="en" id="hreflang-en" href="">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --secondary: #8b5cf6;
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-heading: 'Inter', sans-serif;
+    }
+
+    /* Theme: Modern (dark) */
+    .theme-modern {
+      --bg-main: #0f172a;
+      --bg-section: #1e293b;
+      --bg-card: rgba(30, 41, 59, 0.8);
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255,255,255,0.1);
+    }
+
+    /* Theme: Classic (light) */
+    .theme-classic {
+      --bg-main: #f8fafc;
+      --bg-section: #ffffff;
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: rgba(0,0,0,0.1);
+    }
+
+    /* Theme: Minimal (white) */
+    .theme-minimal {
+      --bg-main: #ffffff;
+      --bg-section: #ffffff;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border-color: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Loading state */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.3s;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 24px;
+      background: var(--bg-main);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-name {
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--text-main);
+    }
+
+    .lang-switcher {
+      display: flex;
+      gap: 8px;
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .lang-btn.active, .lang-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 120px 0 60px;
+      text-align: center;
+    }
+
+    .hero-photo {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--primary);
+      margin-bottom: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    .hero-name {
+      font-family: var(--font-heading);
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-title {
+      font-size: 18px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .hero-headline {
+      font-size: 20px;
+      color: var(--text-main);
+      max-width: 600px;
+      margin: 0 auto 24px;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Video Section */
+    .video-section {
+      padding: 40px 0;
+    }
+
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--bg-card);
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .video-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    /* Section styles */
+    section {
+      padding: 60px 0;
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    /* About Section */
+    .about-content {
+      background: var(--bg-card);
+      padding: 32px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .theme-modern .about-content {
+      backdrop-filter: blur(10px);
+    }
+
+    .bio-text {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text-main);
+      white-space: pre-line;
+    }
+
+    .specializations {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .spec-tag {
+      padding: 6px 14px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .education-info {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Services Section */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .service-card {
+      background: var(--bg-card);
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      transition: transform 0.2s;
+    }
+
+    .service-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .service-name {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .service-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .service-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .service-duration {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .service-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Gallery Section */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .gallery-item {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .gallery-item:hover {
+      transform: scale(1.02);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Reviews Section */
+    .reviews-list {
+      display: grid;
+      gap: 20px;
+    }
+
+    .review-card {
+      background: var(--bg-card);
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .review-card.featured {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1));
+    }
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .review-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .review-name {
+      font-weight: 600;
+    }
+
+    .review-rating {
+      color: #fbbf24;
+    }
+
+    .review-text {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-main);
+    }
+
+    /* Booking Section */
+    .booking-section {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      padding: 60px 0;
+      margin: 60px 0 0;
+    }
+
+    .booking-section .section-title {
+      color: white;
+    }
+
+    .booking-form {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 15px;
+      color: #1e293b;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    /* Contacts Section */
+    .contacts-section {
+      padding: 40px 0;
+    }
+
+    .contacts-grid {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-main);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .contact-link:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Footer */
+    .footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 16px;
+    }
+
+    .footer-link {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .footer-link:hover {
+      color: var(--primary);
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .modal-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      max-width: 90%;
+      max-height: 90vh;
+      overflow: auto;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      color: white;
+      font-size: 20px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      padding: 14px 24px;
+      background: #10b981;
+      color: white;
+      border-radius: 10px;
+      font-weight: 500;
+      z-index: 1001;
+      transition: transform 0.3s;
+    }
+
+    .toast.error {
+      background: #ef4444;
+    }
+
+    .toast.visible {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-name {
+        font-size: 28px;
+      }
+
+      .hero-stats {
+        gap: 16px;
+      }
+
+      .stat-value {
+        font-size: 22px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .header {
+        padding: 12px 16px;
+      }
+
+      .container {
+        padding: 0 16px;
+      }
+    }
+
+    /* Structured Data placeholder */
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body class="theme-modern">
+  <!-- Loading -->
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-name" id="header-name"></div>
+    <div class="lang-switcher">
+      <button class="lang-btn" data-lang="uk">UA</button>
+      <button class="lang-btn" data-lang="ru">RU</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <img class="hero-photo" id="hero-photo" src="" alt="">
+      <h1 class="hero-name" id="hero-name"></h1>
+      <p class="hero-title" id="hero-title"></p>
+      <p class="hero-headline" id="hero-headline"></p>
+      <div class="hero-stats" id="hero-stats"></div>
+      <button class="cta-btn" onclick="scrollToBooking()">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <span data-i18n="book_btn">Записатися на консультацію</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Video -->
+  <section class="video-section container" id="video-section" style="display: none;">
+    <h3 class="video-title" id="video-title"></h3>
+    <div class="video-wrapper">
+      <iframe id="video-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <div class="container">
+      <h2 class="section-title" data-i18n="about_title">Про мене</h2>
+      <div class="about-content">
+        <div class="bio-text" id="bio-text"></div>
+        <div class="specializations" id="specializations"></div>
+        <div class="education-info" id="education-info"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services">
+    <div class="container">
+      <h2 class="section-title" data-i18n="services_title">Послуги</h2>
+      <div class="services-grid" id="services-grid"></div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section id="gallery" style="display: none;">
+    <div class="container">
+      <h2 class="section-title" data-i18n="gallery_title">Галерея</h2>
+      <div class="gallery-grid" id="gallery-grid"></div>
+    </div>
+  </section>
+
+  <!-- Reviews -->
+  <section id="reviews">
+    <div class="container">
+      <h2 class="section-title" data-i18n="reviews_title">Відгуки</h2>
+      <div class="reviews-list" id="reviews-list"></div>
+    </div>
+  </section>
+
+  <!-- Booking -->
+  <section class="booking-section" id="booking">
+    <div class="container">
+      <h2 class="section-title" data-i18n="booking_title">Записатися на консультацію</h2>
+      <form class="booking-form" id="booking-form">
+        <div class="form-group">
+          <label class="form-label" data-i18n="form_name">Ваше ім'я *</label>
+          <input type="text" class="form-input" id="client-name" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-i18n="form_phone">Телефон</label>
+            <input type="tel" class="form-input" id="client-phone" placeholder="+380...">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="form_email">Email</label>
+            <input type="email" class="form-input" id="client-email">
+          </div>
+        </div>
+        <div class="form-group" id="service-select-group">
+          <label class="form-label" data-i18n="form_service">Послуга</label>
+          <select class="form-select" id="service-select"></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-i18n="form_date">Бажана дата</label>
+            <input type="date" class="form-input" id="preferred-date">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="form_time">Бажаний час</label>
+            <input type="time" class="form-input" id="preferred-time">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="form_message">Повідомлення</label>
+          <textarea class="form-textarea" id="client-message" placeholder=""></textarea>
+        </div>
+        <button type="submit" class="submit-btn" id="submit-btn" data-i18n="form_submit">Надіслати заявку</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Contacts -->
+  <section class="contacts-section">
+    <div class="container">
+      <div class="contacts-grid" id="contacts-grid"></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-links" id="footer-links"></div>
+      <p class="footer-copy">&copy; <span id="current-year"></span>. <span data-i18n="footer_rights">Всі права захищені</span></p>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json" id="structured-data"></script>
+
+  <script>
+    // Translations
+    const translations = {
+      uk: {
+        book_btn: 'Записатися на консультацію',
+        about_title: 'Про мене',
+        services_title: 'Послуги',
+        gallery_title: 'Галерея',
+        reviews_title: 'Відгуки',
+        booking_title: 'Записатися на консультацію',
+        form_name: "Ваше ім'я *",
+        form_phone: 'Телефон',
+        form_email: 'Email',
+        form_service: 'Послуга',
+        form_date: 'Бажана дата',
+        form_time: 'Бажаний час',
+        form_message: 'Повідомлення',
+        form_submit: 'Надіслати заявку',
+        footer_rights: 'Всі права захищені',
+        years_exp: 'років досвіду',
+        minutes: 'хв',
+        privacy: 'Політика конфіденційності',
+        disclaimer: 'Відмова від відповідальності',
+        success_msg: 'Заявку надіслано! Ми зв\'яжемося з вами найближчим часом.',
+        error_msg: 'Помилка. Спробуйте ще раз.'
+      },
+      ru: {
+        book_btn: 'Записаться на консультацию',
+        about_title: 'Обо мне',
+        services_title: 'Услуги',
+        gallery_title: 'Галерея',
+        reviews_title: 'Отзывы',
+        booking_title: 'Записаться на консультацию',
+        form_name: 'Ваше имя *',
+        form_phone: 'Телефон',
+        form_email: 'Email',
+        form_service: 'Услуга',
+        form_date: 'Желаемая дата',
+        form_time: 'Желаемое время',
+        form_message: 'Сообщение',
+        form_submit: 'Отправить заявку',
+        footer_rights: 'Все права защищены',
+        years_exp: 'лет опыта',
+        minutes: 'мин',
+        privacy: 'Политика конфиденциальности',
+        disclaimer: 'Отказ от ответственности',
+        success_msg: 'Заявка отправлена! Мы свяжемся с вами в ближайшее время.',
+        error_msg: 'Ошибка. Попробуйте еще раз.'
+      },
+      en: {
+        book_btn: 'Book a consultation',
+        about_title: 'About me',
+        services_title: 'Services',
+        gallery_title: 'Gallery',
+        reviews_title: 'Reviews',
+        booking_title: 'Book a consultation',
+        form_name: 'Your name *',
+        form_phone: 'Phone',
+        form_email: 'Email',
+        form_service: 'Service',
+        form_date: 'Preferred date',
+        form_time: 'Preferred time',
+        form_message: 'Message',
+        form_submit: 'Submit request',
+        footer_rights: 'All rights reserved',
+        years_exp: 'years of experience',
+        minutes: 'min',
+        privacy: 'Privacy Policy',
+        disclaimer: 'Disclaimer',
+        success_msg: 'Request sent! We will contact you soon.',
+        error_msg: 'Error. Please try again.'
+      }
+    };
+
+    let currentLang = 'uk';
+    let pageData = null;
+    let slug = '';
+
+    // Get slug from URL
+    function getSlug() {
+      const path = window.location.pathname;
+      const match = path.match(/\/p\/([^\/]+)/);
+      return match ? match[1] : '';
+    }
+
+    // Detect language
+    function detectLanguage() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlLang = urlParams.get('lang');
+      if (urlLang && ['uk', 'ru', 'en'].includes(urlLang)) return urlLang;
+
+      const savedLang = localStorage.getItem('specialist_lang');
+      if (savedLang && ['uk', 'ru', 'en'].includes(savedLang)) return savedLang;
+
+      const browserLang = navigator.language.substring(0, 2);
+      if (browserLang === 'ru') return 'ru';
+      if (browserLang === 'en') return 'en';
+      return 'uk';
+    }
+
+    // Set language
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('specialist_lang', lang);
+      document.documentElement.lang = lang;
+
+      // Update buttons
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+
+      // Update i18n elements
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+
+      // Re-render content if data loaded
+      if (pageData) {
+        renderPage(pageData);
+      }
+
+      // Update URL
+      const url = new URL(window.location);
+      url.searchParams.set('lang', lang);
+      history.replaceState({}, '', url);
+    }
+
+    // Fetch page data
+    async function fetchPageData() {
+      slug = getSlug();
+      if (!slug) {
+        showError('Сторінку не знайдено');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/.netlify/functions/specialist-page?slug=${slug}&lang=${currentLang}`);
+        if (!response.ok) throw new Error('Not found');
+
+        pageData = await response.json();
+        renderPage(pageData);
+        hideLoading();
+      } catch (error) {
+        console.error(error);
+        showError('Сторінку не знайдено');
+      }
+    }
+
+    // Render page
+    function renderPage(data) {
+      const t = translations[currentLang];
+
+      // Apply theme
+      document.body.className = `theme-${data.theme.name}`;
+      document.documentElement.style.setProperty('--primary', data.theme.primaryColor);
+      document.documentElement.style.setProperty('--secondary', data.theme.secondaryColor);
+
+      // SEO
+      document.getElementById('page-title').textContent = data.seo.title;
+      document.getElementById('meta-desc').content = data.seo.description;
+      document.getElementById('og-title').content = data.seo.title;
+      document.getElementById('og-desc').content = data.seo.description;
+      document.getElementById('og-image').content = data.seo.image || '';
+
+      // Hreflang
+      const baseUrl = window.location.origin + '/p/' + slug;
+      document.getElementById('hreflang-uk').href = baseUrl + '?lang=uk';
+      document.getElementById('hreflang-ru').href = baseUrl + '?lang=ru';
+      document.getElementById('hreflang-en').href = baseUrl + '?lang=en';
+
+      // Header
+      document.getElementById('header-name').textContent = data.specialist.name;
+
+      // Hero
+      document.getElementById('hero-photo').src = data.specialist.photo || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%233b82f6" width="100" height="100"/><text x="50" y="60" text-anchor="middle" fill="white" font-size="40">' + (data.specialist.name?.[0] || '?') + '</text></svg>';
+      document.getElementById('hero-photo').alt = data.specialist.name;
+      document.getElementById('hero-name').textContent = data.specialist.name;
+      document.getElementById('hero-title').textContent = data.specialist.title;
+      document.getElementById('hero-headline').textContent = data.specialist.headline || '';
+
+      // Stats
+      let statsHtml = '';
+      if (data.specialist.experience_years > 0) {
+        statsHtml += `<div class="stat-item"><div class="stat-value">${data.specialist.experience_years}+</div><div class="stat-label">${t.years_exp}</div></div>`;
+      }
+      if (data.reviews.length > 0) {
+        const avgRating = (data.reviews.reduce((sum, r) => sum + r.rating, 0) / data.reviews.length).toFixed(1);
+        statsHtml += `<div class="stat-item"><div class="stat-value">${avgRating}</div><div class="stat-label">rating</div></div>`;
+      }
+      document.getElementById('hero-stats').innerHTML = statsHtml;
+
+      // Video
+      if (data.specialist.youtube_video) {
+        const videoId = extractYoutubeId(data.specialist.youtube_video);
+        if (videoId) {
+          document.getElementById('video-section').style.display = 'block';
+          document.getElementById('video-title').textContent = data.specialist.video_title || '';
+          document.getElementById('video-iframe').src = `https://www.youtube.com/embed/${videoId}`;
+        }
+      }
+
+      // Bio
+      document.getElementById('bio-text').textContent = data.specialist.bio || '';
+
+      // Specializations
+      let specsHtml = '';
+      (data.specialist.specializations || []).forEach(spec => {
+        specsHtml += `<span class="spec-tag">${spec}</span>`;
+      });
+      document.getElementById('specializations').innerHTML = specsHtml;
+
+      // Education
+      if (data.specialist.education) {
+        document.getElementById('education-info').textContent = data.specialist.education;
+      }
+
+      // Services
+      let servicesHtml = '';
+      data.services.forEach(s => {
+        servicesHtml += `
+          <div class="service-card" data-service-id="${s.id}">
+            <h3 class="service-name">${s.name}</h3>
+            <p class="service-desc">${s.description || ''}</p>
+            <div class="service-meta">
+              <span class="service-duration">${s.duration} ${t.minutes}</span>
+              <span class="service-price">${s.price ? s.price + ' ' + s.currency : ''}</span>
+            </div>
+          </div>
+        `;
+      });
+      document.getElementById('services-grid').innerHTML = servicesHtml || '<p style="text-align:center;color:var(--text-muted)">-</p>';
+
+      // Service select
+      let serviceOptionsHtml = '<option value="">-</option>';
+      data.services.forEach(s => {
+        serviceOptionsHtml += `<option value="${s.id}">${s.name}</option>`;
+      });
+      document.getElementById('service-select').innerHTML = serviceOptionsHtml;
+
+      // Gallery
+      if (data.gallery.length > 0) {
+        document.getElementById('gallery').style.display = 'block';
+        let galleryHtml = '';
+        data.gallery.forEach(g => {
+          galleryHtml += `
+            <div class="gallery-item">
+              <img src="${g.url}" alt="${g.caption || ''}" loading="lazy">
+            </div>
+          `;
+        });
+        document.getElementById('gallery-grid').innerHTML = galleryHtml;
+      }
+
+      // Reviews
+      let reviewsHtml = '';
+      data.reviews.forEach(r => {
+        const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        reviewsHtml += `
+          <div class="review-card ${r.is_featured ? 'featured' : ''}">
+            <div class="review-header">
+              <div class="review-avatar">${r.client_name[0]}</div>
+              <div>
+                <div class="review-name">${r.client_name}</div>
+                <div class="review-rating">${stars}</div>
+              </div>
+            </div>
+            <p class="review-text">${r.text || ''}</p>
+          </div>
+        `;
+      });
+      document.getElementById('reviews-list').innerHTML = reviewsHtml || '<p style="text-align:center;color:var(--text-muted)">-</p>';
+
+      // Contacts
+      let contactsHtml = '';
+      if (data.contacts.phone) {
+        contactsHtml += `<a class="contact-link" href="tel:${data.contacts.phone}"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>${data.contacts.phone}</a>`;
+      }
+      if (data.contacts.telegram) {
+        contactsHtml += `<a class="contact-link" href="https://t.me/${data.contacts.telegram}" target="_blank"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>Telegram</a>`;
+      }
+      if (data.contacts.email) {
+        contactsHtml += `<a class="contact-link" href="mailto:${data.contacts.email}"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>Email</a>`;
+      }
+      if (data.contacts.instagram) {
+        contactsHtml += `<a class="contact-link" href="https://instagram.com/${data.contacts.instagram}" target="_blank"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>Instagram</a>`;
+      }
+      document.getElementById('contacts-grid').innerHTML = contactsHtml;
+
+      // Footer links
+      let footerHtml = '';
+      if (data.legal.privacy_policy) {
+        footerHtml += `<a class="footer-link" href="#" onclick="showLegalModal('privacy')">${t.privacy}</a>`;
+      }
+      if (data.legal.disclaimer) {
+        footerHtml += `<a class="footer-link" href="#" onclick="showLegalModal('disclaimer')">${t.disclaimer}</a>`;
+      }
+      document.getElementById('footer-links').innerHTML = footerHtml;
+
+      // Year
+      document.getElementById('current-year').textContent = new Date().getFullYear();
+
+      // Structured Data
+      const structuredData = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": data.specialist.name,
+        "jobTitle": data.specialist.title,
+        "image": data.specialist.photo,
+        "description": data.specialist.bio,
+        "url": window.location.href
+      };
+      document.getElementById('structured-data').textContent = JSON.stringify(structuredData);
+
+      // Set min date for booking
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('preferred-date').min = today;
+    }
+
+    // Extract YouTube video ID
+    function extractYoutubeId(url) {
+      if (!url) return null;
+      const match = url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([^&?\s]+)/);
+      return match ? match[1] : null;
+    }
+
+    // Scroll to booking
+    function scrollToBooking() {
+      document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Show toast
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${isError ? 'error' : ''} visible`;
+      setTimeout(() => {
+        toast.classList.remove('visible');
+      }, 4000);
+    }
+
+    // Hide loading
+    function hideLoading() {
+      document.getElementById('loading').classList.add('hidden');
+    }
+
+    // Show error
+    function showError(message) {
+      document.body.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:20px;">
+          <div>
+            <h1 style="font-size:48px;margin-bottom:16px;">404</h1>
+            <p style="color:var(--text-muted);">${message}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // Submit booking
+    document.getElementById('booking-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = '...';
+
+      const t = translations[currentLang];
+
+      try {
+        const response = await fetch('/.netlify/functions/specialist-booking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            slug: slug,
+            service_id: document.getElementById('service-select').value || null,
+            client_name: document.getElementById('client-name').value,
+            client_phone: document.getElementById('client-phone').value,
+            client_email: document.getElementById('client-email').value,
+            preferred_date: document.getElementById('preferred-date').value,
+            preferred_time: document.getElementById('preferred-time').value,
+            message: document.getElementById('client-message').value
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showToast(t.success_msg);
+          document.getElementById('booking-form').reset();
+        } else {
+          throw new Error(data.error);
+        }
+      } catch (error) {
+        showToast(t.error_msg, true);
+      }
+
+      btn.disabled = false;
+      btn.textContent = t.form_submit;
+    });
+
+    // Language switcher
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setLanguage(btn.dataset.lang);
+      });
+    });
+
+    // Init
+    currentLang = detectLanguage();
+    setLanguage(currentLang);
+    fetchPageData();
+  </script>
+</body>
+</html>
