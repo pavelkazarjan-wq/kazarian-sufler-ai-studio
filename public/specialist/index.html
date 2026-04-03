@@ -163,59 +163,85 @@
       padding: 0 24px;
     }
 
-    /* Hero Section */
+    /* Hero Section - New Layout */
     .hero {
-      padding: 120px 0 60px;
-      text-align: center;
+      padding: 100px 0 60px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-photo-wrapper {
+      position: relative;
     }
 
     .hero-photo {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 3/4;
       object-fit: cover;
-      border: 4px solid var(--primary);
-      margin-bottom: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      border-radius: 24px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    }
+
+    .hero-photo-decoration {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      width: 100%;
+      height: 100%;
+      max-width: 400px;
+      border: 3px solid var(--primary);
+      border-radius: 24px;
+      z-index: -1;
+    }
+
+    .hero-content {
+      text-align: left;
     }
 
     .hero-name {
       font-family: var(--font-heading);
-      font-size: 36px;
+      font-size: 42px;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      line-height: 1.2;
     }
 
     .hero-title {
-      font-size: 18px;
+      font-size: 20px;
       color: var(--text-muted);
-      margin-bottom: 16px;
+      margin-bottom: 20px;
+      font-weight: 500;
     }
 
     .hero-headline {
-      font-size: 20px;
+      font-size: 18px;
       color: var(--text-main);
-      max-width: 600px;
-      margin: 0 auto 24px;
+      line-height: 1.7;
+      margin-bottom: 28px;
     }
 
     .hero-stats {
       display: flex;
-      justify-content: center;
       gap: 32px;
       margin-bottom: 32px;
     }
 
     .stat-item {
-      text-align: center;
+      text-align: left;
     }
 
     .stat-value {
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 700;
       color: var(--primary);
     }
@@ -225,11 +251,27 @@
       color: var(--text-muted);
     }
 
+    .hero-specializations {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .hero-spec-tag {
+      padding: 6px 14px;
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--primary);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
     .cta-btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 16px 32px;
+      gap: 10px;
+      padding: 16px 36px;
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
       border: none;
@@ -241,8 +283,8 @@
     }
 
     .cta-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
     }
 
     /* Video Section */
@@ -673,17 +715,37 @@
 
     /* Responsive - Mobile */
     @media (max-width: 768px) {
-      .hero-section {
+      .hero {
         padding: 80px 0 40px;
       }
 
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        text-align: center;
+      }
+
+      .hero-photo-wrapper {
+        display: flex;
+        justify-content: center;
+      }
+
       .hero-photo {
-        width: 120px;
-        height: 120px;
+        max-width: 280px;
+        aspect-ratio: 1;
+        border-radius: 20px;
+      }
+
+      .hero-photo-decoration {
+        display: none;
+      }
+
+      .hero-content {
+        text-align: center;
       }
 
       .hero-name {
-        font-size: 24px;
+        font-size: 28px;
       }
 
       .hero-title {
@@ -694,14 +756,22 @@
         font-size: 15px;
       }
 
-      .hero-stats {
-        gap: 12px;
-        flex-wrap: wrap;
+      .hero-specializations {
         justify-content: center;
       }
 
+      .hero-stats {
+        justify-content: center;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
       .stat-value {
-        font-size: 20px;
+        font-size: 24px;
       }
 
       .stat-label {
@@ -857,15 +927,23 @@
   <!-- Hero -->
   <section class="hero">
     <div class="container">
-      <img class="hero-photo" id="hero-photo" src="" alt="">
-      <h1 class="hero-name" id="hero-name"></h1>
-      <p class="hero-title" id="hero-title"></p>
-      <p class="hero-headline" id="hero-headline"></p>
-      <div class="hero-stats" id="hero-stats"></div>
-      <button class="cta-btn" onclick="scrollToBooking()">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-        <span data-i18n="book_btn">Записатися на консультацію</span>
-      </button>
+      <div class="hero-grid">
+        <div class="hero-photo-wrapper">
+          <img class="hero-photo" id="hero-photo" src="" alt="">
+          <div class="hero-photo-decoration"></div>
+        </div>
+        <div class="hero-content">
+          <h1 class="hero-name" id="hero-name"></h1>
+          <p class="hero-title" id="hero-title"></p>
+          <p class="hero-headline" id="hero-headline"></p>
+          <div class="hero-specializations" id="hero-specializations"></div>
+          <div class="hero-stats" id="hero-stats"></div>
+          <button class="cta-btn" onclick="scrollToBooking()">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <span data-i18n="book_btn">Записатися на консультацію</span>
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1181,6 +1259,14 @@
       document.getElementById('hero-name').textContent = data.specialist.name;
       document.getElementById('hero-title').textContent = data.specialist.title;
       document.getElementById('hero-headline').textContent = data.specialist.headline || '';
+
+      // Specializations in hero
+      if (data.specialist.specializations && data.specialist.specializations.length > 0) {
+        const specsHtml = data.specialist.specializations
+          .map(s => `<span class="hero-spec-tag">${s}</span>`)
+          .join('');
+        document.getElementById('hero-specializations').innerHTML = specsHtml;
+      }
 
       // Stats
       let statsHtml = '';
