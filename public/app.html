@@ -13459,16 +13459,68 @@
       }
     });
 
+    // Convert audio blob to WAV format for better OpenAI compatibility
+    async function convertToWav(audioBlob) {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const arrayBuffer = await audioBlob.arrayBuffer();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+        // Convert to WAV
+        const numChannels = audioBuffer.numberOfChannels;
+        const sampleRate = audioBuffer.sampleRate;
+        const length = audioBuffer.length * numChannels * 2;
+        const buffer = new ArrayBuffer(44 + length);
+        const view = new DataView(buffer);
+
+        // WAV header
+        const writeString = (offset, string) => {
+          for (let i = 0; i < string.length; i++) {
+            view.setUint8(offset + i, string.charCodeAt(i));
+          }
+        };
+
+        writeString(0, 'RIFF');
+        view.setUint32(4, 36 + length, true);
+        writeString(8, 'WAVE');
+        writeString(12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, numChannels, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * numChannels * 2, true);
+        view.setUint16(32, numChannels * 2, true);
+        view.setUint16(34, 16, true);
+        writeString(36, 'data');
+        view.setUint32(40, length, true);
+
+        // Write audio data
+        let offset = 44;
+        for (let i = 0; i < audioBuffer.length; i++) {
+          for (let channel = 0; channel < numChannels; channel++) {
+            const sample = Math.max(-1, Math.min(1, audioBuffer.getChannelData(channel)[i]));
+            view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+            offset += 2;
+          }
+        }
+
+        await audioContext.close();
+        return new Blob([buffer], { type: 'audio/wav' });
+      } catch (err) {
+        console.warn('WAV conversion failed, using original:', err);
+        return audioBlob; // Return original if conversion fails
+      }
+    }
+
     // Helper function to transcribe a single audio chunk
     async function transcribeSingleChunk(audioBlob, apiKey, chunkIndex = 0) {
-      let fileExt = 'webm';
-      let mimeType = audioBlob.type || 'audio/webm';
-      if (mimeType.includes('ogg')) fileExt = 'ogg';
-      else if (mimeType.includes('mp4') || mimeType.includes('m4a')) fileExt = 'mp4';
-      else if (mimeType.includes('wav')) fileExt = 'wav';
+      // Convert to WAV for better OpenAI compatibility
+      console.log(`🎤 Converting chunk ${chunkIndex} to WAV...`);
+      const wavBlob = await convertToWav(audioBlob);
+      console.log(`🎤 Converted: ${(wavBlob.size/1024/1024).toFixed(2)}MB, type: ${wavBlob.type}`);
 
       const formData = new FormData();
-      formData.append('file', new Blob([audioBlob], { type: mimeType }), `audio_${chunkIndex}.${fileExt}`);
+      formData.append('file', wavBlob, `audio_${chunkIndex}.wav`);
       formData.append('model', 'whisper-1');
       formData.append('language', 'ru');
 
