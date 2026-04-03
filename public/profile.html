@@ -2338,10 +2338,15 @@
               <p style="font-size: 13px; color: #64748b; font-style: italic;">"Записать Анну Иванову на завтра в 14:00, первичная консультация про тревожность"</p>
             </div>
 
-            <button class="voice-record-btn" id="voice-record-btn" onclick="toggleVoiceRecording()">
+            <button class="voice-record-btn" id="voice-record-btn"
+                    onmousedown="startVoiceRecording()"
+                    onmouseup="stopVoiceRecording()"
+                    onmouseleave="stopVoiceRecording()"
+                    ontouchstart="startVoiceRecording(); event.preventDefault();"
+                    ontouchend="stopVoiceRecording()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
             </button>
-            <p id="voice-hint" style="margin-top: 12px; font-size: 13px; color: #64748b;">Нажмите для записи</p>
+            <p id="voice-hint" style="margin-top: 12px; font-size: 13px; color: #64748b;">Зажмите для записи</p>
 
             <div id="voice-transcript" style="margin-top: 20px; padding: 16px; background: rgba(15, 23, 42, 0.6); border-radius: 12px; display: none; text-align: left;">
               <p style="font-size: 12px; color: #64748b; margin-bottom: 8px;">Распознанный текст:</p>
@@ -2407,7 +2412,19 @@
               <input type="text" id="note-topic" placeholder="Краткая тема или запрос">
             </div>
             <div class="form-group" style="margin-bottom: 20px;">
-              <label>Заметки</label>
+              <label style="display: flex; align-items: center; justify-content: space-between;">
+                <span>Заметки</span>
+                <button type="button" class="btn btn-secondary" id="note-voice-btn"
+                        onmousedown="startNoteVoiceRecording()"
+                        onmouseup="stopNoteVoiceRecording()"
+                        onmouseleave="stopNoteVoiceRecording()"
+                        ontouchstart="startNoteVoiceRecording(); event.preventDefault();"
+                        ontouchend="stopNoteVoiceRecording()"
+                        style="padding: 6px 12px; font-size: 12px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-right: 4px;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+                  <span id="note-voice-hint">Зажмите для записи</span>
+                </button>
+              </label>
               <textarea id="note-content" style="width: 100%; padding: 12px 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #e2e8f0; font-size: 14px; min-height: 150px; resize: vertical;" placeholder="Запишите важные моменты сессии, наблюдения, план на следующую встречу..."></textarea>
             </div>
             <div style="display: flex; gap: 12px;">
@@ -5274,21 +5291,16 @@ ${input}
       document.getElementById('voice-parsed').style.display = 'none';
       document.getElementById('voice-loading').style.display = 'none';
       document.getElementById('voice-actions').style.display = 'none';
-      document.getElementById('voice-hint').textContent = 'Нажмите для записи';
+      document.getElementById('voice-hint').textContent = 'Зажмите для записи';
       document.getElementById('voice-record-btn').classList.remove('recording');
       voiceParsedData = null;
       isRecording = false;
     }
 
-    function toggleVoiceRecording() {
-      if (isRecording) {
-        stopVoiceRecording();
-      } else {
-        startVoiceRecording();
-      }
-    }
-
     function startVoiceRecording() {
+      // Prevent double-start
+      if (isRecording) return;
+
       // Check for Web Speech API support
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -5299,13 +5311,13 @@ ${input}
 
       voiceRecognition = new SpeechRecognition();
       voiceRecognition.lang = 'ru-RU';
-      voiceRecognition.continuous = false;
+      voiceRecognition.continuous = true;  // Continuous while button held
       voiceRecognition.interimResults = true;
 
       voiceRecognition.onstart = () => {
         isRecording = true;
         document.getElementById('voice-record-btn').classList.add('recording');
-        document.getElementById('voice-hint').textContent = 'Говорите...';
+        document.getElementById('voice-hint').textContent = 'Говорите... (отпустите для остановки)';
         document.getElementById('voice-transcript').style.display = 'block';
         document.getElementById('voice-text').textContent = '';
       };
@@ -5325,7 +5337,7 @@ ${input}
         if (transcript.trim()) {
           parseVoiceInput(transcript);
         } else {
-          document.getElementById('voice-hint').textContent = 'Нажмите для записи';
+          document.getElementById('voice-hint').textContent = 'Зажмите для записи';
         }
       };
 
@@ -5333,9 +5345,11 @@ ${input}
         isRecording = false;
         document.getElementById('voice-record-btn').classList.remove('recording');
         if (event.error === 'no-speech') {
-          document.getElementById('voice-hint').textContent = 'Речь не распознана. Попробуйте снова.';
+          document.getElementById('voice-hint').textContent = 'Речь не распознана. Зажмите снова.';
         } else if (event.error === 'not-allowed') {
           showToast('Разрешите доступ к микрофону в настройках браузера', true);
+        } else if (event.error === 'aborted') {
+          // Normal stop - do nothing
         } else {
           document.getElementById('voice-hint').textContent = 'Ошибка: ' + event.error;
         }
@@ -5345,12 +5359,96 @@ ${input}
     }
 
     function stopVoiceRecording() {
-      if (voiceRecognition) {
+      if (voiceRecognition && isRecording) {
         voiceRecognition.stop();
       }
       isRecording = false;
       document.getElementById('voice-record-btn').classList.remove('recording');
     }
+
+    // ============ VOICE INPUT FOR NOTES ============
+    let noteVoiceRecognition = null;
+    let isNoteRecording = false;
+
+    function startNoteVoiceRecording() {
+      if (isNoteRecording) return;
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showToast('Браузер не поддерживает распознавание речи. Используйте Chrome или Edge.', true);
+        return;
+      }
+
+      noteVoiceRecognition = new SpeechRecognition();
+      noteVoiceRecognition.lang = 'ru-RU';
+      noteVoiceRecognition.continuous = true;
+      noteVoiceRecognition.interimResults = true;
+
+      let finalTranscript = '';
+
+      noteVoiceRecognition.onstart = () => {
+        isNoteRecording = true;
+        document.getElementById('note-voice-btn').classList.add('recording');
+        document.getElementById('note-voice-btn').style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+        document.getElementById('note-voice-hint').textContent = 'Говорите...';
+        finalTranscript = '';
+      };
+
+      noteVoiceRecognition.onresult = (event) => {
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript + ' ';
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+        // Show interim results in hint
+        if (interimTranscript) {
+          document.getElementById('note-voice-hint').textContent = interimTranscript.substring(0, 30) + '...';
+        }
+      };
+
+      noteVoiceRecognition.onend = () => {
+        isNoteRecording = false;
+        document.getElementById('note-voice-btn').classList.remove('recording');
+        document.getElementById('note-voice-btn').style.background = '';
+        document.getElementById('note-voice-hint').textContent = 'Зажмите для записи';
+
+        if (finalTranscript.trim()) {
+          const noteContent = document.getElementById('note-content');
+          const currentText = noteContent.value;
+          noteContent.value = currentText + (currentText ? '\n' : '') + finalTranscript.trim();
+          showToast('Текст добавлен в заметку');
+        }
+      };
+
+      noteVoiceRecognition.onerror = (event) => {
+        isNoteRecording = false;
+        document.getElementById('note-voice-btn').classList.remove('recording');
+        document.getElementById('note-voice-btn').style.background = '';
+        if (event.error === 'no-speech') {
+          document.getElementById('note-voice-hint').textContent = 'Речь не распознана';
+        } else if (event.error === 'not-allowed') {
+          showToast('Разрешите доступ к микрофону', true);
+        } else if (event.error !== 'aborted') {
+          document.getElementById('note-voice-hint').textContent = 'Ошибка: ' + event.error;
+        }
+        setTimeout(() => {
+          document.getElementById('note-voice-hint').textContent = 'Зажмите для записи';
+        }, 2000);
+      };
+
+      noteVoiceRecognition.start();
+    }
+
+    function stopNoteVoiceRecording() {
+      if (noteVoiceRecognition && isNoteRecording) {
+        noteVoiceRecognition.stop();
+      }
+      isNoteRecording = false;
+    }
+    // ============ END VOICE INPUT FOR NOTES ============
 
     async function parseVoiceInput(transcript) {
       document.getElementById('voice-hint').textContent = 'Обработка...';
