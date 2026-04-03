@@ -449,6 +449,331 @@
       to { transform: rotate(360deg); }
     }
 
+    /* Supervision Chat Styles */
+    .supervision-chat-card {
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .supervision-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .supervision-info-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: #8b5cf6;
+    }
+
+    .supervision-info h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #e2e8f0;
+    }
+
+    .supervision-info p {
+      color: #94a3b8;
+      max-width: 400px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .supervision-chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 500px;
+    }
+
+    .supervision-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .supervision-message {
+      max-width: 85%;
+      padding: 14px 18px;
+      border-radius: 16px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .supervision-message.assistant {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #e2e8f0;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .supervision-message.user {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(59, 130, 246, 0.3));
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .supervision-message.typing {
+      opacity: 0.7;
+    }
+
+    .supervision-input-area {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      background: rgba(15, 23, 42, 0.4);
+      border-radius: 0 0 12px 12px;
+    }
+
+    .supervision-input {
+      flex: 1;
+      resize: none;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #e2e8f0;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .supervision-input:focus {
+      outline: none;
+      border-color: rgba(139, 92, 246, 0.5);
+    }
+
+    .supervision-send-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Floating AI Assistant */
+    .floating-ai-assistant {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+    }
+
+    .floating-ai-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .floating-ai-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 25px rgba(59, 130, 246, 0.5);
+    }
+
+    .floating-ai-btn.has-notification {
+      animation: pulse-notification 2s infinite;
+    }
+
+    @keyframes pulse-notification {
+      0%, 100% { box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4); }
+      50% { box-shadow: 0 4px 30px rgba(139, 92, 246, 0.6), 0 0 0 8px rgba(139, 92, 246, 0.1); }
+    }
+
+    .floating-ai-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 20px;
+      height: 20px;
+      background: #ef4444;
+      border-radius: 50%;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: bounce-badge 0.5s;
+    }
+
+    @keyframes bounce-badge {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    .floating-ai-panel {
+      position: absolute;
+      bottom: 70px;
+      right: 0;
+      width: 340px;
+      max-height: 450px;
+      background: rgba(15, 23, 42, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .floating-ai-panel.open {
+      display: flex;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .floating-ai-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .floating-ai-close,
+    .floating-ai-settings {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .floating-ai-close:hover,
+    .floating-ai-settings:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+    }
+
+    .floating-ai-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      max-height: 300px;
+    }
+
+    .floating-ai-welcome {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .floating-ai-recommendation {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .floating-ai-recommendation-text {
+      color: #e2e8f0;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .floating-ai-recommendation-action {
+      display: flex;
+      gap: 8px;
+    }
+
+    .floating-ai-recommendation-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .floating-ai-recommendation-btn.primary {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+    }
+
+    .floating-ai-recommendation-btn.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+    }
+
+    .floating-ai-recommendation-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .floating-ai-settings-panel {
+      padding: 12px 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .floating-ai-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #94a3b8;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .floating-ai-toggle input {
+      width: 18px;
+      height: 18px;
+      accent-color: #8b5cf6;
+    }
+
     /* Sessions List */
     .session-item {
       display: flex;
@@ -715,7 +1040,7 @@
       background: #ef4444;
     }
 
-    /* Calendar Styles */
+    /* Calendar Styles - Google Calendar Style */
     .calendar-header {
       display: flex;
       align-items: center;
@@ -726,9 +1051,9 @@
     }
 
     .calendar-month {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 600;
-      min-width: 160px;
+      min-width: 180px;
       text-align: center;
     }
 
@@ -750,107 +1075,216 @@
       background: rgba(255,255,255,0.15);
     }
 
+    .calendar-view-toggle {
+      display: flex;
+      gap: 4px;
+      margin-left: 16px;
+    }
+
+    .calendar-view-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 6px;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .calendar-view-btn.active {
+      background: #3b82f6;
+      color: white;
+    }
+
     .calendar-weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      margin-bottom: 8px;
+      gap: 1px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px 8px 0 0;
+      overflow: hidden;
     }
 
-    .calendar-weekdays div {
+    .calendar-weekday-header {
       text-align: center;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: #64748b;
-      padding: 8px 0;
+      padding: 10px 4px;
+      background: rgba(15, 23, 42, 0.6);
+      text-transform: uppercase;
+    }
+
+    .calendar-weekday-header .weekday-date {
+      display: block;
+      font-size: 22px;
+      font-weight: 400;
+      color: #e2e8f0;
+      margin-top: 4px;
+    }
+
+    .calendar-weekday-header.today .weekday-date {
+      background: #3b82f6;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
     }
 
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-    }
-
-    .calendar-day {
-      min-height: 80px;
-      display: flex;
-      flex-direction: column;
-      padding: 6px;
-      background: rgba(15, 23, 42, 0.4);
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
+      gap: 1px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 0 0 8px 8px;
       overflow: hidden;
     }
 
+    .calendar-day {
+      min-height: 200px;
+      max-height: 300px;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 4px;
+      background: rgba(15, 23, 42, 0.4);
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow-y: auto;
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .calendar-day:last-child {
+      border-right: none;
+    }
+
     .calendar-day:hover {
-      background: rgba(59, 130, 246, 0.2);
-      transform: scale(1.02);
+      background: rgba(59, 130, 246, 0.1);
     }
 
     .calendar-day.other-month {
-      opacity: 0.3;
+      opacity: 0.4;
+      background: rgba(15, 23, 42, 0.2);
     }
 
     .calendar-day.today {
-      background: rgba(59, 130, 246, 0.2);
-      border: 2px solid #3b82f6;
+      background: rgba(59, 130, 246, 0.15);
     }
 
     .calendar-day.selected {
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(139, 92, 246, 0.4));
-      border: 2px solid #8b5cf6;
+      background: rgba(139, 92, 246, 0.2);
     }
 
     .calendar-day-number {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: #e2e8f0;
-    }
-
-    .calendar-day.today .calendar-day-number {
-      background: #3b82f6;
-      color: white;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: none; /* Hidden in week view - shown in header */
     }
 
     .calendar-day-events {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 2px;
-      overflow: hidden;
+      gap: 3px;
     }
 
     .calendar-event-preview {
-      font-size: 10px;
-      padding: 2px 4px;
+      font-size: 11px;
+      padding: 4px 6px;
       border-radius: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      background: rgba(59, 130, 246, 0.3);
-      color: #93c5fd;
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+      background: transparent;
+      color: #e2e8f0;
+      line-height: 1.3;
     }
 
-    .calendar-event-preview.type-primary { background: rgba(59, 130, 246, 0.3); color: #93c5fd; }
-    .calendar-event-preview.type-followup { background: rgba(16, 185, 129, 0.3); color: #6ee7b7; }
-    .calendar-event-preview.type-group { background: rgba(139, 92, 246, 0.3); color: #c4b5fd; }
-    .calendar-event-preview.type-supervision { background: rgba(245, 158, 11, 0.3); color: #fcd34d; }
-    .calendar-event-preview.type-training { background: rgba(236, 72, 153, 0.3); color: #f9a8d4; }
+    .calendar-event-preview::before {
+      content: '•';
+      font-size: 14px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .calendar-event-preview.type-primary { color: #93c5fd; }
+    .calendar-event-preview.type-primary::before { color: #3b82f6; }
+    .calendar-event-preview.type-followup { color: #6ee7b7; }
+    .calendar-event-preview.type-followup::before { color: #10b981; }
+    .calendar-event-preview.type-group { color: #c4b5fd; }
+    .calendar-event-preview.type-group::before { color: #8b5cf6; }
+    .calendar-event-preview.type-supervision { color: #fcd34d; }
+    .calendar-event-preview.type-supervision::before { color: #f59e0b; }
+    .calendar-event-preview.type-training { color: #f9a8d4; }
+    .calendar-event-preview.type-training::before { color: #ec4899; }
+
+    .calendar-event-time {
+      font-size: 11px;
+      color: inherit;
+      white-space: nowrap;
+    }
+
+    .calendar-event-text {
+      font-size: 11px;
+      word-break: break-word;
+    }
 
     .calendar-more-events {
-      font-size: 9px;
+      font-size: 10px;
       color: #64748b;
+      padding: 4px;
       text-align: center;
-      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    .calendar-more-events:hover {
+      color: #94a3b8;
+    }
+
+    /* Month view (compact) */
+    .calendar-grid.month-view .calendar-day {
+      min-height: 90px;
+      max-height: 120px;
+    }
+
+    .calendar-grid.month-view .calendar-day-number {
+      display: flex;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #94a3b8;
+    }
+
+    .calendar-grid.month-view .calendar-day.today .calendar-day-number {
+      background: #3b82f6;
+      color: white;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .calendar-grid.month-view .calendar-event-preview {
+      font-size: 10px;
+      padding: 2px 4px;
+    }
+
+    /* Custom scrollbar for calendar */
+    .calendar-day::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .calendar-day::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .calendar-day::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
     }
 
     /* Voice Recording Button */
@@ -1221,17 +1655,18 @@
         padding: 10px 8px;
       }
 
-      /* Calendar mobile */
+      /* Calendar mobile - Google Calendar style */
       .calendar-header {
         flex-wrap: wrap;
         gap: 8px;
+        padding-bottom: 12px;
       }
 
       .calendar-month {
         font-size: 16px;
         min-width: auto;
-        order: 1;
         flex: 1;
+        text-align: left;
       }
 
       .calendar-nav-btn {
@@ -1239,12 +1674,82 @@
         height: 32px;
       }
 
-      .calendar-day {
-        min-height: 40px;
+      .calendar-view-toggle {
+        width: 100%;
+        order: 10;
+        margin-left: 0;
+        margin-top: 8px;
+        justify-content: center;
       }
 
-      .calendar-day-number {
-        font-size: 12px;
+      .calendar-weekdays {
+        gap: 0;
+      }
+
+      .calendar-weekday-header {
+        padding: 6px 2px;
+        font-size: 10px;
+      }
+
+      .calendar-weekday-header .weekday-date {
+        font-size: 16px;
+      }
+
+      .calendar-weekday-header.today .weekday-date {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+      }
+
+      .calendar-grid {
+        gap: 0;
+      }
+
+      .calendar-day {
+        min-height: 120px;
+        max-height: 180px;
+        padding: 4px 2px;
+      }
+
+      .calendar-day-events {
+        gap: 2px;
+      }
+
+      .calendar-event-preview {
+        font-size: 9px;
+        padding: 2px 3px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+      }
+
+      .calendar-event-preview::before {
+        font-size: 10px;
+        display: none;
+      }
+
+      .calendar-event-time {
+        font-size: 9px;
+        font-weight: 600;
+      }
+
+      .calendar-event-text {
+        font-size: 8px;
+        display: none; /* Hide text on very small screens */
+      }
+
+      .calendar-grid.month-view .calendar-day {
+        min-height: 60px;
+        max-height: 80px;
+      }
+
+      .calendar-grid.month-view .calendar-day-number {
+        font-size: 11px;
+      }
+
+      .calendar-grid.month-view .calendar-event-preview {
+        font-size: 8px;
+        padding: 1px 2px;
       }
 
       .session-card {
@@ -1265,6 +1770,70 @@
 
       .session-card-actions .session-btn {
         flex: 1;
+      }
+
+      /* Supervision mobile */
+      .supervision-chat-card {
+        min-height: 400px;
+      }
+
+      .supervision-chat {
+        min-height: 400px;
+      }
+
+      .supervision-messages {
+        padding: 12px;
+      }
+
+      .supervision-message {
+        max-width: 90%;
+        padding: 12px 14px;
+        font-size: 13px;
+      }
+
+      .supervision-input-area {
+        padding: 12px;
+        gap: 8px;
+      }
+
+      .supervision-input {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+
+      .supervision-send-btn {
+        width: 44px;
+        height: 44px;
+      }
+
+      .supervision-info {
+        padding: 30px 16px;
+      }
+
+      .supervision-info h3 {
+        font-size: 18px;
+      }
+
+      .supervision-info p {
+        font-size: 14px;
+      }
+
+      /* Floating AI mobile */
+      .floating-ai-assistant {
+        bottom: 16px;
+        right: 16px;
+      }
+
+      .floating-ai-btn {
+        width: 50px;
+        height: 50px;
+      }
+
+      .floating-ai-panel {
+        width: calc(100vw - 32px);
+        right: 0;
+        bottom: 60px;
+        max-height: 60vh;
       }
     }
 
@@ -1451,6 +2020,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/><path d="M8 12h8"/></svg>
           Регрессии
         </div>
+        <div class="nav-item" data-section="supervision">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></svg>
+          Супервизия
+        </div>
         <div class="nav-item" data-section="settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           Настройки
@@ -1511,12 +2084,12 @@
           </div>
         </div>
 
-        <!-- Quick AI Assistant -->
+        <!-- AI Orchestrator Assistant -->
         <div class="card ai-assistant">
           <div class="card-header">
             <div class="card-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 3 3v1a2 2 0 0 1-2 2h-1v5a4 4 0 0 1-8 0v-5H7a2 2 0 0 1-2-2v-1a3 3 0 0 1 3-3V6a4 4 0 0 1 4-4z"/></svg>
-              AI-Помощник подготовки к консультации
+              AI-Консилиум психологов
             </div>
             <button class="btn btn-secondary" onclick="showHistoryModal()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -1525,22 +2098,33 @@
           </div>
 
           <div class="ai-input-group">
-            <label>Опишите клиента и тему консультации</label>
-            <textarea class="ai-textarea" id="ai-input" placeholder="Например: Женщина 35 лет, тревожность, панические атаки. Первичная консультация. Запрос: научиться справляться с паникой."></textarea>
+            <label>Режим работы</label>
+            <div class="ai-options" id="ai-mode-options">
+              <span class="ai-option active" data-mode="consultation">🧠 Консультация</span>
+              <span class="ai-option" data-mode="technique">🌙 Техника/Транс</span>
+              <span class="ai-option" data-mode="protocol">📋 Протокол</span>
+            </div>
           </div>
 
-          <div class="ai-options">
-            <span class="ai-option active" data-approach="integrative">Интегративный подход</span>
-            <span class="ai-option" data-approach="nlp">НЛП</span>
-            <span class="ai-option" data-approach="cbt">КПТ</span>
-            <span class="ai-option" data-approach="hypnosis">Гипнотерапия</span>
-            <span class="ai-option" data-approach="gestalt">Гештальт</span>
+          <div class="ai-input-group">
+            <label>Клиент и запрос</label>
+            <textarea class="ai-textarea" id="ai-input" placeholder="Например: Ирина, 35 лет. Тревожность, страх отвержения, проблемы с границами. Первичная консультация."></textarea>
+          </div>
+
+          <div class="ai-input-group">
+            <label>Подход (консилиум агентов)</label>
+            <div class="ai-options" id="ai-approach-options">
+              <span class="ai-option active" data-approach="all">👥 Все специалисты</span>
+              <span class="ai-option" data-approach="nlp">🎯 НЛП</span>
+              <span class="ai-option" data-approach="cbt">📊 КПТ</span>
+              <span class="ai-option" data-approach="hypnosis">🌀 Гипноз</span>
+            </div>
           </div>
 
           <div class="ai-actions">
-            <button class="btn btn-ai" onclick="generatePreparation()">
+            <button class="btn btn-ai" onclick="generateOrchestratorResponse()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              Подготовить сессию
+              Запустить консилиум
             </button>
             <button class="btn btn-secondary" onclick="clearAiResult()">Очистить</button>
           </div>
@@ -1601,6 +2185,10 @@
         <div class="page-header">
           <h1 class="page-title">Календарь сессий</h1>
           <div class="header-actions">
+            <button class="btn btn-secondary" onclick="toggleTelegram()" id="telegram-btn">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+              <span class="btn-text">Telegram</span>
+            </button>
             <button class="btn btn-secondary" onclick="toggleTodoist()" id="todoist-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               <span class="btn-text">Todoist</span>
@@ -1619,24 +2207,22 @@
         <!-- Calendar Grid -->
         <div class="card" style="padding: 16px;">
           <div class="calendar-header">
-            <button class="calendar-nav-btn" onclick="prevMonth()">
+            <button class="calendar-nav-btn" onclick="prevWeek()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
             <h3 class="calendar-month" id="calendar-month">Апрель 2026</h3>
-            <button class="calendar-nav-btn" onclick="nextMonth()">
+            <button class="calendar-nav-btn" onclick="nextWeek()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
-            <button class="btn btn-secondary" onclick="goToToday()" style="margin-left: auto; padding: 8px 16px; font-size: 13px;">Сегодня</button>
+            <button class="btn btn-secondary" onclick="goToToday()" style="margin-left: 12px; padding: 8px 16px; font-size: 13px;">Сегодня</button>
+            <div class="calendar-view-toggle" style="margin-left: auto;">
+              <button class="calendar-view-btn active" id="week-view-btn" onclick="setCalendarView('week')">Неделя</button>
+              <button class="calendar-view-btn" id="month-view-btn" onclick="setCalendarView('month')">Месяц</button>
+            </div>
           </div>
 
-          <div class="calendar-weekdays">
-            <div>Пн</div>
-            <div>Вт</div>
-            <div>Ср</div>
-            <div>Чт</div>
-            <div>Пт</div>
-            <div>Сб</div>
-            <div>Вс</div>
+          <div class="calendar-weekdays" id="calendar-weekdays">
+            <!-- Week headers with dates will be rendered by JS -->
           </div>
 
           <div class="calendar-grid" id="calendar-grid">
@@ -1828,6 +2414,99 @@
         </div>
       </div>
 
+      <!-- Telegram Settings Modal -->
+      <div class="modal-overlay" id="telegram-modal">
+        <div class="modal" style="max-width: 500px;">
+          <div class="modal-header">
+            <h3 class="modal-title">Настройка Telegram</h3>
+            <button class="modal-close" onclick="closeTelegramModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="telegram-setup-step1">
+              <p style="color: #94a3b8; margin-bottom: 16px; line-height: 1.6;">
+                Для получения напоминаний о сессиях вам нужен свой Telegram бот.
+              </p>
+              <ol style="color: #94a3b8; margin-bottom: 20px; padding-left: 20px; line-height: 1.8;">
+                <li>Откройте <a href="https://t.me/BotFather" target="_blank" style="color: #3b82f6;">@BotFather</a> в Telegram</li>
+                <li>Отправьте команду <code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">/newbot</code></li>
+                <li>Придумайте имя и username для бота</li>
+                <li>Скопируйте полученный токен и вставьте ниже</li>
+              </ol>
+              <div class="form-group" style="margin-bottom: 16px;">
+                <label>Токен бота</label>
+                <input type="text" id="telegram-bot-token" placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz" style="font-family: monospace;">
+              </div>
+              <div style="display: flex; gap: 12px;">
+                <button class="btn btn-primary" onclick="saveTelegramToken()" style="flex: 1;">Сохранить токен</button>
+                <button class="btn btn-secondary" onclick="closeTelegramModal()">Отмена</button>
+              </div>
+            </div>
+
+            <div id="telegram-setup-step2" style="display: none;">
+              <div style="text-align: center; padding: 20px 0;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                  <svg viewBox="0 0 24 24" fill="white" width="32" height="32"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                </div>
+                <p style="color: #e2e8f0; font-size: 16px; margin-bottom: 8px;">Бот настроен!</p>
+                <p style="color: #94a3b8; margin-bottom: 20px;">Теперь нажмите кнопку, чтобы подключить бота к вашему Telegram</p>
+                <button class="btn btn-ai" onclick="openTelegramBot()" style="width: 100%;">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                  Открыть бота в Telegram
+                </button>
+                <p style="color: #64748b; font-size: 12px; margin-top: 12px;">После нажатия "Начать" в боте, напоминания будут активированы</p>
+              </div>
+            </div>
+
+            <div id="telegram-connected-view" style="display: none;">
+              <div style="text-align: center; padding: 20px 0;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" width="32" height="32"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <p style="color: #e2e8f0; font-size: 16px; margin-bottom: 8px;">Telegram подключён!</p>
+                <p style="color: #94a3b8; margin-bottom: 20px;">Вы будете получать напоминания о сессиях</p>
+                <button class="btn btn-secondary" onclick="disconnectTelegramFromModal()" style="width: 100%;">
+                  Отключить Telegram
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating AI Assistant -->
+      <div class="floating-ai-assistant" id="floating-ai">
+        <button class="floating-ai-btn" id="floating-ai-btn" onclick="toggleFloatingAI()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 3 3v1a2 2 0 0 1-2 2h-1v5a4 4 0 0 1-8 0v-5H7a2 2 0 0 1-2-2v-1a3 3 0 0 1 3-3V6a4 4 0 0 1 4-4z"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></svg>
+          <span class="floating-ai-badge" id="floating-ai-badge" style="display: none;">!</span>
+        </button>
+        <div class="floating-ai-panel" id="floating-ai-panel">
+          <div class="floating-ai-header">
+            <span>AI-Помощник</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="floating-ai-settings" onclick="toggleFloatingAISettings()" title="Настройки">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </button>
+              <button class="floating-ai-close" onclick="toggleFloatingAI()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="floating-ai-content" id="floating-ai-content">
+            <div class="floating-ai-welcome">
+              <p>Привет! Я отслеживаю ваши действия и готов помочь с рекомендациями.</p>
+            </div>
+          </div>
+          <div class="floating-ai-settings-panel" id="floating-ai-settings-panel" style="display: none;">
+            <label class="floating-ai-toggle">
+              <input type="checkbox" id="floating-ai-enabled" checked onchange="toggleFloatingAIEnabled()">
+              <span>AI-помощник включён</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
       <!-- Regressions Section -->
       <section class="settings-section" id="section-regressions">
         <div class="page-header">
@@ -1913,6 +2592,61 @@
             </div>
             <div style="padding: 12px; background: rgba(139, 92, 246, 0.1); border-radius: 8px; border-left: 3px solid #8b5cf6;">
               <strong>Прошлые жизни</strong> — символическая память, архетипы, клятвы
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Supervision Section -->
+      <section class="settings-section" id="section-supervision">
+        <div class="page-header">
+          <h1 class="page-title">AI-Супервизия</h1>
+          <div class="header-actions">
+            <button class="btn btn-secondary" onclick="toggleSupervisionMode()" id="supervision-toggle-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+              <span id="supervision-toggle-text">Включено</span>
+            </button>
+            <button class="btn btn-secondary" onclick="clearSupervisionChat()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              Новый диалог
+            </button>
+          </div>
+        </div>
+
+        <div class="card supervision-chat-card">
+          <div class="supervision-info" id="supervision-info">
+            <div class="supervision-info-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></svg>
+            </div>
+            <h3>Ассистент клинической супервизии</h3>
+            <p>Разберём твою рабочую ситуацию спокойно и без оценок. Я помогу думать вслух и находить ответы.</p>
+            <button class="btn btn-ai" onclick="startSupervision()">Начать супервизию</button>
+          </div>
+
+          <div class="supervision-chat" id="supervision-chat" style="display: none;">
+            <div class="supervision-messages" id="supervision-messages">
+              <!-- Messages will be rendered here -->
+            </div>
+            <div class="supervision-input-area">
+              <textarea class="supervision-input" id="supervision-input" placeholder="Ваш ответ..." rows="3"></textarea>
+              <button class="btn btn-ai supervision-send-btn" onclick="sendSupervisionMessage()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analysis History -->
+        <div class="card" style="margin-top: 16px;" id="supervision-history-card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              История супервизий
+            </div>
+          </div>
+          <div id="supervision-history-list">
+            <div class="empty-state">
+              <p style="color: #64748b;">Ваши супервизионные сессии будут сохранены здесь</p>
             </div>
           </div>
         </div>
@@ -2121,7 +2855,8 @@
     let userProfile = null;
     let profileLoaded = false;
     let aiHistory = [];
-    let selectedApproach = 'integrative';
+    let selectedApproach = 'all';
+    let selectedMode = 'consultation';
     let lastAiResult = null;
 
     // ============ SECURITY FUNCTIONS ============
@@ -2303,10 +3038,18 @@
       document.getElementById(`section-${sectionName}`)?.classList.add('active');
     }
 
-    // AI Approach selection
-    document.querySelectorAll('.ai-option').forEach(opt => {
+    // AI Mode and Approach selection
+    document.querySelectorAll('#ai-mode-options .ai-option').forEach(opt => {
       opt.addEventListener('click', () => {
-        document.querySelectorAll('.ai-option').forEach(o => o.classList.remove('active'));
+        document.querySelectorAll('#ai-mode-options .ai-option').forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        selectedMode = opt.dataset.mode;
+      });
+    });
+
+    document.querySelectorAll('#ai-approach-options .ai-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('#ai-approach-options .ai-option').forEach(o => o.classList.remove('active'));
         opt.classList.add('active');
         selectedApproach = opt.dataset.approach;
       });
@@ -2453,7 +3196,134 @@
     }
 
     // AI Assistant
-    async function generatePreparation() {
+    // Orchestrator AI System - Comprehensive prompts for psychological consultation
+
+    const ORCHESTRATOR_PROMPTS = {
+      // Main orchestrator system prompt
+      orchestrator: `Ты — старший психолог-супервизор, координирующий консилиум специалистов.
+Твоя задача: синтезировать рекомендации от всех агентов и сформировать единый план работы.
+
+При анализе учитывай:
+- Возраст и контекст клиента
+- Первичность/повторность обращения
+- Комплексность запроса
+- Возможные противопоказания к техникам
+
+Формат ответа:
+СТРУКТУРА СЕССИИ:
+(этапы с таймингом для 60-минутной сессии)
+
+РЕКОМЕНДОВАННЫЕ ТЕХНИКИ:
+(3-5 конкретных техник с кратким описанием применения)
+
+ВОПРОСЫ ДЛЯ КЛИЕНТА:
+(5-7 открытых терапевтических вопросов)
+
+ВОЗМОЖНЫЕ СОПРОТИВЛЕНИЯ:
+(защитные механизмы и способы работы с ними)
+
+ДОМАШНЕЕ ЗАДАНИЕ:
+(2-3 практики между сессиями)`,
+
+      // NLP Agent prompt
+      nlp: `Ты — НЛП-терапевт высшей квалификации. Работаешь в технике эриксоновского гипноза, метамодели и рефрейминга.
+
+Твой подход:
+- Метамодельные вопросы для уточнения и расширения карты клиента
+- Выявление ограничивающих убеждений и их трансформация
+- Работа с субмодальностями и якорями
+- Техники timeline и изменение личной истории
+- Рефрейминг: смысловой и контекстный
+
+При анализе случая:
+1. Определи ключевые искажения метамодели (обобщения, опущения, искажения)
+2. Предложи конкретные техники НЛП для данного запроса
+3. Сформулируй метамодельные вопросы
+4. Опиши возможный рефрейминг проблемы
+
+ВАЖНО: Отвечай простым текстом без markdown.`,
+
+      // CBT Agent prompt
+      cbt: `Ты — КПТ-специалист (когнитивно-поведенческая терапия). Работаешь с когнитивными искажениями и поведенческими паттернами.
+
+Твой подход:
+- ABC-модель (Activating event → Beliefs → Consequences)
+- Выявление автоматических мыслей и когнитивных искажений
+- Сократический диалог
+- Поведенческие эксперименты
+- Домашние задания: дневники мыслей, экспозиция
+
+При анализе случая:
+1. Определи вероятные когнитивные искажения клиента
+2. Предложи вопросы для сократического диалога
+3. Опиши подходящие поведенческие эксперименты
+4. Сформулируй конкретное домашнее задание
+
+Типы когнитивных искажений: катастрофизация, черно-белое мышление, чтение мыслей, долженствование, персонализация, обесценивание позитива.
+
+ВАЖНО: Отвечай простым текстом без markdown.`,
+
+      // Hypnosis Agent prompt
+      hypnosis: `Ты — специалист по эриксоновскому гипнозу и трансовым техникам. Мастер метафорической терапии.
+
+Твой подход:
+- Наведение транса через естественные феномены
+- Терапевтические метафоры и истории
+- Работа с бессознательным
+- Возрастная регрессия (при показаниях)
+- Постгипнотические внушения
+
+Алгоритм создания транса:
+1. РАППОРТ — присоединение к дыханию, позе, ритму речи
+2. ФИКСАЦИЯ ВНИМАНИЯ — фокус на ощущениях, образе, звуке
+3. ДЕПОТЕНЦИАЛИЗАЦИЯ — замешательство, перегрузка, разрыв паттерна
+4. УТИЛИЗАЦИЯ — использование любой реакции клиента
+5. РАТИФИКАЦИЯ — подтверждение трансовых феноменов
+
+При анализе случая:
+1. Оцени показания/противопоказания к гипнотическим техникам
+2. Предложи метафору или историю для данного запроса
+3. Опиши технику наведения транса
+4. Сформулируй терапевтические внушения
+
+ВАЖНО: Отвечай простым текстом без markdown.`,
+
+      // Protocol Agent prompt
+      protocol: `Ты — специалист по документированию психологических сессий. Создаёшь структурированные протоколы.
+
+Формат протокола сессии:
+
+ДАННЫЕ СЕССИИ:
+- Дата и время
+- Тип сессии (первичная/повторная/групповая)
+- Длительность
+
+ЗАПРОС КЛИЕНТА:
+(формулировка проблемы словами клиента)
+
+НАБЛЮДЕНИЯ:
+- Эмоциональное состояние
+- Невербальные проявления
+- Ключевые темы
+
+ПРОВЕДЁННАЯ РАБОТА:
+- Использованные техники
+- Ход сессии
+- Реакции клиента
+
+РЕЗУЛЬТАТЫ:
+- Инсайты клиента
+- Достигнутые изменения
+
+ПЛАН:
+- Домашнее задание
+- Фокус следующей сессии
+- Рекомендации
+
+ВАЖНО: Создай шаблон протокола для заполнения после сессии.`
+    };
+
+    async function generateOrchestratorResponse() {
       // Rate limiting check
       if (!rateLimiter.isAllowed()) {
         showToast('Слишком много запросов. Подождите минуту.', true);
@@ -2469,11 +3339,10 @@
       const input = sanitizeInput(rawInput);
 
       if (!input) {
-        showToast('Опишите клиента и тему консультации', true);
+        showToast('Опишите клиента и запрос', true);
         return;
       }
 
-      // Limit input length for AI
       if (input.length > 2000) {
         showToast('Текст слишком длинный (максимум 2000 символов)', true);
         return;
@@ -2484,50 +3353,64 @@
       loading.classList.add('visible');
       result.classList.remove('visible');
 
-      const approachNames = {
-        'integrative': 'интегративный подход',
-        'nlp': 'НЛП (нейро-лингвистическое программирование)',
-        'cbt': 'КПТ (когнитивно-поведенческая терапия)',
-        'hypnosis': 'гипнотерапия и эриксоновский гипноз',
-        'gestalt': 'гештальт-терапия'
+      // Build prompt based on mode and approach
+      let systemPrompt = '';
+      let userPrompt = '';
+
+      const modeNames = {
+        'consultation': 'Консультация (подготовка к сессии)',
+        'technique': 'Техника/Транс (создание терапевтического воздействия)',
+        'protocol': 'Протокол (документирование сессии)'
       };
 
-      const prompt = `Ты — опытный супервизор для психологов и психотерапевтов. Помоги подготовиться к консультации.
+      const approachNames = {
+        'all': 'Все специалисты (интегративный подход)',
+        'nlp': 'НЛП-терапия',
+        'cbt': 'КПТ (когнитивно-поведенческая терапия)',
+        'hypnosis': 'Эриксоновский гипноз'
+      };
+
+      // Build system prompt based on selected approach
+      if (selectedMode === 'protocol') {
+        systemPrompt = ORCHESTRATOR_PROMPTS.protocol;
+      } else if (selectedMode === 'technique') {
+        // For technique mode, focus on hypnosis/trance
+        systemPrompt = ORCHESTRATOR_PROMPTS.hypnosis + `
+
+ДОПОЛНИТЕЛЬНО для режима "Техника/Транс":
+Создай готовый текст для терапевтического воздействия — транс, медитацию или направленную визуализацию.
+Текст должен быть готов к использованию в сессии.`;
+      } else {
+        // Consultation mode
+        if (selectedApproach === 'all') {
+          systemPrompt = ORCHESTRATOR_PROMPTS.orchestrator + `
+
+Интегрируй подходы НЛП, КПТ и гипнотерапии для комплексной работы.`;
+        } else if (selectedApproach === 'nlp') {
+          systemPrompt = ORCHESTRATOR_PROMPTS.nlp;
+        } else if (selectedApproach === 'cbt') {
+          systemPrompt = ORCHESTRATOR_PROMPTS.cbt;
+        } else if (selectedApproach === 'hypnosis') {
+          systemPrompt = ORCHESTRATOR_PROMPTS.hypnosis;
+        }
+      }
+
+      userPrompt = `Режим: ${modeNames[selectedMode]}
+Подход: ${approachNames[selectedApproach]}
 
 Информация о клиенте и запрос:
 ${input}
 
-Используемый подход: ${approachNames[selectedApproach]}
+ВАЖНО: Отвечай ТОЛЬКО простым текстом БЕЗ markdown-разметки. Никаких звёздочек, решёток или подчёркиваний. Используй тире для списков и цифры для нумерации. Отвечай на русском языке. Будь конкретным и практичным.`;
 
-Сформируй план подготовки к сессии в следующем формате:
-
-СТРУКТУРА СЕССИИ (с примерным таймингом для 60-минутной сессии):
-- Укажи этапы сессии с временными рамками
-- Что делать на каждом этапе
-
-РЕКОМЕНДОВАННЫЕ ТЕХНИКИ:
-- Перечисли 3-5 конкретных техник для данного случая
-- Кратко опиши каждую технику и когда её применить
-
-ВОПРОСЫ ДЛЯ КЛИЕНТА:
-- 5-7 ключевых вопросов для диагностики и работы
-- Вопросы должны быть открытыми и терапевтичными
-
-ВОЗМОЖНЫЕ СОПРОТИВЛЕНИЯ:
-- Какие защитные механизмы могут проявиться
-- Как с ними работать
-
-ДОМАШНЕЕ ЗАДАНИЕ:
-- 2-3 практики или упражнения для клиента между сессиями
-
-ВАЖНО: Отвечай ТОЛЬКО простым текстом БЕЗ markdown-разметки. Никаких звёздочек (**), решёток (#), подчёркиваний, или других символов форматирования. Используй только тире (-) для списков и цифры (1. 2. 3.) для нумерации. Отвечай на русском языке. Будь конкретным и практичным.`;
+      const fullPrompt = systemPrompt + '\n\n---\n\n' + userPrompt;
 
       try {
         const response = await fetch('/.netlify/functions/gemini-generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }]
+            contents: [{ parts: [{ text: fullPrompt }] }]
           })
         });
 
@@ -2538,8 +3421,14 @@ ${input}
         const data = await response.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Нет ответа';
 
-        // Parse response
-        parseAndDisplayResult(text, input);
+        // Parse response based on mode
+        if (selectedMode === 'protocol') {
+          parseProtocolResult(text, input);
+        } else if (selectedMode === 'technique') {
+          parseTechniqueResult(text, input);
+        } else {
+          parseAndDisplayResult(text, input);
+        }
 
         loading.classList.remove('visible');
         result.classList.add('visible');
@@ -2551,8 +3440,46 @@ ${input}
       }
     }
 
+    function parseProtocolResult(text, originalInput) {
+      lastAiResult = { text, input: originalInput, approach: selectedApproach, mode: selectedMode, date: new Date().toISOString() };
+
+      // Display full protocol text
+      document.getElementById('result-structure-content').textContent = text;
+      document.getElementById('result-structure').querySelector('.ai-result-title').textContent = '📋 ШАБЛОН ПРОТОКОЛА';
+
+      // Hide other sections for protocol mode
+      document.getElementById('result-techniques').style.display = 'none';
+      document.getElementById('result-questions').style.display = 'none';
+      document.getElementById('result-risks').style.display = 'none';
+      document.getElementById('result-homework').style.display = 'none';
+    }
+
+    function parseTechniqueResult(text, originalInput) {
+      lastAiResult = { text, input: originalInput, approach: selectedApproach, mode: selectedMode, date: new Date().toISOString() };
+
+      // Display technique/trance text
+      document.getElementById('result-structure-content').textContent = text;
+      document.getElementById('result-structure').querySelector('.ai-result-title').textContent = '🌙 ТЕКСТ ТЕХНИКИ/ТРАНСА';
+
+      // Hide other sections for technique mode
+      document.getElementById('result-techniques').style.display = 'none';
+      document.getElementById('result-questions').style.display = 'none';
+      document.getElementById('result-risks').style.display = 'none';
+      document.getElementById('result-homework').style.display = 'none';
+    }
+
     function parseAndDisplayResult(text, originalInput) {
-      lastAiResult = { text, input: originalInput, approach: selectedApproach, date: new Date().toISOString() };
+      lastAiResult = { text, input: originalInput, approach: selectedApproach, mode: selectedMode, date: new Date().toISOString() };
+
+      // Restore all sections visibility for consultation mode
+      document.getElementById('result-structure').style.display = 'block';
+      document.getElementById('result-techniques').style.display = 'block';
+      document.getElementById('result-questions').style.display = 'block';
+      document.getElementById('result-risks').style.display = 'block';
+      document.getElementById('result-homework').style.display = 'block';
+
+      // Restore section titles
+      document.getElementById('result-structure').querySelector('.ai-result-title').textContent = '📋 СТРУКТУРА СЕССИИ';
 
       // Simple parsing - split by sections
       const sections = {
@@ -3346,9 +4273,13 @@ ${input}
 
     let currentCalendarDate = new Date();
     let selectedCalendarDate = new Date();
+    let calendarView = 'week'; // 'week' or 'month'
 
     const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
                         'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+
+    const weekdayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    const weekdayFullNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
 
     const sessionTypeNames = {
       primary: 'Первичная консультация',
@@ -3356,6 +4287,14 @@ ${input}
       group: 'Групповая терапия',
       supervision: 'Супервизия',
       training: 'Обучение/тренинг'
+    };
+
+    const sessionTypeShort = {
+      primary: 'Первичная',
+      followup: 'Повторная',
+      group: 'Группа',
+      supervision: 'Супервизия',
+      training: 'Тренинг'
     };
 
     function getSessions() {
@@ -3370,11 +4309,113 @@ ${input}
       localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
     }
 
+    function setCalendarView(view) {
+      calendarView = view;
+      document.getElementById('week-view-btn').classList.toggle('active', view === 'week');
+      document.getElementById('month-view-btn').classList.toggle('active', view === 'month');
+      renderCalendar();
+    }
+
+    function getWeekStart(date) {
+      const d = new Date(date);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday
+      return new Date(d.setDate(diff));
+    }
+
     function renderCalendar() {
+      if (calendarView === 'week') {
+        renderWeekView();
+      } else {
+        renderMonthView();
+      }
+      renderDaySessions();
+      renderUpcomingSessions();
+    }
+
+    function renderWeekView() {
+      const weekStart = getWeekStart(currentCalendarDate);
+      const sessions = getSessions();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Update month header
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+
+      if (weekStart.getMonth() === weekEnd.getMonth()) {
+        document.getElementById('calendar-month').textContent = `${monthNames[weekStart.getMonth()]} ${weekStart.getFullYear()}`;
+      } else if (weekStart.getFullYear() === weekEnd.getFullYear()) {
+        document.getElementById('calendar-month').textContent = `${monthNames[weekStart.getMonth()]} - ${monthNames[weekEnd.getMonth()]} ${weekStart.getFullYear()}`;
+      } else {
+        document.getElementById('calendar-month').textContent = `${monthNames[weekStart.getMonth()]} ${weekStart.getFullYear()} - ${monthNames[weekEnd.getMonth()]} ${weekEnd.getFullYear()}`;
+      }
+
+      // Render week headers with dates
+      let headersHtml = '';
+      for (let i = 0; i < 7; i++) {
+        const dayDate = new Date(weekStart);
+        dayDate.setDate(dayDate.getDate() + i);
+        const isToday = dayDate.getTime() === today.getTime();
+
+        headersHtml += `<div class="calendar-weekday-header${isToday ? ' today' : ''}">
+          ${weekdayNames[i]}
+          <span class="weekday-date">${dayDate.getDate()}</span>
+        </div>`;
+      }
+      document.getElementById('calendar-weekdays').innerHTML = headersHtml;
+
+      // Render week days with events
+      let gridHtml = '';
+      for (let i = 0; i < 7; i++) {
+        const dayDate = new Date(weekStart);
+        dayDate.setDate(dayDate.getDate() + i);
+        dayDate.setHours(0, 0, 0, 0);
+
+        const dateStr = `${dayDate.getFullYear()}-${String(dayDate.getMonth() + 1).padStart(2, '0')}-${String(dayDate.getDate()).padStart(2, '0')}`;
+        const isToday = dayDate.getTime() === today.getTime();
+        const isSelected = dayDate.getTime() === new Date(selectedCalendarDate.getFullYear(), selectedCalendarDate.getMonth(), selectedCalendarDate.getDate()).getTime();
+
+        const daySessions = sessions.filter(s => s.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
+
+        let classes = 'calendar-day';
+        if (isToday) classes += ' today';
+        if (isSelected) classes += ' selected';
+
+        let eventsHtml = '<div class="calendar-day-events">';
+        daySessions.forEach(s => {
+          const clientName = sanitizeInput(s.client) || 'Клиент';
+          const typeName = sessionTypeShort[s.type] || 'Сессия';
+          eventsHtml += `<div class="calendar-event-preview type-${s.type}">
+            <span class="calendar-event-time">${s.time}</span>
+            <span class="calendar-event-text">${clientName} | ${typeName}</span>
+          </div>`;
+        });
+        eventsHtml += '</div>';
+
+        gridHtml += `<div class="${classes}" data-date="${dateStr}" onclick="selectDate('${dateStr}')">
+          <span class="calendar-day-number">${dayDate.getDate()}</span>
+          ${eventsHtml}
+        </div>`;
+      }
+
+      const grid = document.getElementById('calendar-grid');
+      grid.innerHTML = gridHtml;
+      grid.classList.remove('month-view');
+    }
+
+    function renderMonthView() {
       const year = currentCalendarDate.getFullYear();
       const month = currentCalendarDate.getMonth();
 
       document.getElementById('calendar-month').textContent = `${monthNames[month]} ${year}`;
+
+      // Render static weekday headers
+      let headersHtml = '';
+      weekdayNames.forEach(name => {
+        headersHtml += `<div class="calendar-weekday-header" style="padding: 8px 4px;"><span style="font-size: 11px;">${name}</span></div>`;
+      });
+      document.getElementById('calendar-weekdays').innerHTML = headersHtml;
 
       const firstDay = new Date(year, month, 1);
       const lastDay = new Date(year, month + 1, 0);
@@ -3392,9 +4433,16 @@ ${input}
       const prevMonthDays = prevMonth.getDate();
       for (let i = startingDay - 1; i >= 0; i--) {
         const day = prevMonthDays - i;
-        html += `<div class="calendar-day other-month">
+        const prevMonthNum = month === 0 ? 12 : month;
+        const prevYear = month === 0 ? year - 1 : year;
+        const dateStr = `${prevYear}-${String(prevMonthNum).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const daySessions = sessions.filter(s => s.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
+
+        let eventsHtml = buildEventsHtml(daySessions, 3);
+
+        html += `<div class="calendar-day other-month" data-date="${dateStr}" onclick="selectDate('${dateStr}')">
           <span class="calendar-day-number">${day}</span>
-          <div class="calendar-day-events"></div>
+          ${eventsHtml}
         </div>`;
       }
 
@@ -3412,17 +4460,7 @@ ${input}
         if (isToday) classes += ' today';
         if (isSelected) classes += ' selected';
 
-        // Build events preview
-        let eventsHtml = '<div class="calendar-day-events">';
-        const maxVisible = 2;
-        daySessions.slice(0, maxVisible).forEach(s => {
-          const clientName = sanitizeInput(s.client) || 'Клиент';
-          eventsHtml += `<div class="calendar-event-preview type-${s.type}">${s.time} ${clientName}</div>`;
-        });
-        if (daySessions.length > maxVisible) {
-          eventsHtml += `<div class="calendar-more-events">+${daySessions.length - maxVisible} ещё</div>`;
-        }
-        eventsHtml += '</div>';
+        let eventsHtml = buildEventsHtml(daySessions, 3);
 
         html += `<div class="${classes}" data-date="${dateStr}" onclick="selectDate('${dateStr}')">
           <span class="calendar-day-number">${day}</span>
@@ -3433,15 +4471,38 @@ ${input}
       // Next month days
       const remainingDays = 42 - (startingDay + totalDays);
       for (let day = 1; day <= remainingDays; day++) {
-        html += `<div class="calendar-day other-month">
+        const nextMonthNum = month === 11 ? 1 : month + 2;
+        const nextYear = month === 11 ? year + 1 : year;
+        const dateStr = `${nextYear}-${String(nextMonthNum).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const daySessions = sessions.filter(s => s.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
+
+        let eventsHtml = buildEventsHtml(daySessions, 3);
+
+        html += `<div class="calendar-day other-month" data-date="${dateStr}" onclick="selectDate('${dateStr}')">
           <span class="calendar-day-number">${day}</span>
-          <div class="calendar-day-events"></div>
+          ${eventsHtml}
         </div>`;
       }
 
-      document.getElementById('calendar-grid').innerHTML = html;
-      renderDaySessions();
-      renderUpcomingSessions();
+      const grid = document.getElementById('calendar-grid');
+      grid.innerHTML = html;
+      grid.classList.add('month-view');
+    }
+
+    function buildEventsHtml(daySessions, maxVisible) {
+      let eventsHtml = '<div class="calendar-day-events">';
+      daySessions.slice(0, maxVisible).forEach(s => {
+        const clientName = sanitizeInput(s.client) || 'Клиент';
+        eventsHtml += `<div class="calendar-event-preview type-${s.type}">
+          <span class="calendar-event-time">${s.time}</span>
+          <span class="calendar-event-text">${clientName}</span>
+        </div>`;
+      });
+      if (daySessions.length > maxVisible) {
+        eventsHtml += `<div class="calendar-more-events">+${daySessions.length - maxVisible} ещё</div>`;
+      }
+      eventsHtml += '</div>';
+      return eventsHtml;
     }
 
     function selectDate(dateStr) {
@@ -3450,13 +4511,21 @@ ${input}
       renderCalendar();
     }
 
-    function prevMonth() {
-      currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+    function prevWeek() {
+      if (calendarView === 'week') {
+        currentCalendarDate.setDate(currentCalendarDate.getDate() - 7);
+      } else {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+      }
       renderCalendar();
     }
 
-    function nextMonth() {
-      currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+    function nextWeek() {
+      if (calendarView === 'week') {
+        currentCalendarDate.setDate(currentCalendarDate.getDate() + 7);
+      } else {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+      }
       renderCalendar();
     }
 
@@ -3745,6 +4814,189 @@ ${input}
       }
     }
 
+    // Telegram Integration for Reminders
+    let telegramConnected = false;
+    let telegramHasToken = false;
+    let savedBotToken = null;
+
+    async function checkTelegramConnection() {
+      if (!currentUser) return false;
+
+      try {
+        const response = await fetch('/.netlify/functions/telegram-bot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'check-connection',
+            userId: currentUser.id
+          })
+        });
+
+        const data = await response.json();
+        telegramConnected = data.connected;
+        telegramHasToken = data.hasToken;
+
+        const btn = document.getElementById('telegram-btn');
+        if (telegramConnected) {
+          btn.classList.add('google-connected');
+          btn.querySelector('.btn-text').textContent = 'Telegram ✓';
+        } else {
+          btn.classList.remove('google-connected');
+          btn.querySelector('.btn-text').textContent = 'Telegram';
+        }
+
+        return telegramConnected;
+      } catch (err) {
+        console.error('Telegram check error:', err);
+        return false;
+      }
+    }
+
+    function toggleTelegram() {
+      if (!currentUser) {
+        showToast('Войдите в аккаунт', true);
+        return;
+      }
+      openTelegramModal();
+    }
+
+    function openTelegramModal() {
+      const modal = document.getElementById('telegram-modal');
+      modal.classList.add('visible');
+
+      // Show appropriate view
+      if (telegramConnected) {
+        document.getElementById('telegram-setup-step1').style.display = 'none';
+        document.getElementById('telegram-setup-step2').style.display = 'none';
+        document.getElementById('telegram-connected-view').style.display = 'block';
+      } else if (telegramHasToken) {
+        document.getElementById('telegram-setup-step1').style.display = 'none';
+        document.getElementById('telegram-setup-step2').style.display = 'block';
+        document.getElementById('telegram-connected-view').style.display = 'none';
+      } else {
+        document.getElementById('telegram-setup-step1').style.display = 'block';
+        document.getElementById('telegram-setup-step2').style.display = 'none';
+        document.getElementById('telegram-connected-view').style.display = 'none';
+      }
+    }
+
+    function closeTelegramModal() {
+      document.getElementById('telegram-modal').classList.remove('visible');
+    }
+
+    async function saveTelegramToken() {
+      const token = document.getElementById('telegram-bot-token').value.trim();
+      if (!token) {
+        showToast('Введите токен бота', true);
+        return;
+      }
+
+      // Verify token first
+      showToast('Проверяю токен...');
+      try {
+        const verifyResponse = await fetch('/.netlify/functions/telegram-bot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'verify-token', botToken: token })
+        });
+
+        const verifyData = await verifyResponse.json();
+        if (!verifyData.success) {
+          showToast('Неверный токен бота: ' + (verifyData.error || ''), true);
+          return;
+        }
+
+        // Save token
+        const saveResponse = await fetch('/.netlify/functions/telegram-bot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'save-token',
+            userId: currentUser.id,
+            botToken: token
+          })
+        });
+
+        const saveData = await saveResponse.json();
+        if (saveData.success) {
+          savedBotToken = token;
+          telegramHasToken = true;
+          showToast('Токен сохранён! Бот: @' + verifyData.bot.username);
+
+          // Show step 2
+          document.getElementById('telegram-setup-step1').style.display = 'none';
+          document.getElementById('telegram-setup-step2').style.display = 'block';
+        } else {
+          showToast('Ошибка сохранения токена', true);
+        }
+      } catch (err) {
+        console.error('Save token error:', err);
+        showToast('Ошибка сохранения', true);
+      }
+    }
+
+    async function openTelegramBot() {
+      try {
+        const response = await fetch('/.netlify/functions/telegram-bot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'get-link',
+            userId: currentUser.id
+          })
+        });
+
+        const data = await response.json();
+        if (data.link) {
+          window.open(data.link, '_blank');
+          showToast('Нажмите "Начать" в Telegram');
+
+          // Poll for connection
+          let attempts = 0;
+          const pollInterval = setInterval(async () => {
+            attempts++;
+            const connected = await checkTelegramConnection();
+            if (connected || attempts > 12) {
+              clearInterval(pollInterval);
+              if (connected) {
+                showToast('Telegram подключён!');
+                closeTelegramModal();
+              }
+            }
+          }, 5000);
+        }
+      } catch (err) {
+        showToast('Ошибка открытия бота', true);
+      }
+    }
+
+    async function disconnectTelegramFromModal() {
+      try {
+        await fetch('/.netlify/functions/telegram-bot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'disconnect',
+            userId: currentUser.id
+          })
+        });
+        telegramConnected = false;
+        document.getElementById('telegram-btn').classList.remove('google-connected');
+        document.getElementById('telegram-btn').querySelector('.btn-text').textContent = 'Telegram';
+        showToast('Telegram отключён');
+        closeTelegramModal();
+      } catch (err) {
+        showToast('Ошибка отключения', true);
+      }
+    }
+
+    // Close telegram modal on outside click
+    document.getElementById('telegram-modal').addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        closeTelegramModal();
+      }
+    });
+
     // Close session modal on outside click
     document.getElementById('session-modal').addEventListener('click', (e) => {
       if (e.target.classList.contains('modal-overlay')) {
@@ -3755,6 +5007,7 @@ ${input}
     // Initialize calendar
     renderCalendar();
     checkTodoistConnection();
+    checkTelegramConnection();
     // ============ END CALENDAR ============
 
     // ============ VOICE INPUT FOR CALENDAR ============
@@ -3995,6 +5248,499 @@ ${input}
       }
     });
     // ============ END VOICE INPUT ============
+
+    // ============ SUPERVISION FUNCTIONALITY ============
+    const SUPERVISION_KEY = 'supervision_sessions';
+    const SUPERVISION_ENABLED_KEY = 'supervision_enabled';
+
+    let supervisionMessages = [];
+    let supervisionStep = 0;
+    let supervisionModality = null;
+    let supervisionEnabled = localStorage.getItem(SUPERVISION_ENABLED_KEY) !== 'false';
+
+    const SUPERVISION_SYSTEM_PROMPT = `Ты — ассистент клинической супервизии.
+
+Ты работаешь с практикующими психологами и психотерапевтами.
+Твой стиль — спокойный, профессиональный, без оценок и дидактики.
+Ты коллега, а не система. Ты не проверяешь — ты помогаешь думать вслух.
+
+ПРАВИЛА:
+1. Один вопрос — одно сообщение. Всегда.
+2. Признавай ответ перед следующим вопросом: "Понял", "Услышал", "Да, это важный момент"
+3. Никогда не давай советы и не интерпретируй ответы
+4. Контрперенос — обязательная зона. Всегда спрашивай о состоянии терапевта.
+5. Язык — живой, без канцелярита
+
+СТРУКТУРА ДИАЛОГА:
+- Шаг 0: Уточни подход (КПТ, гештальт, НЛП, психодрама, психоанализ)
+- Шаг 1: Ситуация - кто клиент, запрос, как давно работаете
+- Шаг 2: Динамика - что происходит сейчас в терапии
+- Шаг 3: Трудность - где больше всего вопросов/сомнений
+- Шаг 4: Гипотеза - как терапевт понимает ситуацию
+- Шаг 5: Контрперенос - что происходит с терапевтом
+- Шаг 6: Слепое пятно - о чём избегал думать
+- Шаг 7: Следующий шаг - что важнее всего учитывать
+
+КАРТА МОДАЛЬНОСТЕЙ (для внутреннего использования):
+- КПТ: автоматические мысли, когнитивные искажения, поведенческие эксперименты
+- Гештальт: контакт/прерывание, осознавание, здесь-и-сейчас, полярности
+- НЛП: раппорт, субмодальности, якоря, рефрейминг, метапрограммы
+- Психодрама: протагонист, роли, сцена, шеринг
+- Психоанализ: перенос, контрперенос, сопротивление, защитные механизмы
+
+ЗАВЕРШЕНИЕ:
+Не подводи итоги. Закончи так: "Спасибо, что разобрал это вслух. Думаю, на этом этапе этого достаточно."
+
+ВАЖНО: Отвечай ТОЛЬКО простым текстом без markdown. Никаких звёздочек и решёток.`;
+
+    function initSupervision() {
+      updateSupervisionToggle();
+      loadSupervisionHistory();
+    }
+
+    function updateSupervisionToggle() {
+      const btn = document.getElementById('supervision-toggle-btn');
+      const text = document.getElementById('supervision-toggle-text');
+      if (supervisionEnabled) {
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-ai');
+        text.textContent = 'Включено';
+      } else {
+        btn.classList.add('btn-secondary');
+        btn.classList.remove('btn-ai');
+        text.textContent = 'Отключено';
+      }
+    }
+
+    function toggleSupervisionMode() {
+      supervisionEnabled = !supervisionEnabled;
+      localStorage.setItem(SUPERVISION_ENABLED_KEY, supervisionEnabled);
+      updateSupervisionToggle();
+      showToast(supervisionEnabled ? 'Супервизия включена' : 'Супервизия отключена');
+    }
+
+    function startSupervision() {
+      if (!supervisionEnabled) {
+        showToast('Супервизия отключена. Включите в настройках.', true);
+        return;
+      }
+
+      supervisionMessages = [];
+      supervisionStep = 0;
+      supervisionModality = null;
+
+      document.getElementById('supervision-info').style.display = 'none';
+      document.getElementById('supervision-chat').style.display = 'flex';
+      document.getElementById('supervision-messages').innerHTML = '';
+
+      // Initial greeting
+      const greeting = `Привет.
+Я ассистент клинической супервизии.
+Здесь мы разберём твою рабочую ситуацию — спокойно, без оценок.
+
+Я буду задавать несколько вопросов — по одному.
+Ничего проверять я не буду. Моя задача — помочь тебе самому сформулировать то, что уже есть в твоём профессиональном мышлении.
+
+В каком подходе ты сейчас работаешь с этим клиентом?
+(КПТ, гештальт, НЛП, психодрама, психоанализ — или что-то своё?)`;
+
+      addSupervisionMessage(greeting, 'assistant');
+    }
+
+    function addSupervisionMessage(text, role) {
+      const messagesDiv = document.getElementById('supervision-messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `supervision-message ${role}`;
+      messageDiv.textContent = text;
+      messagesDiv.appendChild(messageDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+      supervisionMessages.push({ role, content: text });
+    }
+
+    async function sendSupervisionMessage() {
+      const input = document.getElementById('supervision-input');
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      // Add user message
+      addSupervisionMessage(text, 'user');
+      input.value = '';
+
+      // Show typing indicator
+      const messagesDiv = document.getElementById('supervision-messages');
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'supervision-message assistant typing';
+      typingDiv.textContent = 'Думаю...';
+      messagesDiv.appendChild(typingDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+      try {
+        // Build conversation for AI
+        let conversationHistory = supervisionMessages.map(m => ({
+          role: m.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: m.content }]
+        }));
+
+        const prompt = `${SUPERVISION_SYSTEM_PROMPT}
+
+ИСТОРИЯ ДИАЛОГА:
+${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор' : 'Терапевт'}: ${m.content}`).join('\n\n')}
+
+Ответь как супервизор. Помни: один вопрос за раз, признай ответ, задай следующий вопрос по структуре.`;
+
+        const response = await fetch('/.netlify/functions/gemini-generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }]
+          })
+        });
+
+        if (!response.ok) throw new Error('AI request failed');
+
+        const data = await response.json();
+        const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Продолжим...';
+
+        // Remove typing indicator and add real response
+        typingDiv.remove();
+        addSupervisionMessage(aiResponse, 'assistant');
+
+      } catch (err) {
+        console.error('Supervision AI error:', err);
+        typingDiv.remove();
+        addSupervisionMessage('Извини, возникла техническая проблема. Попробуй ещё раз.', 'assistant');
+      }
+    }
+
+    function clearSupervisionChat() {
+      if (supervisionMessages.length > 0) {
+        // Save to history before clearing
+        saveSupervisionToHistory();
+      }
+
+      supervisionMessages = [];
+      supervisionStep = 0;
+      document.getElementById('supervision-info').style.display = 'flex';
+      document.getElementById('supervision-chat').style.display = 'none';
+    }
+
+    function saveSupervisionToHistory() {
+      if (supervisionMessages.length < 2) return;
+
+      const history = getSupervisionHistory();
+      const session = {
+        id: Date.now().toString(),
+        date: new Date().toISOString(),
+        messages: supervisionMessages,
+        summary: supervisionMessages[1]?.content?.slice(0, 100) || 'Супервизия'
+      };
+
+      history.unshift(session);
+      if (history.length > 20) history.pop();
+
+      localStorage.setItem(SUPERVISION_KEY, JSON.stringify(history));
+      loadSupervisionHistory();
+    }
+
+    function getSupervisionHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(SUPERVISION_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function loadSupervisionHistory() {
+      const history = getSupervisionHistory();
+      const container = document.getElementById('supervision-history-list');
+
+      if (history.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p style="color: #64748b;">Ваши супервизионные сессии будут сохранены здесь</p></div>';
+        return;
+      }
+
+      container.innerHTML = history.map((session, idx) => {
+        const date = new Date(session.date).toLocaleDateString('ru-RU', {
+          day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        return `
+          <div class="session-card" style="cursor: pointer;" onclick="viewSupervisionSession('${session.id}')">
+            <div class="session-card-time">
+              <div class="session-card-time-value">${session.messages.length}</div>
+              <div class="session-card-time-duration">сообщ.</div>
+            </div>
+            <div class="session-card-info">
+              <div class="session-card-client">${sanitizeInput(session.summary)}...</div>
+              <div class="session-card-type">${date}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function viewSupervisionSession(sessionId) {
+      const history = getSupervisionHistory();
+      const session = history.find(s => s.id === sessionId);
+      if (!session) return;
+
+      supervisionMessages = session.messages;
+      document.getElementById('supervision-info').style.display = 'none';
+      document.getElementById('supervision-chat').style.display = 'flex';
+
+      const messagesDiv = document.getElementById('supervision-messages');
+      messagesDiv.innerHTML = '';
+      session.messages.forEach(m => {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `supervision-message ${m.role}`;
+        messageDiv.textContent = m.content;
+        messagesDiv.appendChild(messageDiv);
+      });
+    }
+
+    // Handle Enter key in supervision input
+    document.getElementById('supervision-input')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendSupervisionMessage();
+      }
+    });
+
+    // Initialize supervision
+    initSupervision();
+    // ============ END SUPERVISION ============
+
+    // ============ FLOATING AI ASSISTANT ============
+    const FLOATING_AI_KEY = 'floating_ai_enabled';
+    let floatingAIEnabled = localStorage.getItem(FLOATING_AI_KEY) !== 'false';
+    let floatingAIOpen = false;
+    let pendingRecommendations = [];
+    let lastAction = null;
+
+    function initFloatingAI() {
+      const checkbox = document.getElementById('floating-ai-enabled');
+      if (checkbox) checkbox.checked = floatingAIEnabled;
+
+      if (!floatingAIEnabled) {
+        document.getElementById('floating-ai').style.display = 'none';
+      }
+
+      // Track user actions
+      trackUserActions();
+    }
+
+    function toggleFloatingAI() {
+      floatingAIOpen = !floatingAIOpen;
+      const panel = document.getElementById('floating-ai-panel');
+      const btn = document.getElementById('floating-ai-btn');
+
+      if (floatingAIOpen) {
+        panel.classList.add('open');
+        btn.classList.remove('has-notification');
+        document.getElementById('floating-ai-badge').style.display = 'none';
+        pendingRecommendations = [];
+      } else {
+        panel.classList.remove('open');
+        document.getElementById('floating-ai-settings-panel').style.display = 'none';
+      }
+    }
+
+    function toggleFloatingAISettings() {
+      const panel = document.getElementById('floating-ai-settings-panel');
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function toggleFloatingAIEnabled() {
+      floatingAIEnabled = document.getElementById('floating-ai-enabled').checked;
+      localStorage.setItem(FLOATING_AI_KEY, floatingAIEnabled);
+
+      if (!floatingAIEnabled) {
+        document.getElementById('floating-ai').style.display = 'none';
+        toggleFloatingAI(); // Close panel
+      } else {
+        document.getElementById('floating-ai').style.display = 'block';
+      }
+
+      showToast(floatingAIEnabled ? 'AI-помощник включён' : 'AI-помощник отключён');
+    }
+
+    function trackUserActions() {
+      // Track navigation
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const section = item.dataset.section;
+          if (section) {
+            handleUserAction('navigate', section);
+          }
+        });
+      });
+
+      // Track session creation
+      const originalSaveSession = window.saveSession;
+      if (typeof originalSaveSession === 'function') {
+        window.saveSession = function() {
+          originalSaveSession.apply(this, arguments);
+          handleUserAction('session_created');
+        };
+      }
+
+      // Track note creation
+      const originalSaveNote = window.saveNote;
+      if (typeof originalSaveNote === 'function') {
+        window.saveNote = function() {
+          originalSaveNote.apply(this, arguments);
+          handleUserAction('note_created');
+        };
+      }
+
+      // Track AI generation
+      const originalGenerateOrchestrator = window.generateOrchestratorResponse;
+      if (typeof originalGenerateOrchestrator === 'function') {
+        window.generateOrchestratorResponse = async function() {
+          await originalGenerateOrchestrator.apply(this, arguments);
+          handleUserAction('ai_consultation');
+        };
+      }
+    }
+
+    function handleUserAction(actionType, data) {
+      if (!floatingAIEnabled) return;
+
+      lastAction = { type: actionType, data, timestamp: Date.now() };
+
+      // Generate contextual recommendations
+      setTimeout(() => {
+        const recommendations = getRecommendations(actionType, data);
+        if (recommendations.length > 0) {
+          addRecommendations(recommendations);
+        }
+      }, 1500);
+    }
+
+    function getRecommendations(actionType, data) {
+      const recommendations = [];
+
+      switch (actionType) {
+        case 'session_created':
+          recommendations.push({
+            text: 'Сессия создана! Хотите настроить напоминание в Telegram за час до сессии?',
+            actions: [
+              { label: 'Настроить', primary: true, action: () => toggleTelegram() },
+              { label: 'Позже', primary: false, action: () => dismissRecommendation() }
+            ]
+          });
+          break;
+
+        case 'ai_consultation':
+          recommendations.push({
+            text: 'Подготовка к сессии готова! Сохраните её в историю, чтобы не потерять.',
+            actions: [
+              { label: 'Сохранить', primary: true, action: () => { saveToHistory(); dismissRecommendation(); } },
+              { label: 'Уже сохранил', primary: false, action: () => dismissRecommendation() }
+            ]
+          });
+          break;
+
+        case 'navigate':
+          if (data === 'calendar') {
+            const sessions = getSessions ? getSessions() : [];
+            if (sessions.length === 0) {
+              recommendations.push({
+                text: 'Ваш календарь пуст. Добавьте первую сессию или используйте голосовой ввод!',
+                actions: [
+                  { label: 'Добавить сессию', primary: true, action: () => openSessionModal() },
+                  { label: 'Голосом', primary: false, action: () => startVoiceInput() }
+                ]
+              });
+            }
+          } else if (data === 'supervision') {
+            recommendations.push({
+              text: 'Супервизия помогает разобрать сложные случаи. Готовы начать диалог?',
+              actions: [
+                { label: 'Начать', primary: true, action: () => { startSupervision(); dismissRecommendation(); } },
+                { label: 'Позже', primary: false, action: () => dismissRecommendation() }
+              ]
+            });
+          }
+          break;
+
+        case 'note_created':
+          recommendations.push({
+            text: 'Заметка сохранена! Не забудьте запланировать следующую сессию с этим клиентом.',
+            actions: [
+              { label: 'В календарь', primary: true, action: () => { switchSection('calendar'); dismissRecommendation(); } },
+              { label: 'Понятно', primary: false, action: () => dismissRecommendation() }
+            ]
+          });
+          break;
+      }
+
+      return recommendations;
+    }
+
+    function addRecommendations(recommendations) {
+      pendingRecommendations = pendingRecommendations.concat(recommendations);
+
+      // Show notification badge if panel is closed
+      if (!floatingAIOpen) {
+        const btn = document.getElementById('floating-ai-btn');
+        const badge = document.getElementById('floating-ai-badge');
+        btn.classList.add('has-notification');
+        badge.style.display = 'flex';
+        badge.textContent = pendingRecommendations.length;
+      } else {
+        renderRecommendations();
+      }
+    }
+
+    function renderRecommendations() {
+      const content = document.getElementById('floating-ai-content');
+
+      if (pendingRecommendations.length === 0) {
+        content.innerHTML = '<div class="floating-ai-welcome"><p>Привет! Я отслеживаю ваши действия и готов помочь с рекомендациями.</p></div>';
+        return;
+      }
+
+      content.innerHTML = pendingRecommendations.map((rec, idx) => `
+        <div class="floating-ai-recommendation" data-idx="${idx}">
+          <div class="floating-ai-recommendation-text">${rec.text}</div>
+          <div class="floating-ai-recommendation-action">
+            ${rec.actions.map((action, actionIdx) => `
+              <button class="floating-ai-recommendation-btn ${action.primary ? 'primary' : 'secondary'}"
+                      onclick="executeRecommendationAction(${idx}, ${actionIdx})">
+                ${action.label}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function executeRecommendationAction(recIdx, actionIdx) {
+      const rec = pendingRecommendations[recIdx];
+      if (rec && rec.actions[actionIdx]) {
+        rec.actions[actionIdx].action();
+      }
+    }
+
+    function dismissRecommendation() {
+      pendingRecommendations.shift();
+      renderRecommendations();
+    }
+
+    // Override panel toggle to render recommendations
+    const originalToggle = toggleFloatingAI;
+    toggleFloatingAI = function() {
+      originalToggle();
+      if (floatingAIOpen) {
+        renderRecommendations();
+      }
+    };
+
+    // Initialize floating AI
+    initFloatingAI();
+    // ============ END FLOATING AI ============
   </script>
 </body>
 </html>

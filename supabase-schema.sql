@@ -124,3 +124,81 @@ DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
 CREATE TRIGGER update_profiles_updated_at
   BEFORE UPDATE ON profiles
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- =============================================
+-- 12. Telegram Integration
+-- =============================================
+
+-- Add telegram fields to profiles for bot notifications
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS telegram_chat_id BIGINT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS telegram_bot_token TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS telegram_notifications_enabled BOOLEAN DEFAULT true;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS reminder_minutes INTEGER DEFAULT 60;
+
+-- 13. Calendar sessions table for scheduled appointments
+CREATE TABLE IF NOT EXISTS calendar_sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  client_name TEXT,
+  session_type TEXT CHECK (session_type IN ('primary', 'followup', 'group', 'supervision', 'training')),
+  session_date DATE NOT NULL,
+  session_time TIME NOT NULL,
+  duration INTEGER DEFAULT 60,
+  notes TEXT,
+  todoist_task_id TEXT,
+  reminder_sent BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- RLS for calendar_sessions
+ALTER TABLE calendar_sessions ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can manage own calendar sessions" ON calendar_sessions;
+CREATE POLICY "Users can manage own calendar sessions" ON calendar_sessions
+  FOR ALL USING (user_id = auth.uid());
+
+-- Index for faster reminder queries
+CREATE INDEX IF NOT EXISTS idx_calendar_sessions_datetime ON calendar_sessions(session_date, session_time);
+CREATE INDEX IF NOT EXISTS idx_calendar_sessions_user_reminder ON calendar_sessions(user_id, reminder_sent);
+
+-- Trigger for updated_at
+DROP TRIGGER IF EXISTS update_calendar_sessions_updated_at ON calendar_sessions;
+CREATE TRIGGER update_calendar_sessions_updated_at
+  BEFORE UPDATE ON calendar_sessions
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- 14. Function to get upcoming calendar sessions for reminders
+CREATE OR REPLACE FUNCTION get_calendar_reminders(minutes_before INTEGER DEFAULT 60)
+RETURNS TABLE (
+  session_id UUID,
+  user_id UUID,
+  client_name TEXT,
+  session_type TEXT,
+  session_datetime TIMESTAMP WITH TIME ZONE,
+  telegram_chat_id BIGINT,
+  telegram_bot_token TEXT,
+  notifications_enabled BOOLEAN
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    cs.id as session_id,
+    cs.user_id,
+    cs.client_name,
+    cs.session_type,
+    (cs.session_date + cs.session_time)::timestamp with time zone as session_datetime,
+    p.telegram_chat_id,
+    p.telegram_bot_token,
+    p.telegram_notifications_enabled as notifications_enabled
+  FROM calendar_sessions cs
+  JOIN profiles p ON cs.user_id = p.id
+  WHERE
+    cs.reminder_sent = false
+    AND p.telegram_chat_id IS NOT NULL
+    AND p.telegram_bot_token IS NOT NULL
+    AND p.telegram_notifications_enabled = true
+    AND (cs.session_date + cs.session_time)::timestamp with time zone
+        BETWEEN NOW() AND NOW() + (minutes_before || ' minutes')::interval;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
