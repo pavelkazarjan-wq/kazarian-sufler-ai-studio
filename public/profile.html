@@ -876,6 +876,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           Заметки
         </div>
+        <div class="nav-item" data-section="regressions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/><path d="M8 12h8"/></svg>
+          Регрессии
+        </div>
         <div class="nav-item" data-section="settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           Настройки
@@ -1058,6 +1062,96 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               <p>Нет заметок</p>
               <p style="font-size: 13px; margin-top: 8px;">Заметки помогают отслеживать прогресс клиентов</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Regressions Section -->
+      <section class="settings-section" id="section-regressions">
+        <div class="page-header">
+          <h1 class="page-title">Генератор регрессий</h1>
+        </div>
+
+        <div class="card ai-assistant">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              Создание регрессионного скрипта
+            </div>
+          </div>
+
+          <div class="ai-input-group">
+            <label>Информация о клиенте и запрос</label>
+            <textarea class="ai-textarea" id="regression-input" placeholder="Опишите клиента: пол, возраст, запрос, симптомы, история. Например: Мужчина 40 лет, проблемы с самооценкой, сложные отношения с отцом, телесные зажимы в плечах."></textarea>
+          </div>
+
+          <div class="ai-input-group">
+            <label>Тип регрессии</label>
+            <div class="ai-options" id="regression-types">
+              <span class="ai-option active" data-type="men">Мужская</span>
+              <span class="ai-option" data-type="women">Женская</span>
+              <span class="ai-option" data-type="family">Родовая</span>
+              <span class="ai-option" data-type="body">Телесная</span>
+              <span class="ai-option" data-type="past-lives">Прошлые жизни</span>
+            </div>
+          </div>
+
+          <div class="ai-actions">
+            <button class="btn btn-ai" onclick="generateRegression()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Создать регрессию (~15000 символов)
+            </button>
+            <button class="btn btn-secondary" onclick="clearRegressionResult()">Очистить</button>
+          </div>
+
+          <div class="ai-loading" id="regression-loading">
+            <div class="ai-spinner"></div>
+            <span>Генерация регрессионного скрипта...</span>
+          </div>
+
+          <div class="ai-result" id="regression-result">
+            <div class="ai-result-section">
+              <div class="ai-result-title">📜 РЕГРЕССИОННЫЙ СКРИПТ</div>
+              <div class="ai-result-content" id="regression-text" style="white-space: pre-wrap; line-height: 1.8;"></div>
+            </div>
+            <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+              <button class="btn btn-secondary" onclick="copyRegressionResult()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Копировать
+              </button>
+              <button class="btn btn-secondary" onclick="downloadRegressionResult()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Скачать .txt
+              </button>
+              <span id="regression-char-count" style="color: #64748b; font-size: 13px; padding: 10px;"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reference Info -->
+        <div class="card" style="margin-top: 20px;">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              Типы регрессий
+            </div>
+          </div>
+          <div style="display: grid; gap: 12px;">
+            <div style="padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border-left: 3px solid #3b82f6;">
+              <strong>Мужская</strong> — сила, ответственность, право быть, агрессия, отец, границы
+            </div>
+            <div style="padding: 12px; background: rgba(236, 72, 153, 0.1); border-radius: 8px; border-left: 3px solid #ec4899;">
+              <strong>Женская</strong> — ценность, принятие, любовь, тело, мать, сексуальность
+            </div>
+            <div style="padding: 12px; background: rgba(34, 197, 94, 0.1); border-radius: 8px; border-left: 3px solid #22c55e;">
+              <strong>Родовая</strong> — лояльность, чужая судьба, долг, запрет на счастье
+            </div>
+            <div style="padding: 12px; background: rgba(249, 115, 22, 0.1); border-radius: 8px; border-left: 3px solid #f97316;">
+              <strong>Телесная</strong> — симптом, боль, зажим, психосоматика
+            </div>
+            <div style="padding: 12px; background: rgba(139, 92, 246, 0.1); border-radius: 8px; border-left: 3px solid #8b5cf6;">
+              <strong>Прошлые жизни</strong> — символическая память, архетипы, клятвы
             </div>
           </div>
         </div>
@@ -2099,6 +2193,210 @@ ${input}
     function addNote() {
       showToast('Функция в разработке');
     }
+
+    // ============ REGRESSION GENERATOR ============
+
+    let selectedRegressionType = 'men';
+    let lastRegressionResult = null;
+
+    // Regression type selection
+    document.querySelectorAll('#regression-types .ai-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('#regression-types .ai-option').forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        selectedRegressionType = opt.dataset.type;
+      });
+    });
+
+    const regressionPrompts = {
+      men: `Ты — генератор мужских регрессий Павла Казарьяна.
+
+МУЖСКАЯ ВЕТКА РЕГРЕССИИ
+Ключевая тема: Сила, ответственность, право быть, агрессия, действие, опора, отец, статус, границы
+
+ОБЯЗАТЕЛЬНЫЕ УРОВНИ:
+1. Телесная: грудь, солнечное сплетение, челюсть, плечи, кулаки
+2. Возрастная: сцены унижения, первый запрет на агрессию
+3. Отцовская: отсутствующий/слабый/агрессивный отец
+4. Родовая: травмы войны, репрессий, запрет быть заметным
+5. Экзистенциальная: образы воина, защитника, изгнанника
+
+ЦЕЛЬ: вернуть право на силу, восстановить стержень`,
+
+      women: `Ты — генератор женских регрессий Павла Казарьяна.
+
+ЖЕНСКАЯ ВЕТКА РЕГРЕССИИ
+Ключевая тема: Ценность, принятие, любовь, тело, границы, материнство, сексуальность
+
+ОБЯЗАТЕЛЬНЫЕ УРОВНИ:
+1. Телесная: живот, грудь, таз, горло
+2. Возрастная: сцены обесценивания, сравнение с другими
+3. Материнская: холодная/тревожная мать, слияние
+4. Родовая: судьбы женщин которые терпели, насилие
+5. Доутробная: желание/нежелание ребёнка
+
+ЦЕЛЬ: вернуть чувство ценности, разрешить желания`,
+
+      family: `Ты — генератор родовых регрессий Павла Казарьяна.
+
+РОДОВАЯ ВЕТКА РЕГРЕССИИ
+Ключевая тема: Лояльность, чужая судьба, долг, запрет на счастье, повторение сценариев
+
+ОБЯЗАТЕЛЬНЫЕ УРОВНИ:
+1. Телесная: хронические симптомы, тяжесть
+2. Сценическая: образы предков, сцены потерь
+3. Родовая идентификация: я вместо, я за, я должен
+4. Развязка лояльности: возврат чужой судьбы
+
+ЦЕЛЬ: вернуть себе свою жизнь, снять чужую ответственность`,
+
+      body: `Ты — генератор телесных регрессий Павла Казарьяна.
+
+ТЕЛЕСНАЯ ВЕТКА РЕГРЕССИИ
+Ключевая тема: Симптом, болезнь, боль, зажим, психосоматика
+
+ОБЯЗАТЕЛЬНЫЕ УРОВНИ:
+1. Прямая телесная регрессия: вход в симптом, диалог
+2. Первичный момент: когда тело взяло на себя
+3. Функция симптома: защита, наказание, удержание
+4. Переписывание: благодарность, снятие функции
+
+ЦЕЛЬ: освободить тело от чужой задачи`,
+
+      'past-lives': `Ты — генератор регрессий в прошлые жизни Павла Казарьяна.
+
+РЕГРЕССИЯ ПРОШЛЫХ ЖИЗНЕЙ
+Ключевая тема: Символическая память, архетипические роли, экзистенциальные сценарии
+
+ОБЯЗАТЕЛЬНАЯ СТРУКТУРА:
+1. Обряд входа и безопасность
+2. Переход за предел текущей жизни
+3. Прошлая жизнь: тело, возраст, пол, место, роль
+4. Ключевая сцена: момент выбора, травма, клятва
+5. Перенос сценария: как это живёт сейчас
+6. Переписывание: разрыв клятвы, возврат ресурса
+7. Возвращение
+
+ЦЕЛЬ: обнаружить старое решение, развязать сценарий`
+    };
+
+    async function generateRegression() {
+      // Rate limiting
+      if (!rateLimiter.isAllowed()) {
+        showToast('Слишком много запросов. Подождите минуту.', true);
+        return;
+      }
+
+      // Verify session
+      if (!await verifySession()) {
+        return;
+      }
+
+      const rawInput = document.getElementById('regression-input').value.trim();
+      const input = sanitizeInput(rawInput);
+
+      if (!input) {
+        showToast('Опишите клиента и его запрос', true);
+        return;
+      }
+
+      if (input.length > 3000) {
+        showToast('Текст слишком длинный (максимум 3000 символов)', true);
+        return;
+      }
+
+      const loading = document.getElementById('regression-loading');
+      const result = document.getElementById('regression-result');
+      loading.classList.add('visible');
+      result.classList.remove('visible');
+
+      const systemPrompt = regressionPrompts[selectedRegressionType] || regressionPrompts.men;
+
+      const prompt = `${systemPrompt}
+
+ФОРМАТ: Непрерывный текст примерно 15000 символов для чтения вслух. Текст должен быть плавным, гипнотическим, без заголовков и списков. Пиши во втором лице ("ты", "твой").
+
+ВАЖНО: Отвечай ТОЛЬКО простым текстом БЕЗ markdown-разметки. Никаких звёздочек, решёток, подчёркиваний. Только чистый текст.
+
+Информация о клиенте:
+${input}
+
+Создай полный регрессионный скрипт:`;
+
+      try {
+        const response = await fetch('/.netlify/functions/gemini-generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }]
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('AI request failed');
+        }
+
+        const data = await response.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Нет ответа';
+
+        lastRegressionResult = {
+          text: text,
+          type: selectedRegressionType,
+          input: input,
+          date: new Date().toISOString()
+        };
+
+        document.getElementById('regression-text').textContent = text;
+        document.getElementById('regression-char-count').textContent = `${text.length} символов`;
+
+        loading.classList.remove('visible');
+        result.classList.add('visible');
+
+      } catch (err) {
+        console.error('Regression generation error:', err);
+        loading.classList.remove('visible');
+        showToast('Ошибка генерации: ' + err.message, true);
+      }
+    }
+
+    function clearRegressionResult() {
+      document.getElementById('regression-input').value = '';
+      document.getElementById('regression-result').classList.remove('visible');
+      lastRegressionResult = null;
+    }
+
+    function copyRegressionResult() {
+      if (!lastRegressionResult) return;
+      navigator.clipboard.writeText(lastRegressionResult.text).then(() => {
+        showToast('Скопировано в буфер обмена');
+      });
+    }
+
+    function downloadRegressionResult() {
+      if (!lastRegressionResult) return;
+
+      const typeNames = {
+        men: 'мужская',
+        women: 'женская',
+        family: 'родовая',
+        body: 'телесная',
+        'past-lives': 'прошлые_жизни'
+      };
+
+      const filename = `регрессия_${typeNames[lastRegressionResult.type]}_${new Date().toISOString().slice(0, 10)}.txt`;
+      const blob = new Blob([lastRegressionResult.text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Файл скачан');
+    }
+
+    // ============ END REGRESSION GENERATOR ============
 
     function showToast(message, isError = false) {
       const toast = document.getElementById('toast');
