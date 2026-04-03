@@ -715,6 +715,248 @@
       background: #ef4444;
     }
 
+    /* Calendar Styles */
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .calendar-month {
+      font-size: 18px;
+      font-weight: 600;
+      min-width: 160px;
+      text-align: center;
+    }
+
+    .calendar-nav-btn {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 8px;
+      color: #e2e8f0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .calendar-nav-btn:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .calendar-weekdays div {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      padding: 8px 0;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.4);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      min-height: 50px;
+    }
+
+    .calendar-day:hover {
+      background: rgba(59, 130, 246, 0.2);
+    }
+
+    .calendar-day.other-month {
+      opacity: 0.3;
+    }
+
+    .calendar-day.today {
+      background: rgba(59, 130, 246, 0.3);
+      border: 2px solid #3b82f6;
+    }
+
+    .calendar-day.selected {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    }
+
+    .calendar-day.has-events::after {
+      content: '';
+      position: absolute;
+      bottom: 6px;
+      width: 6px;
+      height: 6px;
+      background: #10b981;
+      border-radius: 50%;
+    }
+
+    .calendar-day-number {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .session-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.4);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      border-left: 3px solid #3b82f6;
+      transition: all 0.2s;
+    }
+
+    .session-card:hover {
+      background: rgba(15, 23, 42, 0.6);
+    }
+
+    .session-card.type-primary { border-left-color: #3b82f6; }
+    .session-card.type-followup { border-left-color: #10b981; }
+    .session-card.type-group { border-left-color: #8b5cf6; }
+    .session-card.type-supervision { border-left-color: #f59e0b; }
+    .session-card.type-training { border-left-color: #ec4899; }
+
+    .session-card-time {
+      text-align: center;
+      min-width: 60px;
+    }
+
+    .session-card-time-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #3b82f6;
+    }
+
+    .session-card-time-duration {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .session-card-info {
+      flex: 1;
+    }
+
+    .session-card-client {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .session-card-type {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .session-card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .google-connected {
+      background: rgba(16, 185, 129, 0.2) !important;
+      border-color: #10b981 !important;
+      color: #10b981 !important;
+    }
+
+    /* Mobile Header */
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(15, 23, 42, 0.98);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 0 16px;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 200;
+      backdrop-filter: blur(10px);
+    }
+
+    .mobile-logo {
+      font-size: 16px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .burger-btn {
+      width: 44px;
+      height: 44px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.3s;
+    }
+
+    .burger-btn span {
+      width: 20px;
+      height: 2px;
+      background: #e2e8f0;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    .burger-btn.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .burger-btn.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .burger-btn.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    .mobile-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 150;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .mobile-overlay.visible {
+      display: block;
+      opacity: 1;
+    }
+
     /* Responsive */
     @media (max-width: 1200px) {
       .stats-grid {
@@ -723,21 +965,248 @@
     }
 
     @media (max-width: 768px) {
-      .sidebar {
-        display: none;
+      .mobile-header {
+        display: flex;
       }
+
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        width: 280px;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
       .main-content {
         margin-left: 0;
+        padding: 80px 16px 24px;
       }
+
+      .page-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .page-title {
+        font-size: 20px;
+      }
+
+      .header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .header-actions .btn {
+        flex: 1;
+        min-width: 140px;
+        justify-content: center;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .stat-card {
+        padding: 16px;
+      }
+
+      .stat-value {
+        font-size: 22px;
+      }
+
+      .stat-label {
+        font-size: 11px;
+      }
+
+      .stat-icon {
+        width: 36px;
+        height: 36px;
+      }
+
+      .card {
+        padding: 16px;
+        border-radius: 12px;
+      }
+
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .avatar-upload {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .ai-options {
+        gap: 6px;
+      }
+
+      .ai-option {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .ai-actions {
+        flex-direction: column;
+      }
+
+      .ai-actions .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .ai-result {
+        padding: 16px;
+      }
+
+      .ai-result-content {
+        font-size: 13px;
+      }
+
+      .session-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .session-time {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+      }
+
+      .session-time-value {
+        font-size: 16px;
+      }
+
+      .session-actions {
+        width: 100%;
+      }
+
+      .session-btn {
+        flex: 1;
+      }
+
+      .modal {
+        max-width: 100%;
+        max-height: 90vh;
+        margin: 10px;
+        border-radius: 12px;
+      }
+
+      .modal-body {
+        padding: 16px;
+      }
+
+      .toast {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+      }
+
+      /* Regression section mobile */
+      #regression-types {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      #regression-types .ai-option {
+        text-align: center;
+        padding: 10px 8px;
+      }
+
+      /* Calendar mobile */
+      .calendar-header {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .calendar-month {
+        font-size: 16px;
+        min-width: auto;
+        order: 1;
+        flex: 1;
+      }
+
+      .calendar-nav-btn {
+        width: 32px;
+        height: 32px;
+      }
+
+      .calendar-day {
+        min-height: 40px;
+      }
+
+      .calendar-day-number {
+        font-size: 12px;
+      }
+
+      .session-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .session-card-time {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .session-card-actions {
+        width: 100%;
+      }
+
+      .session-card-actions .session-btn {
+        flex: 1;
+      }
+    }
+
+    @media (max-width: 480px) {
       .stats-grid {
         grid-template-columns: 1fr;
       }
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-      .page-header {
-        flex-direction: column;
+
+      .stat-card {
+        display: flex;
+        align-items: center;
         gap: 16px;
+      }
+
+      .stat-icon {
+        margin-bottom: 0;
+      }
+
+      .stat-info {
+        flex: 1;
+      }
+
+      .header-actions .btn {
+        min-width: 100%;
+        padding: 12px 16px;
+      }
+
+      .btn span.btn-text {
+        display: none;
+      }
+
+      #regression-types {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -842,6 +1311,17 @@
   </style>
 </head>
 <body>
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <div class="mobile-logo">WebinarStudio</div>
+    <button class="burger-btn" id="burger-btn" aria-label="Меню">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+  <div class="mobile-overlay" id="mobile-overlay"></div>
+
   <div class="app-container">
     <!-- Sidebar -->
     <aside class="sidebar">
@@ -868,9 +1348,9 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 3 3v1a2 2 0 0 1-2 2h-1v5a4 4 0 0 1-8 0v-5H7a2 2 0 0 1-2-2v-1a3 3 0 0 1 3-3V6a4 4 0 0 1 4-4z"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></svg>
           AI-Помощник
         </div>
-        <div class="nav-item" data-section="sessions">
+        <div class="nav-item" data-section="calendar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          Сессии
+          Календарь
         </div>
         <div class="nav-item" data-section="notes">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -1025,32 +1505,144 @@
         </div>
       </section>
 
-      <!-- Sessions Section -->
-      <section class="settings-section" id="section-sessions">
+      <!-- Calendar Section -->
+      <section class="settings-section" id="section-calendar">
         <div class="page-header">
-          <h1 class="page-title">Ближайшие сессии</h1>
-          <button class="btn btn-secondary">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Добавить сессию
-          </button>
+          <h1 class="page-title">Календарь сессий</h1>
+          <div class="header-actions">
+            <button class="btn btn-secondary" onclick="connectGoogleCalendar()" id="google-cal-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <span class="btn-text">Google Calendar</span>
+            </button>
+            <button class="btn btn-primary" onclick="openSessionModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span class="btn-text">Новая сессия</span>
+            </button>
+          </div>
         </div>
 
-        <div class="card">
-          <div id="sessions-list">
-            <div class="empty-state">
+        <!-- Calendar Grid -->
+        <div class="card" style="padding: 16px;">
+          <div class="calendar-header">
+            <button class="calendar-nav-btn" onclick="prevMonth()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <h3 class="calendar-month" id="calendar-month">Апрель 2026</h3>
+            <button class="calendar-nav-btn" onclick="nextMonth()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn btn-secondary" onclick="goToToday()" style="margin-left: auto; padding: 8px 16px; font-size: 13px;">Сегодня</button>
+          </div>
+
+          <div class="calendar-weekdays">
+            <div>Пн</div>
+            <div>Вт</div>
+            <div>Ср</div>
+            <div>Чт</div>
+            <div>Пт</div>
+            <div>Сб</div>
+            <div>Вс</div>
+          </div>
+
+          <div class="calendar-grid" id="calendar-grid">
+            <!-- Days will be rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Sessions for Selected Day -->
+        <div class="card" style="margin-top: 16px;">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span id="selected-day-title">Сессии на сегодня</span>
+            </div>
+          </div>
+          <div id="day-sessions-list">
+            <div class="empty-state" id="sessions-empty">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              <p>Нет запланированных сессий</p>
-              <p style="font-size: 13px; margin-top: 8px;">Добавьте сессию или начните консультацию сейчас</p>
+              <p>Нет сессий на этот день</p>
+              <p style="font-size: 13px; margin-top: 8px;">Нажмите "Новая сессия" чтобы запланировать</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Sessions -->
+        <div class="card" style="margin-top: 16px;">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+              Ближайшие сессии
+            </div>
+          </div>
+          <div id="upcoming-sessions-list">
+            <div class="empty-state">
+              <p style="color: #64748b;">Запланируйте первую сессию</p>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- Session Modal -->
+      <div class="modal-overlay" id="session-modal">
+        <div class="modal" style="max-width: 550px;">
+          <div class="modal-header">
+            <h3 class="modal-title" id="session-modal-title">Новая сессия</h3>
+            <button class="modal-close" onclick="closeSessionModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="session-edit-id">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Дата</label>
+                <input type="date" id="session-date">
+              </div>
+              <div class="form-group">
+                <label>Время</label>
+                <input type="time" id="session-time" value="10:00">
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>Клиент</label>
+              <input type="text" id="session-client" placeholder="Имя клиента">
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>Тип сессии</label>
+              <select id="session-type" style="width: 100%; padding: 12px 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #e2e8f0; font-size: 14px;">
+                <option value="primary">Первичная консультация</option>
+                <option value="followup">Повторная сессия</option>
+                <option value="group">Групповая терапия</option>
+                <option value="supervision">Супервизия</option>
+                <option value="training">Обучение/тренинг</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>Длительность</label>
+              <select id="session-duration" style="width: 100%; padding: 12px 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #e2e8f0; font-size: 14px;">
+                <option value="60">1 час</option>
+                <option value="90">1.5 часа</option>
+                <option value="120">2 часа</option>
+                <option value="180">3 часа</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label>Заметки</label>
+              <textarea id="session-notes" style="width: 100%; padding: 12px 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #e2e8f0; font-size: 14px; min-height: 80px; resize: vertical;" placeholder="Тема, запрос, подготовка..."></textarea>
+            </div>
+            <div style="display: flex; gap: 12px;">
+              <button class="btn btn-primary" onclick="saveSession()" style="flex: 1;">Сохранить</button>
+              <button class="btn btn-secondary" onclick="closeSessionModal()">Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Notes Section -->
       <section class="settings-section" id="section-notes">
         <div class="page-header">
           <h1 class="page-title">Заметки по сессиям</h1>
-          <button class="btn btn-secondary" onclick="addNote()">
+          <button class="btn btn-primary" onclick="openNoteModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Новая заметка
           </button>
@@ -1058,7 +1650,7 @@
 
         <div class="card">
           <div id="notes-list">
-            <div class="empty-state">
+            <div class="empty-state" id="notes-empty">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               <p>Нет заметок</p>
               <p style="font-size: 13px; margin-top: 8px;">Заметки помогают отслеживать прогресс клиентов</p>
@@ -1066,6 +1658,37 @@
           </div>
         </div>
       </section>
+
+      <!-- Note Modal -->
+      <div class="modal-overlay" id="note-modal">
+        <div class="modal" style="max-width: 600px;">
+          <div class="modal-header">
+            <h3 class="modal-title" id="note-modal-title">Новая заметка</h3>
+            <button class="modal-close" onclick="closeNoteModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="note-edit-id">
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>Имя клиента</label>
+              <input type="text" id="note-client" placeholder="Введите имя клиента">
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>Тема сессии</label>
+              <input type="text" id="note-topic" placeholder="Краткая тема или запрос">
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label>Заметки</label>
+              <textarea id="note-content" style="width: 100%; padding: 12px 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #e2e8f0; font-size: 14px; min-height: 150px; resize: vertical;" placeholder="Запишите важные моменты сессии, наблюдения, план на следующую встречу..."></textarea>
+            </div>
+            <div style="display: flex; gap: 12px;">
+              <button class="btn btn-primary" onclick="saveNote()" style="flex: 1;">Сохранить</button>
+              <button class="btn btn-secondary" onclick="closeNoteModal()">Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Regressions Section -->
       <section class="settings-section" id="section-regressions">
@@ -1498,13 +2121,39 @@
       }
     })();
 
+    // Mobile menu
+    const burgerBtn = document.getElementById('burger-btn');
+    const sidebar = document.querySelector('.sidebar');
+    const mobileOverlay = document.getElementById('mobile-overlay');
+
+    function toggleMobileMenu() {
+      burgerBtn.classList.toggle('active');
+      sidebar.classList.toggle('open');
+      mobileOverlay.classList.toggle('visible');
+      document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+    }
+
+    function closeMobileMenu() {
+      burgerBtn.classList.remove('active');
+      sidebar.classList.remove('open');
+      mobileOverlay.classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+
+    burgerBtn.addEventListener('click', toggleMobileMenu);
+    mobileOverlay.addEventListener('click', closeMobileMenu);
+
     // Navigation
     document.querySelectorAll('.nav-item[data-section]').forEach(item => {
       item.addEventListener('click', () => {
         const section = item.dataset.section;
         switchSection(section);
+        closeMobileMenu();
       });
     });
+
+    // Close mobile menu when clicking "В студию"
+    document.querySelector('.sidebar-footer a')?.addEventListener('click', closeMobileMenu);
 
     function switchSection(sectionName) {
       // Update nav
@@ -2422,6 +3071,476 @@ ${input}
         hideHistoryModal();
       }
     });
+
+    // ============ NOTES FUNCTIONALITY ============
+    const NOTES_KEY = 'psychologist_notes';
+
+    function getNotes() {
+      try {
+        return JSON.parse(localStorage.getItem(NOTES_KEY)) || [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveNotesToStorage(notes) {
+      localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+    }
+
+    function renderNotes() {
+      const notes = getNotes();
+      const container = document.getElementById('notes-list');
+      const emptyState = document.getElementById('notes-empty');
+
+      if (notes.length === 0) {
+        container.innerHTML = '';
+        container.appendChild(emptyState.cloneNode(true));
+        return;
+      }
+
+      container.innerHTML = notes.map((note, index) => `
+        <div class="note-item" data-index="${index}">
+          <div class="note-header">
+            <span class="note-client">${sanitizeInput(note.client) || 'Без имени'}</span>
+            <span class="note-date">${formatNoteDate(note.date)}</span>
+          </div>
+          <div class="note-topic" style="font-size: 13px; color: #8b5cf6; margin-bottom: 8px;">${sanitizeInput(note.topic) || ''}</div>
+          <div class="note-text">${sanitizeInput(note.content).substring(0, 200)}${note.content.length > 200 ? '...' : ''}</div>
+          <div style="display: flex; gap: 8px; margin-top: 12px;">
+            <button class="session-btn session-btn-prepare" onclick="editNote(${index})">Редактировать</button>
+            <button class="session-btn" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;" onclick="deleteNote(${index})">Удалить</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function formatNoteDate(dateStr) {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function openNoteModal(editIndex = null) {
+      document.getElementById('note-edit-id').value = editIndex !== null ? editIndex : '';
+      document.getElementById('note-modal-title').textContent = editIndex !== null ? 'Редактировать заметку' : 'Новая заметка';
+
+      if (editIndex !== null) {
+        const notes = getNotes();
+        const note = notes[editIndex];
+        if (note) {
+          document.getElementById('note-client').value = note.client || '';
+          document.getElementById('note-topic').value = note.topic || '';
+          document.getElementById('note-content').value = note.content || '';
+        }
+      } else {
+        document.getElementById('note-client').value = '';
+        document.getElementById('note-topic').value = '';
+        document.getElementById('note-content').value = '';
+      }
+
+      document.getElementById('note-modal').classList.add('visible');
+    }
+
+    function closeNoteModal() {
+      document.getElementById('note-modal').classList.remove('visible');
+    }
+
+    function saveNote() {
+      const client = sanitizeInput(document.getElementById('note-client').value);
+      const topic = sanitizeInput(document.getElementById('note-topic').value);
+      const content = sanitizeInput(document.getElementById('note-content').value);
+
+      if (!content.trim()) {
+        showToast('Введите текст заметки', true);
+        return;
+      }
+
+      const notes = getNotes();
+      const editIndex = document.getElementById('note-edit-id').value;
+
+      const noteData = {
+        client: client,
+        topic: topic,
+        content: content,
+        date: new Date().toISOString()
+      };
+
+      if (editIndex !== '') {
+        notes[parseInt(editIndex)] = noteData;
+        showToast('Заметка обновлена');
+      } else {
+        notes.unshift(noteData);
+        showToast('Заметка сохранена');
+      }
+
+      saveNotesToStorage(notes);
+      renderNotes();
+      closeNoteModal();
+    }
+
+    function editNote(index) {
+      openNoteModal(index);
+    }
+
+    function deleteNote(index) {
+      if (!confirm('Удалить эту заметку?')) return;
+
+      const notes = getNotes();
+      notes.splice(index, 1);
+      saveNotesToStorage(notes);
+      renderNotes();
+      showToast('Заметка удалена');
+    }
+
+    // Close note modal on outside click
+    document.getElementById('note-modal').addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        closeNoteModal();
+      }
+    });
+
+    // Initialize notes on load
+    renderNotes();
+    // ============ END NOTES ============
+
+    // ============ CALENDAR FUNCTIONALITY ============
+    const SESSIONS_KEY = 'psychologist_sessions';
+    const GOOGLE_CAL_KEY = 'google_calendar_connected';
+
+    let currentCalendarDate = new Date();
+    let selectedCalendarDate = new Date();
+
+    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                        'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+
+    const sessionTypeNames = {
+      primary: 'Первичная консультация',
+      followup: 'Повторная сессия',
+      group: 'Групповая терапия',
+      supervision: 'Супервизия',
+      training: 'Обучение/тренинг'
+    };
+
+    function getSessions() {
+      try {
+        return JSON.parse(localStorage.getItem(SESSIONS_KEY)) || [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveSessionsToStorage(sessions) {
+      localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+    }
+
+    function renderCalendar() {
+      const year = currentCalendarDate.getFullYear();
+      const month = currentCalendarDate.getMonth();
+
+      document.getElementById('calendar-month').textContent = `${monthNames[month]} ${year}`;
+
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const startingDay = (firstDay.getDay() + 6) % 7; // Monday = 0
+      const totalDays = lastDay.getDate();
+
+      const sessions = getSessions();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      let html = '';
+
+      // Previous month days
+      const prevMonth = new Date(year, month, 0);
+      const prevMonthDays = prevMonth.getDate();
+      for (let i = startingDay - 1; i >= 0; i--) {
+        const day = prevMonthDays - i;
+        html += `<div class="calendar-day other-month" data-date="${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}">
+          <span class="calendar-day-number">${day}</span>
+        </div>`;
+      }
+
+      // Current month days
+      for (let day = 1; day <= totalDays; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const date = new Date(year, month, day);
+        date.setHours(0, 0, 0, 0);
+
+        const isToday = date.getTime() === today.getTime();
+        const isSelected = date.getTime() === new Date(selectedCalendarDate.getFullYear(), selectedCalendarDate.getMonth(), selectedCalendarDate.getDate()).getTime();
+        const hasEvents = sessions.some(s => s.date === dateStr);
+
+        let classes = 'calendar-day';
+        if (isToday) classes += ' today';
+        if (isSelected) classes += ' selected';
+        if (hasEvents) classes += ' has-events';
+
+        html += `<div class="${classes}" data-date="${dateStr}" onclick="selectDate('${dateStr}')">
+          <span class="calendar-day-number">${day}</span>
+        </div>`;
+      }
+
+      // Next month days
+      const remainingDays = 42 - (startingDay + totalDays);
+      for (let day = 1; day <= remainingDays; day++) {
+        html += `<div class="calendar-day other-month">
+          <span class="calendar-day-number">${day}</span>
+        </div>`;
+      }
+
+      document.getElementById('calendar-grid').innerHTML = html;
+      renderDaySessions();
+      renderUpcomingSessions();
+    }
+
+    function selectDate(dateStr) {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      selectedCalendarDate = new Date(year, month - 1, day);
+      renderCalendar();
+    }
+
+    function prevMonth() {
+      currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+      renderCalendar();
+    }
+
+    function nextMonth() {
+      currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+      renderCalendar();
+    }
+
+    function goToToday() {
+      currentCalendarDate = new Date();
+      selectedCalendarDate = new Date();
+      renderCalendar();
+    }
+
+    function renderDaySessions() {
+      const dateStr = `${selectedCalendarDate.getFullYear()}-${String(selectedCalendarDate.getMonth() + 1).padStart(2, '0')}-${String(selectedCalendarDate.getDate()).padStart(2, '0')}`;
+      const sessions = getSessions().filter(s => s.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
+
+      const dayTitle = selectedCalendarDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+      document.getElementById('selected-day-title').textContent = `Сессии на ${dayTitle}`;
+
+      const container = document.getElementById('day-sessions-list');
+
+      if (sessions.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <p>Нет сессий на этот день</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = sessions.map((session, idx) => `
+        <div class="session-card type-${session.type}">
+          <div class="session-card-time">
+            <div class="session-card-time-value">${session.time}</div>
+            <div class="session-card-time-duration">${session.duration} мин</div>
+          </div>
+          <div class="session-card-info">
+            <div class="session-card-client">${sanitizeInput(session.client) || 'Без имени'}</div>
+            <div class="session-card-type">${sessionTypeNames[session.type] || session.type}</div>
+            ${session.notes ? `<div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">${sanitizeInput(session.notes).substring(0, 50)}...</div>` : ''}
+          </div>
+          <div class="session-card-actions">
+            <button class="session-btn session-btn-prepare" onclick="editSession('${session.id}')">Изменить</button>
+            <button class="session-btn" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;" onclick="deleteSession('${session.id}')">Удалить</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderUpcomingSessions() {
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+      const sessions = getSessions()
+        .filter(s => s.date >= todayStr)
+        .sort((a, b) => {
+          if (a.date !== b.date) return a.date.localeCompare(b.date);
+          return a.time.localeCompare(b.time);
+        })
+        .slice(0, 5);
+
+      const container = document.getElementById('upcoming-sessions-list');
+
+      if (sessions.length === 0) {
+        container.innerHTML = `<div class="empty-state"><p style="color: #64748b;">Нет предстоящих сессий</p></div>`;
+        return;
+      }
+
+      container.innerHTML = sessions.map(session => {
+        const [year, month, day] = session.date.split('-');
+        const dateObj = new Date(year, month - 1, day);
+        const dateFormatted = dateObj.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+
+        return `
+          <div class="session-card type-${session.type}" onclick="selectDate('${session.date}')" style="cursor: pointer;">
+            <div class="session-card-time">
+              <div class="session-card-time-value">${session.time}</div>
+              <div class="session-card-time-duration">${dateFormatted}</div>
+            </div>
+            <div class="session-card-info">
+              <div class="session-card-client">${sanitizeInput(session.client) || 'Без имени'}</div>
+              <div class="session-card-type">${sessionTypeNames[session.type] || session.type}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openSessionModal(editId = null) {
+      document.getElementById('session-edit-id').value = editId || '';
+      document.getElementById('session-modal-title').textContent = editId ? 'Редактировать сессию' : 'Новая сессия';
+
+      if (editId) {
+        const sessions = getSessions();
+        const session = sessions.find(s => s.id === editId);
+        if (session) {
+          document.getElementById('session-date').value = session.date;
+          document.getElementById('session-time').value = session.time;
+          document.getElementById('session-client').value = session.client || '';
+          document.getElementById('session-type').value = session.type || 'primary';
+          document.getElementById('session-duration').value = session.duration || '60';
+          document.getElementById('session-notes').value = session.notes || '';
+        }
+      } else {
+        const dateStr = `${selectedCalendarDate.getFullYear()}-${String(selectedCalendarDate.getMonth() + 1).padStart(2, '0')}-${String(selectedCalendarDate.getDate()).padStart(2, '0')}`;
+        document.getElementById('session-date').value = dateStr;
+        document.getElementById('session-time').value = '10:00';
+        document.getElementById('session-client').value = '';
+        document.getElementById('session-type').value = 'primary';
+        document.getElementById('session-duration').value = '60';
+        document.getElementById('session-notes').value = '';
+      }
+
+      document.getElementById('session-modal').classList.add('visible');
+    }
+
+    function closeSessionModal() {
+      document.getElementById('session-modal').classList.remove('visible');
+    }
+
+    function saveSession() {
+      const date = document.getElementById('session-date').value;
+      const time = document.getElementById('session-time').value;
+      const client = sanitizeInput(document.getElementById('session-client').value);
+      const type = document.getElementById('session-type').value;
+      const duration = document.getElementById('session-duration').value;
+      const notes = sanitizeInput(document.getElementById('session-notes').value);
+
+      if (!date || !time) {
+        showToast('Укажите дату и время', true);
+        return;
+      }
+
+      const sessions = getSessions();
+      const editId = document.getElementById('session-edit-id').value;
+
+      const sessionData = {
+        id: editId || Date.now().toString(),
+        date,
+        time,
+        client,
+        type,
+        duration: parseInt(duration),
+        notes,
+        createdAt: new Date().toISOString()
+      };
+
+      if (editId) {
+        const idx = sessions.findIndex(s => s.id === editId);
+        if (idx !== -1) sessions[idx] = sessionData;
+        showToast('Сессия обновлена');
+      } else {
+        sessions.push(sessionData);
+        showToast('Сессия добавлена');
+      }
+
+      saveSessionsToStorage(sessions);
+      renderCalendar();
+      closeSessionModal();
+
+      // Sync to Google Calendar if connected
+      if (localStorage.getItem(GOOGLE_CAL_KEY) === 'true') {
+        syncToGoogleCalendar(sessionData);
+      }
+    }
+
+    function editSession(id) {
+      openSessionModal(id);
+    }
+
+    function deleteSession(id) {
+      if (!confirm('Удалить эту сессию?')) return;
+
+      const sessions = getSessions().filter(s => s.id !== id);
+      saveSessionsToStorage(sessions);
+      renderCalendar();
+      showToast('Сессия удалена');
+    }
+
+    // Google Calendar Integration
+    const GOOGLE_CLIENT_ID = ''; // Will be set up later
+    const GOOGLE_API_KEY = ''; // Will be set up later
+
+    function connectGoogleCalendar() {
+      if (localStorage.getItem(GOOGLE_CAL_KEY) === 'true') {
+        // Disconnect
+        localStorage.removeItem(GOOGLE_CAL_KEY);
+        document.getElementById('google-cal-btn').classList.remove('google-connected');
+        document.getElementById('google-cal-btn').querySelector('.btn-text').textContent = 'Google Calendar';
+        showToast('Google Calendar отключён');
+        return;
+      }
+
+      // For now, show setup instructions
+      const setupInstructions = `
+Для подключения Google Calendar:
+
+1. Создайте проект в Google Cloud Console
+2. Включите Google Calendar API
+3. Настройте OAuth 2.0 credentials
+4. Добавьте Client ID в настройки
+
+Это будет настроено администратором.
+      `;
+
+      // Simulate connection for demo
+      if (confirm('Подключить Google Calendar?\n\n(Демо-режим: события будут синхронизироваться локально)')) {
+        localStorage.setItem(GOOGLE_CAL_KEY, 'true');
+        document.getElementById('google-cal-btn').classList.add('google-connected');
+        document.getElementById('google-cal-btn').querySelector('.btn-text').textContent = 'Подключено';
+        showToast('Google Calendar подключён (демо)');
+      }
+    }
+
+    function syncToGoogleCalendar(session) {
+      // Placeholder for actual Google Calendar API integration
+      console.log('Syncing to Google Calendar:', session);
+    }
+
+    function checkGoogleCalendarStatus() {
+      if (localStorage.getItem(GOOGLE_CAL_KEY) === 'true') {
+        document.getElementById('google-cal-btn').classList.add('google-connected');
+        document.getElementById('google-cal-btn').querySelector('.btn-text').textContent = 'Подключено';
+      }
+    }
+
+    // Close session modal on outside click
+    document.getElementById('session-modal').addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        closeSessionModal();
+      }
+    });
+
+    // Initialize calendar
+    renderCalendar();
+    checkGoogleCalendarStatus();
+    // ============ END CALENDAR ============
   </script>
 </body>
 </html>
