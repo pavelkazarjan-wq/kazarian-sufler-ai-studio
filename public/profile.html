@@ -768,25 +768,25 @@
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
+      gap: 6px;
     }
 
     .calendar-day {
-      aspect-ratio: 1;
+      min-height: 80px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      padding: 6px;
       background: rgba(15, 23, 42, 0.4);
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s;
       position: relative;
-      min-height: 50px;
+      overflow: hidden;
     }
 
     .calendar-day:hover {
       background: rgba(59, 130, 246, 0.2);
+      transform: scale(1.02);
     }
 
     .calendar-day.other-month {
@@ -794,26 +794,117 @@
     }
 
     .calendar-day.today {
-      background: rgba(59, 130, 246, 0.3);
+      background: rgba(59, 130, 246, 0.2);
       border: 2px solid #3b82f6;
     }
 
     .calendar-day.selected {
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    }
-
-    .calendar-day.has-events::after {
-      content: '';
-      position: absolute;
-      bottom: 6px;
-      width: 6px;
-      height: 6px;
-      background: #10b981;
-      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(139, 92, 246, 0.4));
+      border: 2px solid #8b5cf6;
     }
 
     .calendar-day-number {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #e2e8f0;
+    }
+
+    .calendar-day.today .calendar-day-number {
+      background: #3b82f6;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .calendar-day-events {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+
+    .calendar-event-preview {
+      font-size: 10px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: rgba(59, 130, 246, 0.3);
+      color: #93c5fd;
+    }
+
+    .calendar-event-preview.type-primary { background: rgba(59, 130, 246, 0.3); color: #93c5fd; }
+    .calendar-event-preview.type-followup { background: rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+    .calendar-event-preview.type-group { background: rgba(139, 92, 246, 0.3); color: #c4b5fd; }
+    .calendar-event-preview.type-supervision { background: rgba(245, 158, 11, 0.3); color: #fcd34d; }
+    .calendar-event-preview.type-training { background: rgba(236, 72, 153, 0.3); color: #f9a8d4; }
+
+    .calendar-more-events {
+      font-size: 9px;
+      color: #64748b;
+      text-align: center;
+      margin-top: 2px;
+    }
+
+    /* Voice Recording Button */
+    .voice-record-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: all 0.3s;
+      box-shadow: 0 10px 40px rgba(59, 130, 246, 0.3);
+    }
+
+    .voice-record-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 50px rgba(59, 130, 246, 0.4);
+    }
+
+    .voice-record-btn.recording {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      animation: pulse-recording 1.5s infinite;
+    }
+
+    @keyframes pulse-recording {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      50% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+    }
+
+    .voice-parsed-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .voice-parsed-item:last-child {
+      border-bottom: none;
+    }
+
+    .voice-parsed-label {
+      font-size: 12px;
+      color: #64748b;
+      min-width: 80px;
+    }
+
+    .voice-parsed-value {
       font-size: 14px;
+      color: #e2e8f0;
       font-weight: 500;
     }
 
@@ -1511,12 +1602,16 @@
           <h1 class="page-title">Календарь сессий</h1>
           <div class="header-actions">
             <button class="btn btn-secondary" onclick="connectGoogleCalendar()" id="google-cal-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              <span class="btn-text">Google Calendar</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+              <span class="btn-text">Google</span>
+            </button>
+            <button class="btn btn-ai" onclick="startVoiceInput()" id="voice-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              <span class="btn-text">Голос</span>
             </button>
             <button class="btn btn-primary" onclick="openSessionModal()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span class="btn-text">Новая сессия</span>
+              <span class="btn-text">Добавить</span>
             </button>
           </div>
         </div>
@@ -1633,6 +1728,49 @@
             <div style="display: flex; gap: 12px;">
               <button class="btn btn-primary" onclick="saveSession()" style="flex: 1;">Сохранить</button>
               <button class="btn btn-secondary" onclick="closeSessionModal()">Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voice Input Modal -->
+      <div class="modal-overlay" id="voice-modal">
+        <div class="modal" style="max-width: 500px;">
+          <div class="modal-header">
+            <h3 class="modal-title">Голосовая запись сессии</h3>
+            <button class="modal-close" onclick="closeVoiceModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="modal-body" style="text-align: center;">
+            <div id="voice-status" style="margin-bottom: 20px;">
+              <p style="color: #94a3b8; margin-bottom: 12px;">Нажмите на микрофон и скажите, например:</p>
+              <p style="font-size: 13px; color: #64748b; font-style: italic;">"Записать Анну Иванову на завтра в 14:00, первичная консультация про тревожность"</p>
+            </div>
+
+            <button class="voice-record-btn" id="voice-record-btn" onclick="toggleVoiceRecording()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </button>
+            <p id="voice-hint" style="margin-top: 12px; font-size: 13px; color: #64748b;">Нажмите для записи</p>
+
+            <div id="voice-transcript" style="margin-top: 20px; padding: 16px; background: rgba(15, 23, 42, 0.6); border-radius: 12px; display: none; text-align: left;">
+              <p style="font-size: 12px; color: #64748b; margin-bottom: 8px;">Распознанный текст:</p>
+              <p id="voice-text" style="color: #e2e8f0; line-height: 1.5;"></p>
+            </div>
+
+            <div id="voice-parsed" style="margin-top: 16px; padding: 16px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; display: none; text-align: left;">
+              <p style="font-size: 12px; color: #3b82f6; margin-bottom: 12px;">AI распознал:</p>
+              <div id="voice-parsed-content"></div>
+            </div>
+
+            <div id="voice-loading" style="display: none; padding: 20px;">
+              <div class="ai-spinner" style="margin: 0 auto;"></div>
+              <p style="margin-top: 12px; color: #94a3b8;">AI обрабатывает запрос...</p>
+            </div>
+
+            <div id="voice-actions" style="display: none; margin-top: 20px; display: flex; gap: 12px;">
+              <button class="btn btn-primary" onclick="confirmVoiceSession()" style="flex: 1;">Создать сессию</button>
+              <button class="btn btn-secondary" onclick="retryVoiceInput()">Повторить</button>
             </div>
           </div>
         </div>
@@ -3255,8 +3393,9 @@ ${input}
       const prevMonthDays = prevMonth.getDate();
       for (let i = startingDay - 1; i >= 0; i--) {
         const day = prevMonthDays - i;
-        html += `<div class="calendar-day other-month" data-date="${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}">
+        html += `<div class="calendar-day other-month">
           <span class="calendar-day-number">${day}</span>
+          <div class="calendar-day-events"></div>
         </div>`;
       }
 
@@ -3268,15 +3407,27 @@ ${input}
 
         const isToday = date.getTime() === today.getTime();
         const isSelected = date.getTime() === new Date(selectedCalendarDate.getFullYear(), selectedCalendarDate.getMonth(), selectedCalendarDate.getDate()).getTime();
-        const hasEvents = sessions.some(s => s.date === dateStr);
+        const daySessions = sessions.filter(s => s.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
 
         let classes = 'calendar-day';
         if (isToday) classes += ' today';
         if (isSelected) classes += ' selected';
-        if (hasEvents) classes += ' has-events';
+
+        // Build events preview
+        let eventsHtml = '<div class="calendar-day-events">';
+        const maxVisible = 2;
+        daySessions.slice(0, maxVisible).forEach(s => {
+          const clientName = sanitizeInput(s.client) || 'Клиент';
+          eventsHtml += `<div class="calendar-event-preview type-${s.type}">${s.time} ${clientName}</div>`;
+        });
+        if (daySessions.length > maxVisible) {
+          eventsHtml += `<div class="calendar-more-events">+${daySessions.length - maxVisible} ещё</div>`;
+        }
+        eventsHtml += '</div>';
 
         html += `<div class="${classes}" data-date="${dateStr}" onclick="selectDate('${dateStr}')">
           <span class="calendar-day-number">${day}</span>
+          ${eventsHtml}
         </div>`;
       }
 
@@ -3285,6 +3436,7 @@ ${input}
       for (let day = 1; day <= remainingDays; day++) {
         html += `<div class="calendar-day other-month">
           <span class="calendar-day-number">${day}</span>
+          <div class="calendar-day-events"></div>
         </div>`;
       }
 
@@ -3477,56 +3629,179 @@ ${input}
     function deleteSession(id) {
       if (!confirm('Удалить эту сессию?')) return;
 
-      const sessions = getSessions().filter(s => s.id !== id);
-      saveSessionsToStorage(sessions);
+      const sessions = getSessions();
+      const session = sessions.find(s => s.id === id);
+
+      // Delete from Google Calendar if connected
+      if (session?.googleEventId) {
+        deleteFromGoogleCalendar(session.googleEventId);
+      }
+
+      const filteredSessions = sessions.filter(s => s.id !== id);
+      saveSessionsToStorage(filteredSessions);
       renderCalendar();
       showToast('Сессия удалена');
     }
 
     // Google Calendar Integration
-    const GOOGLE_CLIENT_ID = ''; // Will be set up later
-    const GOOGLE_API_KEY = ''; // Will be set up later
+    const GCAL_TOKENS_KEY = 'google_calendar_tokens';
 
-    function connectGoogleCalendar() {
-      if (localStorage.getItem(GOOGLE_CAL_KEY) === 'true') {
-        // Disconnect
-        localStorage.removeItem(GOOGLE_CAL_KEY);
-        document.getElementById('google-cal-btn').classList.remove('google-connected');
-        document.getElementById('google-cal-btn').querySelector('.btn-text').textContent = 'Google Calendar';
-        showToast('Google Calendar отключён');
+    function getGoogleCalendarTokens() {
+      try {
+        return JSON.parse(localStorage.getItem(GCAL_TOKENS_KEY));
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function saveGoogleCalendarTokens(tokens) {
+      localStorage.setItem(GCAL_TOKENS_KEY, JSON.stringify(tokens));
+      localStorage.setItem(GOOGLE_CAL_KEY, 'true');
+    }
+
+    function clearGoogleCalendarTokens() {
+      localStorage.removeItem(GCAL_TOKENS_KEY);
+      localStorage.removeItem(GOOGLE_CAL_KEY);
+    }
+
+    async function connectGoogleCalendar() {
+      const tokens = getGoogleCalendarTokens();
+
+      if (tokens) {
+        // Already connected - ask to disconnect
+        if (confirm(`Google Calendar подключён (${tokens.email || 'аккаунт'}).\n\nОтключить?`)) {
+          clearGoogleCalendarTokens();
+          document.getElementById('google-cal-btn').classList.remove('google-connected');
+          document.getElementById('google-cal-btn').querySelector('.btn-text').textContent = 'Google';
+          showToast('Google Calendar отключён');
+        }
         return;
       }
 
-      // For now, show setup instructions
-      const setupInstructions = `
-Для подключения Google Calendar:
+      // Start OAuth flow
+      try {
+        const userId = currentUser?.id || 'default';
+        const response = await fetch(`/.netlify/functions/google-calendar-auth?user_id=${userId}`);
 
-1. Создайте проект в Google Cloud Console
-2. Включите Google Calendar API
-3. Настройте OAuth 2.0 credentials
-4. Добавьте Client ID в настройки
+        if (!response.ok) {
+          const error = await response.json();
+          if (error.message?.includes('not configured')) {
+            showToast('Google Calendar ещё не настроен администратором', true);
+            return;
+          }
+          throw new Error(error.error || 'Auth failed');
+        }
 
-Это будет настроено администратором.
-      `;
+        const data = await response.json();
 
-      // Simulate connection for demo
-      if (confirm('Подключить Google Calendar?\n\n(Демо-режим: события будут синхронизироваться локально)')) {
-        localStorage.setItem(GOOGLE_CAL_KEY, 'true');
-        document.getElementById('google-cal-btn').classList.add('google-connected');
-        document.getElementById('google-cal-btn').querySelector('.btn-text').textContent = 'Подключено';
-        showToast('Google Calendar подключён (демо)');
+        if (data.authUrl) {
+          // Redirect to Google OAuth
+          window.location.href = data.authUrl;
+        }
+
+      } catch (err) {
+        console.error('Google Calendar auth error:', err);
+        showToast('Ошибка подключения Google Calendar', true);
       }
     }
 
-    function syncToGoogleCalendar(session) {
-      // Placeholder for actual Google Calendar API integration
-      console.log('Syncing to Google Calendar:', session);
+    async function syncToGoogleCalendar(session) {
+      const tokens = getGoogleCalendarTokens();
+      if (!tokens?.access_token) return;
+
+      try {
+        const response = await fetch('/.netlify/functions/google-calendar-sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'create',
+            session: session,
+            accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token
+          })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Sync failed');
+        }
+
+        const data = await response.json();
+
+        // Update tokens if refreshed
+        if (data.newAccessToken) {
+          tokens.access_token = data.newAccessToken;
+          saveGoogleCalendarTokens(tokens);
+        }
+
+        // Save Google event ID with session
+        if (data.eventId) {
+          const sessions = getSessions();
+          const idx = sessions.findIndex(s => s.id === session.id);
+          if (idx !== -1) {
+            sessions[idx].googleEventId = data.eventId;
+            saveSessionsToStorage(sessions);
+          }
+        }
+
+        console.log('Synced to Google Calendar:', data.eventId);
+
+      } catch (err) {
+        console.error('Google Calendar sync error:', err);
+        // Don't show error to user - silent sync
+      }
+    }
+
+    async function deleteFromGoogleCalendar(googleEventId) {
+      const tokens = getGoogleCalendarTokens();
+      if (!tokens?.access_token || !googleEventId) return;
+
+      try {
+        await fetch('/.netlify/functions/google-calendar-sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'delete',
+            eventId: googleEventId,
+            accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token
+          })
+        });
+      } catch (err) {
+        console.error('Google Calendar delete error:', err);
+      }
     }
 
     function checkGoogleCalendarStatus() {
-      if (localStorage.getItem(GOOGLE_CAL_KEY) === 'true') {
+      // Check URL for OAuth callback tokens
+      const urlParams = new URLSearchParams(window.location.search);
+      const encodedTokens = urlParams.get('gcal_tokens');
+      const gcalError = urlParams.get('gcal_error');
+
+      if (encodedTokens) {
+        try {
+          const tokens = JSON.parse(atob(decodeURIComponent(encodedTokens)));
+          saveGoogleCalendarTokens(tokens);
+          showToast(`Google Calendar подключён! (${tokens.email || ''})`);
+
+          // Clean URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (e) {
+          console.error('Failed to parse tokens:', e);
+        }
+      }
+
+      if (gcalError) {
+        showToast('Ошибка подключения Google Calendar: ' + gcalError, true);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // Update button state
+      const tokens = getGoogleCalendarTokens();
+      if (tokens) {
         document.getElementById('google-cal-btn').classList.add('google-connected');
-        document.getElementById('google-cal-btn').querySelector('.btn-text').textContent = 'Подключено';
+        const email = tokens.email ? ` (${tokens.email.split('@')[0]})` : '';
+        document.getElementById('google-cal-btn').querySelector('.btn-text').textContent = 'Google' + email;
       }
     }
 
@@ -3541,6 +3816,245 @@ ${input}
     renderCalendar();
     checkGoogleCalendarStatus();
     // ============ END CALENDAR ============
+
+    // ============ VOICE INPUT FOR CALENDAR ============
+    let voiceRecognition = null;
+    let isRecording = false;
+    let voiceParsedData = null;
+
+    function startVoiceInput() {
+      document.getElementById('voice-modal').classList.add('visible');
+      resetVoiceState();
+    }
+
+    function closeVoiceModal() {
+      document.getElementById('voice-modal').classList.remove('visible');
+      stopVoiceRecording();
+    }
+
+    function resetVoiceState() {
+      document.getElementById('voice-transcript').style.display = 'none';
+      document.getElementById('voice-parsed').style.display = 'none';
+      document.getElementById('voice-loading').style.display = 'none';
+      document.getElementById('voice-actions').style.display = 'none';
+      document.getElementById('voice-hint').textContent = 'Нажмите для записи';
+      document.getElementById('voice-record-btn').classList.remove('recording');
+      voiceParsedData = null;
+      isRecording = false;
+    }
+
+    function toggleVoiceRecording() {
+      if (isRecording) {
+        stopVoiceRecording();
+      } else {
+        startVoiceRecording();
+      }
+    }
+
+    function startVoiceRecording() {
+      // Check for Web Speech API support
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        showToast('Браузер не поддерживает распознавание речи. Используйте Chrome или Edge.', true);
+        return;
+      }
+
+      voiceRecognition = new SpeechRecognition();
+      voiceRecognition.lang = 'ru-RU';
+      voiceRecognition.continuous = false;
+      voiceRecognition.interimResults = true;
+
+      voiceRecognition.onstart = () => {
+        isRecording = true;
+        document.getElementById('voice-record-btn').classList.add('recording');
+        document.getElementById('voice-hint').textContent = 'Говорите...';
+        document.getElementById('voice-transcript').style.display = 'block';
+        document.getElementById('voice-text').textContent = '';
+      };
+
+      voiceRecognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = 0; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        document.getElementById('voice-text').textContent = transcript;
+      };
+
+      voiceRecognition.onend = () => {
+        isRecording = false;
+        document.getElementById('voice-record-btn').classList.remove('recording');
+        const transcript = document.getElementById('voice-text').textContent;
+        if (transcript.trim()) {
+          parseVoiceInput(transcript);
+        } else {
+          document.getElementById('voice-hint').textContent = 'Нажмите для записи';
+        }
+      };
+
+      voiceRecognition.onerror = (event) => {
+        isRecording = false;
+        document.getElementById('voice-record-btn').classList.remove('recording');
+        if (event.error === 'no-speech') {
+          document.getElementById('voice-hint').textContent = 'Речь не распознана. Попробуйте снова.';
+        } else if (event.error === 'not-allowed') {
+          showToast('Разрешите доступ к микрофону в настройках браузера', true);
+        } else {
+          document.getElementById('voice-hint').textContent = 'Ошибка: ' + event.error;
+        }
+      };
+
+      voiceRecognition.start();
+    }
+
+    function stopVoiceRecording() {
+      if (voiceRecognition) {
+        voiceRecognition.stop();
+      }
+      isRecording = false;
+      document.getElementById('voice-record-btn').classList.remove('recording');
+    }
+
+    async function parseVoiceInput(transcript) {
+      document.getElementById('voice-hint').textContent = 'Обработка...';
+      document.getElementById('voice-loading').style.display = 'block';
+
+      const today = new Date();
+      const todayStr = today.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+      const prompt = `Ты — AI-ассистент для планирования сессий психолога.
+Сегодня: ${todayStr}
+
+Пользователь сказал голосом: "${transcript}"
+
+Извлеки информацию о сессии и верни ТОЛЬКО JSON без markdown:
+{
+  "client": "имя клиента",
+  "date": "YYYY-MM-DD",
+  "time": "HH:MM",
+  "type": "primary|followup|group|supervision|training",
+  "duration": 60,
+  "notes": "краткое описание запроса"
+}
+
+Правила:
+- "завтра" = дата завтрашнего дня
+- "послезавтра" = +2 дня
+- "в понедельник/вторник..." = ближайший такой день
+- Если время не указано, поставь "10:00"
+- Если тип не ясен, поставь "primary"
+- duration в минутах (60, 90, 120)
+- Если имя не указано, напиши "Клиент"
+
+ВАЖНО: Верни ТОЛЬКО валидный JSON, без объяснений.`;
+
+      try {
+        const response = await fetch('/.netlify/functions/gemini-generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }]
+          })
+        });
+
+        if (!response.ok) throw new Error('AI request failed');
+
+        const data = await response.json();
+        let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+        // Clean up response - remove markdown code blocks if present
+        text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+        voiceParsedData = JSON.parse(text);
+
+        document.getElementById('voice-loading').style.display = 'none';
+        showParsedVoiceData(voiceParsedData);
+
+      } catch (err) {
+        console.error('Voice parsing error:', err);
+        document.getElementById('voice-loading').style.display = 'none';
+        document.getElementById('voice-hint').textContent = 'Не удалось распознать. Попробуйте снова.';
+        showToast('Ошибка обработки: ' + err.message, true);
+      }
+    }
+
+    function showParsedVoiceData(data) {
+      const dateFormatted = data.date ? new Date(data.date).toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' }) : '—';
+
+      const typeNames = {
+        primary: 'Первичная',
+        followup: 'Повторная',
+        group: 'Групповая',
+        supervision: 'Супервизия',
+        training: 'Тренинг'
+      };
+
+      const content = `
+        <div class="voice-parsed-item">
+          <span class="voice-parsed-label">Клиент:</span>
+          <span class="voice-parsed-value">${sanitizeInput(data.client) || 'Клиент'}</span>
+        </div>
+        <div class="voice-parsed-item">
+          <span class="voice-parsed-label">Дата:</span>
+          <span class="voice-parsed-value">${dateFormatted}</span>
+        </div>
+        <div class="voice-parsed-item">
+          <span class="voice-parsed-label">Время:</span>
+          <span class="voice-parsed-value">${data.time || '10:00'}</span>
+        </div>
+        <div class="voice-parsed-item">
+          <span class="voice-parsed-label">Тип:</span>
+          <span class="voice-parsed-value">${typeNames[data.type] || 'Первичная'}</span>
+        </div>
+        ${data.notes ? `<div class="voice-parsed-item">
+          <span class="voice-parsed-label">Заметки:</span>
+          <span class="voice-parsed-value">${sanitizeInput(data.notes)}</span>
+        </div>` : ''}
+      `;
+
+      document.getElementById('voice-parsed-content').innerHTML = content;
+      document.getElementById('voice-parsed').style.display = 'block';
+      document.getElementById('voice-actions').style.display = 'flex';
+      document.getElementById('voice-hint').textContent = 'Проверьте данные';
+    }
+
+    function confirmVoiceSession() {
+      if (!voiceParsedData) return;
+
+      const sessionData = {
+        id: Date.now().toString(),
+        date: voiceParsedData.date,
+        time: voiceParsedData.time || '10:00',
+        client: voiceParsedData.client || 'Клиент',
+        type: voiceParsedData.type || 'primary',
+        duration: parseInt(voiceParsedData.duration) || 60,
+        notes: voiceParsedData.notes || '',
+        createdAt: new Date().toISOString()
+      };
+
+      const sessions = getSessions();
+      sessions.push(sessionData);
+      saveSessionsToStorage(sessions);
+
+      closeVoiceModal();
+      renderCalendar();
+      showToast('Сессия создана голосом!');
+
+      // Select the date in calendar
+      selectDate(sessionData.date);
+    }
+
+    function retryVoiceInput() {
+      resetVoiceState();
+    }
+
+    // Close voice modal on outside click
+    document.getElementById('voice-modal').addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        closeVoiceModal();
+      }
+    });
+    // ============ END VOICE INPUT ============
   </script>
 </body>
 </html>
