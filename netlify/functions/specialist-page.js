@@ -71,15 +71,20 @@ exports.handler = async (event, context) => {
     }
 
     // Get services
-    const { data: services } = await supabase
+    const { data: services, error: servicesError } = await supabase
       .from('specialist_services')
       .select('*')
       .eq('site_id', site.id)
       .eq('is_active', true)
       .order('sort_order');
 
+    if (servicesError) {
+      console.log('Services error:', servicesError);
+    }
+    console.log('Loaded services for site', site.id, ':', services?.length || 0);
+
     // Get approved reviews
-    const { data: reviews } = await supabase
+    const { data: reviews, error: reviewsError } = await supabase
       .from('specialist_reviews')
       .select('*')
       .eq('site_id', site.id)
@@ -87,6 +92,11 @@ exports.handler = async (event, context) => {
       .order('is_featured', { ascending: false })
       .order('created_at', { ascending: false })
       .limit(20);
+
+    if (reviewsError) {
+      console.log('Reviews error:', reviewsError);
+    }
+    console.log('Loaded reviews for site', site.id, ':', reviews?.length || 0);
 
     // Get gallery
     const { data: gallery } = await supabase
