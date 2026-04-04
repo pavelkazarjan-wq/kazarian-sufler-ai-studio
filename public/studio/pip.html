@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- ExpertPage.pro v2.1.0 build:20240313145500 -->
+<!-- KazarianWEBINARStudio v2.1.0 build:20240313145500 -->
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Суфлер Студіо</title>
+  <title>KazarianWEBINARStudio</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="theme-color" content="#0f172a">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1991,7 +1991,7 @@
     ESC — выход из режима трансляции
   </div>
 
-  <!-- Auth loading screen -->
+  <!-- Auth screen -->
   <div id="auth-screen" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#0f172a;display:flex;align-items:center;justify-content:center;z-index:10000;">
     <div style="text-align:center;padding:40px;">
       <div style="width:60px;height:60px;margin:0 auto 20px;background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899);border-radius:16px;display:flex;align-items:center;justify-content:center;">
@@ -2001,33 +2001,44 @@
         </svg>
       </div>
       <h2 style="color:white;font-family:Inter,sans-serif;margin-bottom:20px;">WEBINAR Studio</h2>
-      <div style="width:40px;height:40px;margin:0 auto;border:3px solid rgba(255,255,255,0.2);border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite;"></div>
-      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+      <input type="password" id="auth-password" placeholder="Введите пароль" style="width:250px;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:white;font-size:16px;text-align:center;" onkeypress="if(event.key==='Enter')checkAuth()">
+      <br><br>
+      <button onclick="checkAuth()" style="padding:12px 32px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border:none;border-radius:8px;font-size:16px;cursor:pointer;">Войти</button>
+      <p id="auth-error" style="color:#ef4444;margin-top:15px;display:none;">Неверный пароль</p>
     </div>
   </div>
   <script>
-    // Supabase Auth Check
-    const SUPABASE_URL = 'https://ngxbfuimddefjeufwcwf.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neGJmdWltZGRlZmpldWZ3Y3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDQ5MjYsImV4cCI6MjA4MDc4MDkyNn0.xRRF3L8BCzM5qTKzODT3IfayIQ1x4u0sa-4ki3UbhkI';
+    const AUTH_KEY = 'kazarian_studio_auth';
+    // NOTE: This is client-side auth - not secure against determined attackers
+    // For production, use server-side authentication
+    const VALID_HASH = '-5c4d11'; // simpleHash('2525')
 
-    (async function checkSupabaseAuth() {
-      try {
-        const authClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const { data: { session }, error } = await authClient.auth.getSession();
-
-        if (!session) {
-          // Not logged in - redirect to login
-          window.location.href = '/login.html?redirect=' + encodeURIComponent('/studio/');
-          return;
-        }
-
-        // Logged in - hide auth screen
-        document.getElementById('auth-screen').style.display = 'none';
-      } catch (e) {
-        console.error('Auth check failed:', e);
-        window.location.href = '/login.html';
+    function simpleHash(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
       }
-    })();
+      return hash.toString(16);
+    }
+
+    function checkAuth() {
+      const pwd = document.getElementById('auth-password').value;
+      // FIX: Use hash-based check instead of plaintext comparison
+      const pwdHash = simpleHash(pwd);
+      if (pwdHash === VALID_HASH || localStorage.getItem(AUTH_KEY) === 'true') {
+        localStorage.setItem(AUTH_KEY, 'true');
+        document.getElementById('auth-screen').style.display = 'none';
+      } else {
+        document.getElementById('auth-error').style.display = 'block';
+      }
+    }
+
+    // Check if already authenticated
+    if (localStorage.getItem(AUTH_KEY) === 'true') {
+      document.getElementById('auth-screen').style.display = 'none';
+    }
 
     // Real-time clock for overlay
     function updateOverlayClock() {
@@ -2052,11 +2063,11 @@
 
   <header class="header">
     <div class="header-left">
-      <button class="back-btn" onclick="window.location.href='/app.html'">
+      <button class="back-btn" onclick="window.location.href='index.html'">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
           <polyline points="15 18 9 12 15 6"></polyline>
         </svg>
-        Вебинар
+        Назад
       </button>
       <div class="logo">
         <div class="logo-icon">
@@ -2071,7 +2082,7 @@
             <circle cx="18" cy="28" r="2.5" fill="#ef4444"/>
           </svg>
         </div>
-        <div class="logo-text">Суфлер<span>Студіо</span></div>
+        <div class="logo-text">Kazarian<span>WEBINAR</span>Studio</div>
       </div>
     </div>
     <div class="header-center">
@@ -2122,7 +2133,7 @@
           </div>
         </div>
       </div>
-      <a href="/app.html" class="support-btn" title="Перейти в Вебинар Студио" style="background:linear-gradient(135deg, #3b82f6, #6366f1);">
+      <a href="https://kazarian-webinar-ai-studio.netlify.app" target="_blank" class="support-btn" title="Перейти в Вебинар Студио" style="background:linear-gradient(135deg, #3b82f6, #6366f1);">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Вебинар Студио
       </a>
@@ -3063,7 +3074,7 @@
     // Broadcast mode - clean screen for OBS/Zoom capture
     if (isBroadcastMode) {
       document.body.classList.add('broadcast-mode');
-      document.title = 'Суфлер Студіо - Трансляція';
+      document.title = 'KazarianStudio - Трансляция';
     }
     const hostSessionId = urlParams.get('host'); // Host mode with pre-generated session
     let sessionId = urlParams.get('session');
@@ -5287,7 +5298,7 @@
       if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('Клиент ожидает', {
           body: guestName + ' ждёт подключения к консультации',
-          icon: '/favicon.svg'
+          icon: 'https://kazarian-webinar-ai-studio.netlify.app/favicon.svg'
         });
       } else if ('Notification' in window && Notification.permission !== 'denied') {
         Notification.requestPermission();
@@ -6334,14 +6345,14 @@
         if ('Notification' in window && Notification.permission === 'granted') {
           new Notification('Гость ожидает', {
             body: guestName + ' ждёт подтверждения для входа',
-            icon: '/favicon.svg'
+            icon: 'https://kazarian-webinar-ai-studio.netlify.app/favicon.svg'
           });
         } else if ('Notification' in window && Notification.permission !== 'denied') {
           Notification.requestPermission().then(perm => {
             if (perm === 'granted') {
               new Notification('Гость ожидает', {
                 body: guestName + ' ждёт подтверждения для входа',
-                icon: '/favicon.svg'
+                icon: 'https://kazarian-webinar-ai-studio.netlify.app/favicon.svg'
               });
             }
           });

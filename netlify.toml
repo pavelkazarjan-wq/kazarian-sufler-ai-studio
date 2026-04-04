@@ -10,25 +10,6 @@
   node_bundler = "esbuild"
   external_node_modules = ["@google/generative-ai"]
 
-# Redirect /studio/ to kazarian-ai-studio
-[[redirects]]
-  from = "/studio/*"
-  to = "https://kazarian-ai-studio.netlify.app/:splat"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/studio"
-  to = "https://kazarian-ai-studio.netlify.app/"
-  status = 301
-  force = true
-
-# Sufler Studio (renamed from /studio/)
-[[redirects]]
-  from = "/sufler/*"
-  to = "/sufler-studio/:splat"
-  status = 200
-
 # Redirects for short links
 [[redirects]]
   from = "/c/*"

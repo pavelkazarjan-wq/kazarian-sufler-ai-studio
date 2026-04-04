@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="description" content="KazarianSuflerAIStudio - Профессиональный телесуфлёр с AI генерацией скриптов" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <title>KazarianSuflerAIStudio</title>
+    <script type="module" crossorigin src="/studio/assets/index-bDUgQgit.js"></script>
+    <link rel="modulepreload" crossorigin href="/studio/assets/ui-CQtwd36K.js">
+    <link rel="modulepreload" crossorigin href="/studio/assets/vendor-DtT6VYgm.js">
+    <link rel="modulepreload" crossorigin href="/studio/assets/zustand-CUQdhat9.js">
+    <link rel="stylesheet" crossorigin href="/studio/assets/index-DN555aUF.css">
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- PiP Studio Button -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+          // Find header or create floating button
+          const header = document.querySelector('header');
+
+          const pipBtn = document.createElement('a');
+          pipBtn.href = 'https://expertpage.pro/';
+          pipBtn.target = '_blank';
+          pipBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            Вебинар Студио
+          `;
+          pipBtn.style.cssText = `
+            position: fixed;
+            top: 12px;
+            right: 320px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            z-index: 9999;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+          `;
+          pipBtn.onmouseover = () => {
+            pipBtn.style.transform = 'translateY(-2px)';
+            pipBtn.style.boxShadow = '0 6px 20px rgba(139, 92, 246, 0.4)';
+          };
+          pipBtn.onmouseout = () => {
+            pipBtn.style.transform = '';
+            pipBtn.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.3)';
+          };
+
+          document.body.appendChild(pipBtn);
+        }, 500);
+      });
+    </script>
+  </body>
+</html>
