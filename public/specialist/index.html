@@ -1933,6 +1933,12 @@
       let reviewsHtml = '';
       data.reviews.forEach(r => {
         const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        let screenshotsHtml = '';
+        if (r.screenshots && r.screenshots.length > 0) {
+          screenshotsHtml = `<div class="review-screenshots" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
+            ${r.screenshots.map(url => `<img src="${url}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid var(--border);" onclick="window.open('${url}', '_blank')">`).join('')}
+          </div>`;
+        }
         reviewsHtml += `
           <div class="review-card ${r.is_featured ? 'featured' : ''}">
             <div class="review-header">
@@ -1943,6 +1949,7 @@
               </div>
             </div>
             <p class="review-text">${r.text || ''}</p>
+            ${screenshotsHtml}
           </div>
         `;
       });

@@ -173,6 +173,7 @@ exports.handler = async (event, context) => {
         id: r.id,
         client_name: r.client_name,
         client_photo: r.client_photo_url,
+        screenshots: r.screenshots || [],
         rating: r.rating,
         text: r[`text${langSuffix}`] || r.text_uk,
         is_featured: r.is_featured,

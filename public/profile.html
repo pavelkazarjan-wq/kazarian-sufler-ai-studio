@@ -4001,6 +4001,16 @@
               <textarea id="review-text-en" rows="3" placeholder="Thank you for the consultation..."></textarea>
             </div>
             <div class="form-group">
+              <label>Скриншоты отзыва (до 10 шт)</label>
+              <div id="review-screenshots-preview" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;"></div>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn btn-secondary" style="font-size: 12px;" onclick="document.getElementById('review-screenshots-input').click()">
+                  📷 Добавить скриншот
+                </button>
+                <input type="file" id="review-screenshots-input" accept="image/*" multiple style="display: none;" onchange="uploadReviewScreenshots(this)">
+              </div>
+            </div>
+            <div class="form-group">
               <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                 <input type="checkbox" id="review-featured" style="width: 18px; height: 18px;">
                 <span>Выделенный отзыв (показывать первым)</span>
@@ -9211,6 +9221,7 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
     let siteReviews = [];
     let currentReviewPhotoUrl = null;
     let currentReviewRating = 5;
+    let currentReviewScreenshots = [];
 
     function renderSiteReviews(reviews) {
       siteReviews = reviews;
@@ -9278,8 +9289,10 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       document.getElementById('review-featured').checked = false;
       currentReviewPhotoUrl = null;
       currentReviewRating = 5;
+      currentReviewScreenshots = [];
 
       document.getElementById('review-photo-preview').innerHTML = '<span style="color: #64748b; font-size: 10px;">Фото</span>';
+      document.getElementById('review-screenshots-preview').innerHTML = '';
       setReviewRating(5);
 
       if (id) {
@@ -9292,11 +9305,13 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
           document.getElementById('review-featured').checked = review.is_featured || false;
           currentReviewPhotoUrl = review.client_photo_url;
           currentReviewRating = review.rating || 5;
+          currentReviewScreenshots = review.screenshots || [];
 
           if (review.client_photo_url) {
             document.getElementById('review-photo-preview').innerHTML = `<img src="${review.client_photo_url}" style="width:100%;height:100%;object-fit:cover;">`;
           }
           setReviewRating(currentReviewRating);
+          renderReviewScreenshots();
         }
       }
 
@@ -9316,6 +9331,59 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       document.querySelectorAll('#review-rating .star').forEach((star, i) => {
         star.style.color = (i + 1) <= rating ? '#fbbf24' : '#334155';
       });
+    }
+
+    function renderReviewScreenshots() {
+      const container = document.getElementById('review-screenshots-preview');
+      if (currentReviewScreenshots.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+      container.innerHTML = currentReviewScreenshots.map((url, idx) => `
+        <div style="position: relative; width: 80px; height: 80px;">
+          <img src="${url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid #334155;">
+          <button type="button" onclick="removeReviewScreenshot(${idx})" style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #ef4444; color: white; border: none; cursor: pointer; font-size: 12px; line-height: 1;">×</button>
+        </div>
+      `).join('');
+    }
+
+    function removeReviewScreenshot(idx) {
+      currentReviewScreenshots.splice(idx, 1);
+      renderReviewScreenshots();
+    }
+
+    async function uploadReviewScreenshots(input) {
+      const files = Array.from(input.files);
+      if (files.length === 0) return;
+
+      if (currentReviewScreenshots.length + files.length > 10) {
+        showToast('Максимум 10 скриншотов', true);
+        return;
+      }
+
+      for (const file of files) {
+        try {
+          const fileName = `screenshot-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${file.name.split('.').pop()}`;
+          const filePath = `${currentUser.id}/reviews/screenshots/${fileName}`;
+
+          const { error: uploadError } = await supabaseClient.storage
+            .from('user-files')
+            .upload(filePath, file, { upsert: true });
+
+          if (uploadError) throw uploadError;
+
+          const { data: urlData } = supabaseClient.storage
+            .from('user-files')
+            .getPublicUrl(filePath);
+
+          currentReviewScreenshots.push(urlData.publicUrl + '?t=' + Date.now());
+        } catch (e) {
+          console.error('Upload screenshot error:', e);
+          showToast('Ошибка загрузки: ' + e.message, true);
+        }
+      }
+      renderReviewScreenshots();
+      input.value = ''; // Reset input
     }
 
     async function uploadReviewPhoto(input) {
@@ -9366,6 +9434,7 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
         site_id: siteData.id,
         client_name: clientName,
         client_photo_url: currentReviewPhotoUrl,
+        screenshots: currentReviewScreenshots,
         rating: currentReviewRating,
         text_uk: textUk,
         text_ru: document.getElementById('review-text-ru').value.trim() || textUk,
