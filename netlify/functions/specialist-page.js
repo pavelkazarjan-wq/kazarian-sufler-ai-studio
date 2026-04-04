@@ -139,6 +139,7 @@ exports.handler = async (event, context) => {
         name: site.profiles.full_name,
         title: site.profiles.title,
         photo: getSitePhoto(),
+        photo_size: site.hero_photo_size || 'medium',
         logo: site.logo_url || null, // Supports static images and animated GIFs
         headline: getLocalizedField('headline'),
         bio: getLocalizedField('bio'),

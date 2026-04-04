@@ -142,6 +142,18 @@
       opacity: 1;
     }
 
+    .nav-badge {
+      background: #ef4444;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: auto;
+      min-width: 18px;
+      text-align: center;
+    }
+
     .sidebar-footer {
       padding: 10px 12px;
       border-top: 1px solid rgba(255,255,255,0.1);
@@ -2299,6 +2311,11 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           Мой сайт
         </div>
+        <div class="nav-item" data-section="bookings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+          Заявки
+          <span id="bookings-badge" class="nav-badge" style="display:none;">0</span>
+        </div>
         <div class="nav-item" data-section="settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           Настройки
@@ -3166,6 +3183,28 @@
           <p style="font-size: 12px; color: #64748b; margin-top: 12px;">
             Форматы: JPG, PNG. Максимум: 5 MB
           </p>
+
+          <div class="form-group" style="margin-top: 20px;">
+            <label>Размер фото на сайте</label>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 8px 16px; background: #1e293b; border-radius: 8px; border: 2px solid transparent;" class="photo-size-option" data-size="small">
+                <input type="radio" name="hero-photo-size" value="small" style="display: none;">
+                <span style="font-size: 13px;">Маленький</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 8px 16px; background: #1e293b; border-radius: 8px; border: 2px solid transparent;" class="photo-size-option" data-size="medium">
+                <input type="radio" name="hero-photo-size" value="medium" style="display: none;" checked>
+                <span style="font-size: 13px;">Средний</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 8px 16px; background: #1e293b; border-radius: 8px; border: 2px solid transparent;" class="photo-size-option" data-size="large">
+                <input type="radio" name="hero-photo-size" value="large" style="display: none;">
+                <span style="font-size: 13px;">Большой</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 8px 16px; background: #1e293b; border-radius: 8px; border: 2px solid transparent;" class="photo-size-option" data-size="full">
+                <input type="radio" name="hero-photo-size" value="full" style="display: none;">
+                <span style="font-size: 13px;">Полный</span>
+              </label>
+            </div>
+          </div>
         </div>
 
         <!-- Basic Info -->
@@ -4109,6 +4148,29 @@
           </div>
         </div>
       </div>
+
+      <!-- Bookings Section -->
+      <section class="settings-section" id="section-bookings">
+        <div class="page-header">
+          <h1 class="page-title">Заявки на консультации</h1>
+          <button class="btn btn-secondary" onclick="loadBookings()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Обновить
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+              Заявки с сайта
+            </div>
+          </div>
+          <div id="bookings-list" style="display: flex; flex-direction: column; gap: 12px;">
+            <p style="color: #64748b; text-align: center; padding: 40px;">Загрузка...</p>
+          </div>
+        </div>
+      </section>
 
       <!-- Settings Section -->
       <section class="settings-section" id="section-settings">
@@ -8359,6 +8421,31 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       });
     });
 
+    // Update photo size selection visual state
+    function updatePhotoSizeSelection(selectedSize) {
+      document.querySelectorAll('.photo-size-option').forEach(option => {
+        const input = option.querySelector('input[type="radio"]');
+        if (input && input.value === selectedSize) {
+          option.style.borderColor = '#3b82f6';
+          option.style.background = 'rgba(59, 130, 246, 0.15)';
+          input.checked = true;
+        } else {
+          option.style.borderColor = 'transparent';
+          option.style.background = '#1e293b';
+        }
+      });
+    }
+
+    // Photo size option click handlers
+    document.querySelectorAll('.photo-size-option').forEach(option => {
+      option.addEventListener('click', () => {
+        const input = option.querySelector('input[type="radio"]');
+        if (input) {
+          updatePhotoSizeSelection(input.value);
+        }
+      });
+    });
+
     // Load site data
     async function loadSiteData() {
       if (!currentUser) return;
@@ -8452,6 +8539,14 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       }
 
       document.getElementById('site-experience').value = data.experience_years || '';
+
+      // Hero photo size
+      const savedPhotoSize = data.hero_photo_size || 'medium';
+      const photoSizeRadio = document.querySelector(`input[name="hero-photo-size"][value="${savedPhotoSize}"]`);
+      if (photoSizeRadio) {
+        photoSizeRadio.checked = true;
+        updatePhotoSizeSelection(savedPhotoSize);
+      }
 
       // YouTube videos per language
       document.getElementById('site-youtube-url-uk').value = data.youtube_video_url_uk || '';
@@ -8655,6 +8750,9 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
           }
         });
       }
+
+      // Initialize photo size selection to default (medium)
+      updatePhotoSizeSelection('medium');
     });
 
     // Generate site content with AI
@@ -8767,6 +8865,9 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
         education_en: document.getElementById('site-education-en')?.value || '',
 
         experience_years: parseInt(document.getElementById('site-experience').value) || 0,
+
+        // Hero photo size
+        hero_photo_size: document.querySelector('input[name="hero-photo-size"]:checked')?.value || 'medium',
 
         // YouTube videos per language
         youtube_video_url_uk: document.getElementById('site-youtube-url-uk').value,
@@ -9201,6 +9302,117 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       }
     }
 
+    // Bookings
+    async function loadBookings() {
+      if (!siteData?.id) {
+        document.getElementById('bookings-list').innerHTML = '<p style="color: #64748b; text-align: center; padding: 40px;">Сначала создайте сайт</p>';
+        return;
+      }
+
+      try {
+        const { data: bookings, error } = await supabaseClient
+          .from('specialist_bookings')
+          .select(`
+            *,
+            specialist_services (name_uk, name_ru, price, currency)
+          `)
+          .eq('site_id', siteData.id)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        renderBookings(bookings || []);
+
+        // Update badge
+        const pendingCount = (bookings || []).filter(b => b.status === 'pending').length;
+        const badge = document.getElementById('bookings-badge');
+        if (pendingCount > 0) {
+          badge.textContent = pendingCount;
+          badge.style.display = 'inline-flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      } catch (e) {
+        console.error('Load bookings error:', e);
+        document.getElementById('bookings-list').innerHTML = '<p style="color: #ef4444; text-align: center; padding: 40px;">Ошибка загрузки</p>';
+      }
+    }
+
+    function renderBookings(bookings) {
+      const container = document.getElementById('bookings-list');
+      if (bookings.length === 0) {
+        container.innerHTML = '<p style="color: #64748b; text-align: center; padding: 40px;">Нет заявок</p>';
+        return;
+      }
+
+      container.innerHTML = bookings.map(b => {
+        const statusColors = {
+          pending: '#f59e0b',
+          confirmed: '#10b981',
+          cancelled: '#ef4444',
+          completed: '#3b82f6'
+        };
+        const statusLabels = {
+          pending: 'Ожидает',
+          confirmed: 'Подтверждено',
+          cancelled: 'Отменено',
+          completed: 'Завершено'
+        };
+        const serviceName = b.specialist_services?.name_uk || b.specialist_services?.name_ru || '—';
+        const dateStr = b.preferred_date ? new Date(b.preferred_date).toLocaleDateString('ru-RU') : '—';
+        const timeStr = b.preferred_time ? b.preferred_time.slice(0, 5) : '—';
+        const createdStr = new Date(b.created_at).toLocaleString('ru-RU');
+
+        return `
+          <div style="padding: 16px; background: rgba(15, 23, 42, 0.5); border-radius: 12px; border-left: 4px solid ${statusColors[b.status] || '#64748b'};">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+              <div>
+                <div style="font-weight: 600; font-size: 16px;">${b.client_name}</div>
+                <div style="color: #64748b; font-size: 13px;">${createdStr}</div>
+              </div>
+              <span style="padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; background: ${statusColors[b.status]}22; color: ${statusColors[b.status]};">
+                ${statusLabels[b.status] || b.status}
+              </span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 14px; margin-bottom: 12px;">
+              <div><span style="color: #64748b;">📱 Телефон:</span> ${b.client_phone || '—'}</div>
+              <div><span style="color: #64748b;">📧 Email:</span> ${b.client_email || '—'}</div>
+              <div><span style="color: #64748b;">📅 Дата:</span> ${dateStr}</div>
+              <div><span style="color: #64748b;">🕐 Время:</span> ${timeStr}</div>
+              <div style="grid-column: span 2;"><span style="color: #64748b;">🎯 Услуга:</span> ${serviceName}</div>
+            </div>
+            ${b.message ? `<div style="padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; font-size: 13px; color: #94a3b8;">💬 ${b.message}</div>` : ''}
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+              ${b.status === 'pending' ? `
+                <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;" onclick="updateBookingStatus('${b.id}', 'confirmed')">✓ Подтвердить</button>
+                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px; color: #ef4444;" onclick="updateBookingStatus('${b.id}', 'cancelled')">✕ Отклонить</button>
+              ` : ''}
+              ${b.status === 'confirmed' ? `
+                <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;" onclick="updateBookingStatus('${b.id}', 'completed')">✓ Завершить</button>
+              ` : ''}
+              <a href="tel:${b.client_phone}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">📞 Позвонить</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function updateBookingStatus(bookingId, newStatus) {
+      try {
+        const { error } = await supabaseClient
+          .from('specialist_bookings')
+          .update({ status: newStatus, updated_at: new Date().toISOString() })
+          .eq('id', bookingId);
+
+        if (error) throw error;
+        showToast('Статус обновлён');
+        loadBookings();
+      } catch (e) {
+        console.error('Update booking error:', e);
+        showToast('Ошибка обновления', true);
+      }
+    }
+
     // Reviews
     async function loadSiteReviews() {
       if (!siteData?.id) return;
@@ -9504,6 +9716,28 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
     // Also load when clicking nav item
     document.querySelector('.nav-item[data-section="mysite"]')?.addEventListener('click', () => {
       if (!siteData) loadSiteData();
+    });
+
+    // Load bookings when section becomes visible
+    const bookingsSection = document.getElementById('section-bookings');
+    const bookingsObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        if (!siteData) {
+          loadSiteData().then(() => loadBookings());
+        } else {
+          loadBookings();
+        }
+      }
+    });
+    if (bookingsSection) bookingsObserver.observe(bookingsSection);
+
+    // Also load when clicking bookings nav item
+    document.querySelector('.nav-item[data-section="bookings"]')?.addEventListener('click', () => {
+      if (!siteData) {
+        loadSiteData().then(() => loadBookings());
+      } else {
+        loadBookings();
+      }
     });
     // ============ END MY SITE SECTION ============
   </script>

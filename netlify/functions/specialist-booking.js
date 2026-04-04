@@ -151,18 +151,19 @@ exports.handler = async (event, context) => {
       const sessionId = 'cons-' + crypto.randomBytes(12).toString('hex');
       shortCode = crypto.randomBytes(4).toString('hex');
 
-      // Parse scheduled time
-      const dateTimeStr = `${preferred_date}T${preferred_time}:00`;
-      const scheduledTime = new Date(dateTimeStr);
+      // Parse scheduled time - store as local time string (no timezone conversion)
+      // Format: "2026-04-05 17:00:00" - PostgreSQL will treat this as local time
+      const scheduledTimeStr = `${preferred_date} ${preferred_time}:00`;
       const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
-      // Create token for consultation link
+      // Create token for consultation link (use timestamp for reference)
+      const scheduledTimestamp = new Date(`${preferred_date}T${preferred_time}:00`).getTime();
       const consultationData = {
         s: sessionId,
         n: client_name,
         e: expiresAt.getTime(),
         c: Date.now(),
-        t: scheduledTime.getTime()
+        t: scheduledTimestamp
       };
       const token = Buffer.from(JSON.stringify(consultationData)).toString('base64url');
       consultationLink = `${BASE_URL}/pip.html?mode=client&token=${token}`;
@@ -178,7 +179,7 @@ exports.handler = async (event, context) => {
           session_id: sessionId,
           client_name,
           status: 'scheduled',
-          scheduled_time: scheduledTime.toISOString(),
+          scheduled_time: scheduledTimeStr,
           token: token,
           link: consultationLink,
           short_code: shortCode,

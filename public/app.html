@@ -9589,9 +9589,11 @@
           console.log('🔔 New waiting client:', payload.new);
           const client = payload.new;
 
-          // IMPORTANT: Only show notifications for sessions created by THIS host
-          // This prevents seeing other users' consultations
-          if (!myConsultationSessions.has(client.session_id)) {
+          // IMPORTANT: Only show notifications for sessions belonging to THIS host
+          // Check if session was created by this host OR if user_id matches current user
+          const isMySession = myConsultationSessions.has(client.session_id);
+          const isMyUser = currentUser && client.user_id === currentUser.id;
+          if (!isMySession && !isMyUser) {
             console.log('⏭️ Skipping notification for other user\'s session:', client.session_id);
             return;
           }
@@ -9621,6 +9623,23 @@
         .subscribe((status) => {
           console.log('📡 Realtime subscription status:', status);
         });
+
+      // Subscribe to scheduled consultations updates (from website bookings)
+      supabase
+        .channel('scheduled-consultations-channel')
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'waiting_clients'
+        }, (payload) => {
+          const client = payload.new;
+          // If this is a scheduled consultation for current user, refresh the list
+          if (client.scheduled_time && currentUser && client.user_id === currentUser.id) {
+            console.log('📅 New scheduled consultation from website, refreshing list');
+            loadScheduledConsultations();
+          }
+        })
+        .subscribe();
     }
 
     // Show notification when client is waiting (via Supabase)
@@ -9813,13 +9832,14 @@
 
     // Fetch scheduled consultations from Supabase
     async function fetchScheduledFromSupabase() {
-      if (!supabase) return [];
+      if (!supabase || !currentUser) return [];
 
       try {
         const now = Date.now();
         const { data, error } = await supabase
           .from('waiting_clients')
           .select('*')
+          .eq('user_id', currentUser.id) // Filter by current user
           .not('scheduled_time', 'is', null)
           .gte('scheduled_time', new Date(now - 60 * 60 * 1000).toISOString()) // Include up to 1 hour past
           .order('scheduled_time', { ascending: true });
