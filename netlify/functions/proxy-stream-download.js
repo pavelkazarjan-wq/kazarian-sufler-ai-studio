@@ -8,6 +8,7 @@ const STREAM_SERVER_API_KEY = process.env.STREAM_SERVER_API_KEY || 'kzrn_stream_
 
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = [
+  'https://expertpage.pro',
   'https://kazarian-webinar-ai-studio.netlify.app',
   'http://localhost:3000'
 ];

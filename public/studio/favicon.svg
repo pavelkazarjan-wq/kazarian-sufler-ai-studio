@@ -1,0 +1,18 @@
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Base square with rounded corners -->
+  <rect x="0" y="0" width="48" height="48" rx="11" fill="#534AB7" opacity="0.12"/>
+  <rect x="0" y="0" width="48" height="48" rx="11" fill="none" stroke="#534AB7" stroke-width="1.5"/>
+
+  <!-- Head arc (психолог) -->
+  <path d="M12,26 A12,12 0 0,1 36,26" fill="none" stroke="#534AB7" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Center circle (голова) -->
+  <circle cx="24" cy="26" r="5" fill="#534AB7" opacity="0.3"/>
+  <circle cx="24" cy="26" r="5" fill="none" stroke="#534AB7" stroke-width="1.5"/>
+
+  <!-- Pulse line (AI/запись) -->
+  <polyline points="6,39 10,39 13,33 16,44 19,37 22,39 26,39 29,32 32,44 35,39 38,39 42,39" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- REC dot -->
+  <circle cx="43" cy="6" r="4" fill="#E24B4A" opacity="0.85"/>
+</svg>

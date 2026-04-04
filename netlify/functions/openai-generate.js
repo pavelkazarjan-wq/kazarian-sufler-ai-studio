@@ -1,6 +1,7 @@
 // OpenAI API function for text generation
 
 const ALLOWED_ORIGINS = [
+  'https://expertpage.pro',
   'https://kazarian-webinar-ai-studio.netlify.app',
   'http://localhost:3000'
 ];

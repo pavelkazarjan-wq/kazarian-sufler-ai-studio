@@ -14,6 +14,7 @@ const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabase
 
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = [
+  'https://expertpage.pro',
   'https://kazarian-webinar-ai-studio.netlify.app',
   'https://n8n.kazarian.studio',
   'http://localhost:3000',
@@ -158,7 +159,7 @@ exports.handler = async (event, context) => {
     const token = Buffer.from(JSON.stringify(consultationData)).toString('base64url');
 
     // Build consultation URL
-    const baseUrl = process.env.URL || 'https://kazarian-webinar-ai-studio.netlify.app';
+    const baseUrl = process.env.URL || 'https://expertpage.pro';
     const consultationLink = `${baseUrl}/pip.html?mode=client&token=${token}`;
 
     // Build short link

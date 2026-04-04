@@ -1,6 +1,7 @@
 // Using native fetch and Blob (Node 18+)
 
 const ALLOWED_ORIGINS = [
+  'https://expertpage.pro',
   'https://kazarian-webinar-ai-studio.netlify.app',
   'http://localhost:3000'
 ];

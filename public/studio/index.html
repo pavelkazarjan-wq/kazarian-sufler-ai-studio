@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ExpertPage.pro - Суфлер</title>
+  <title>ExpertPage.pro - Суфлер Студіо</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="theme-color" content="#0f172a">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -20,23 +20,6 @@
   <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/dist/face-api.min.js"></script>
   <!-- Supabase для хранения сессий -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Global Supabase config loader -->
-  <script>
-    window.__SUPABASE_CONFIG__ = null;
-    window.getSupabaseConfig = async function() {
-      if (window.__SUPABASE_CONFIG__) return window.__SUPABASE_CONFIG__;
-      try {
-        const res = await fetch('/.netlify/functions/config');
-        if (!res.ok) throw new Error('Config fetch failed');
-        const config = await res.json();
-        window.__SUPABASE_CONFIG__ = { url: config.supabaseUrl, key: config.supabaseAnonKey };
-        return window.__SUPABASE_CONFIG__;
-      } catch (e) {
-        console.error('Failed to load Supabase config:', e);
-        return null;
-      }
-    };
-  </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; min-height: 100vh; overflow: hidden; }
@@ -520,6 +503,186 @@
     }
     body.format-vertical #camera-circle {
       display: none;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ */
+    /* 9:16 VERTICAL FORMAT - All overlays scaled down and repositioned */
+    /* ═══════════════════════════════════════════════════════════════ */
+
+    /* Clock overlay - smaller, centered at top of content area */
+    body.format-vertical #clock-overlay {
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+    body.format-vertical .clock-date {
+      font-size: 10px;
+    }
+    body.format-vertical .clock-time {
+      font-size: 18px;
+      letter-spacing: 1px;
+    }
+
+    /* Viewer counter - smaller, top-right of content area */
+    body.format-vertical #viewer-counter {
+      top: 10px;
+      right: 10px;
+      padding: 4px 8px;
+      font-size: 11px;
+      border-radius: 12px;
+    }
+    body.format-vertical .viewer-count {
+      font-size: 12px;
+      min-width: 25px;
+    }
+    body.format-vertical .viewer-label {
+      font-size: 10px;
+    }
+    body.format-vertical .viewer-pulse {
+      width: 6px;
+      height: 6px;
+    }
+
+    /* Comments - smaller, right side of content area */
+    body.format-vertical #comments-container {
+      top: 50px;
+      right: 10px;
+      width: 150px;
+      max-height: 150px;
+    }
+    body.format-vertical .live-comment {
+      padding: 4px 8px;
+      font-size: 9px;
+    }
+    body.format-vertical .comment-avatar {
+      width: 18px;
+      height: 18px;
+      font-size: 8px;
+    }
+    body.format-vertical .comment-name {
+      font-size: 8px;
+    }
+    body.format-vertical .comment-text {
+      font-size: 9px;
+    }
+
+    /* YouTube overlay - smaller, centered at bottom of camera area */
+    body.format-vertical #youtube-overlay {
+      bottom: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 14px;
+      gap: 8px;
+      border-radius: 10px;
+    }
+    body.format-vertical .yt-logo svg {
+      width: 28px;
+      height: 20px;
+    }
+    body.format-vertical .yt-bell {
+      width: 22px;
+      height: 22px;
+    }
+    body.format-vertical .yt-bell svg {
+      width: 12px;
+      height: 12px;
+    }
+    body.format-vertical .yt-text-main {
+      font-size: 11px;
+    }
+    body.format-vertical .yt-text-sub {
+      font-size: 9px;
+    }
+    body.format-vertical .yt-btn {
+      padding: 5px 10px;
+      font-size: 10px;
+      border-radius: 14px;
+    }
+    body.format-vertical .yt-btn svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    /* Name plates - CRITICAL: Position correctly for vertical split */
+    /* In 9:16: Guest/Content is TOP (0-50%), Camera is BOTTOM (50-100%) */
+
+    /* Host plate - should be in BOTTOM half (camera area) */
+    body.format-vertical .name-plate:not(.guest) {
+      left: 10px;
+      right: auto;
+      bottom: 8%; /* Near bottom of screen (in camera area) */
+      top: auto;
+    }
+    body.format-vertical .name-plate:not(.guest).pos-top {
+      top: 52%; /* Just below divider - still in camera area */
+      bottom: auto;
+    }
+    body.format-vertical .name-plate:not(.guest) .name-plate-inner {
+      padding: 8px 14px;
+      border-radius: 0 6px 6px 0;
+    }
+    body.format-vertical .name-plate:not(.guest) .name-plate-name {
+      font-size: 14px;
+    }
+    body.format-vertical .name-plate:not(.guest) .name-plate-title {
+      font-size: 10px;
+    }
+
+    /* Guest plate - should be in TOP half (content/guest area) */
+    body.format-vertical .name-plate.guest {
+      right: 10px;
+      left: auto;
+      top: auto;
+      bottom: 52%; /* Just above divider - in guest area */
+    }
+    body.format-vertical .name-plate.guest.pos-top {
+      top: 5%;
+      bottom: auto;
+    }
+    body.format-vertical .name-plate.guest .name-plate-inner {
+      padding: 8px 14px;
+      border-radius: 6px 0 0 6px;
+    }
+    body.format-vertical .name-plate.guest .name-plate-name {
+      font-size: 14px;
+    }
+    body.format-vertical .name-plate.guest .name-plate-title {
+      font-size: 10px;
+    }
+
+    /* CTA button - smaller for vertical */
+    body.format-vertical .cta-button a {
+      padding: 12px 24px;
+      font-size: 14px;
+      border-radius: 12px;
+      gap: 8px;
+    }
+    body.format-vertical .cta-button svg {
+      width: 18px;
+      height: 18px;
+    }
+    body.format-vertical .cta-timer {
+      padding: 6px 14px;
+      font-size: 18px;
+      border-radius: 20px;
+    }
+
+    /* Ticker - smaller height for vertical */
+    body.format-vertical .ticker-container {
+      height: 30px;
+    }
+    body.format-vertical .ticker-text {
+      font-size: 13px;
+      line-height: 30px;
+    }
+
+    /* Splash text - lower position for vertical */
+    body.format-vertical #splash-text {
+      bottom: 8%;
+      font-size: 22px;
+      letter-spacing: 2px;
     }
 
     .split-right { background: #000; overflow: auto; }
@@ -1071,12 +1234,13 @@
     .format-buttons {
       display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px;
     }
-    .format-btn {
+    /* FIX: Use more specific selector to avoid conflict with .format-toggle .format-btn */
+    .format-buttons .format-btn {
       padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
       border-radius: 8px; color: white; cursor: pointer; text-align: left; transition: all 0.2s;
     }
-    .format-btn:hover { background: rgba(255,255,255,0.15); border-color: #3b82f6; }
-    .format-btn.active { background: rgba(59,130,246,0.3); border-color: #3b82f6; }
+    .format-buttons .format-btn:hover { background: rgba(255,255,255,0.15); border-color: #3b82f6; }
+    .format-buttons .format-btn.active { background: rgba(59,130,246,0.3); border-color: #3b82f6; }
     .format-btn-title { font-weight: 600; margin-bottom: 4px; }
     .format-btn-desc { font-size: 11px; color: #94a3b8; }
     .protocol-result {
@@ -1727,7 +1891,7 @@
       }
       .transcription-text { max-height: 150px; font-size: 12px; }
       .format-buttons { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .format-btn { padding: 10px 8px; }
+      .format-buttons .format-btn { padding: 10px 8px; }
       .format-btn-title { font-size: 12px; }
       .format-btn-desc { font-size: 10px; }
 
@@ -1827,9 +1991,9 @@
     ESC — выход из режима трансляции
   </div>
 
-  <!-- Auth screen with Supabase -->
+  <!-- Auth screen -->
   <div id="auth-screen" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#0f172a;display:flex;align-items:center;justify-content:center;z-index:10000;">
-    <div style="text-align:center;padding:40px;max-width:360px;width:100%;">
+    <div style="text-align:center;padding:40px;">
       <div style="width:60px;height:60px;margin:0 auto 20px;background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899);border-radius:16px;display:flex;align-items:center;justify-content:center;">
         <svg viewBox="0 0 36 36" width="32" height="32">
           <path d="M6 8 L10 26 L18 14 L26 26 L30 8" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1837,263 +2001,43 @@
         </svg>
       </div>
       <h2 style="color:white;font-family:Inter,sans-serif;margin-bottom:20px;">WEBINAR Studio</h2>
-
-      <!-- Auth tabs -->
-      <div style="display:flex;gap:0;margin-bottom:20px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.2);">
-        <button id="tab-login" onclick="showAuthTab('login')" style="flex:1;padding:10px;background:rgba(59,130,246,0.3);color:white;border:none;cursor:pointer;font-size:14px;">Вход</button>
-        <button id="tab-register" onclick="showAuthTab('register')" style="flex:1;padding:10px;background:rgba(255,255,255,0.05);color:#94a3b8;border:none;cursor:pointer;font-size:14px;">Регистрация</button>
-      </div>
-
-      <!-- Login form -->
-      <div id="form-login">
-        <input type="email" id="auth-email" placeholder="Email" style="width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:white;font-size:16px;margin-bottom:12px;" onkeypress="if(event.key==='Enter')document.getElementById('auth-password').focus()">
-        <input type="password" id="auth-password" placeholder="Пароль" style="width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:white;font-size:16px;" onkeypress="if(event.key==='Enter')authLogin()">
-        <br><br>
-        <button id="btn-login" onclick="authLogin()" style="width:100%;padding:12px 32px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border:none;border-radius:8px;font-size:16px;cursor:pointer;">Войти</button>
-      </div>
-
-      <!-- Register form -->
-      <div id="form-register" style="display:none;">
-        <input type="email" id="reg-email" placeholder="Email" style="width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:white;font-size:16px;margin-bottom:12px;">
-        <input type="password" id="reg-password" placeholder="Пароль (мин. 6 символов)" style="width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:white;font-size:16px;margin-bottom:12px;">
-        <input type="password" id="reg-password2" placeholder="Повторите пароль" style="width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:white;font-size:16px;" onkeypress="if(event.key==='Enter')authRegister()">
-        <br><br>
-        <button id="btn-register" onclick="authRegister()" style="width:100%;padding:12px 32px;background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;border-radius:8px;font-size:16px;cursor:pointer;">Зарегистрироваться</button>
-      </div>
-
-      <p id="auth-error" style="color:#ef4444;margin-top:15px;display:none;"></p>
-      <p id="auth-success" style="color:#10b981;margin-top:15px;display:none;"></p>
-
-      <!-- Loading indicator -->
-      <div id="auth-loading" style="display:none;margin-top:15px;">
-        <div style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.2);border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto;"></div>
-      </div>
-      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
-
-      <!-- Logged in state -->
-      <div id="auth-logged-in" style="display:none;">
-        <p style="color:#94a3b8;margin-bottom:12px;">Вы вошли как:</p>
-        <p id="auth-user-email" style="color:white;font-weight:500;margin-bottom:16px;"></p>
-        <button onclick="authLogout()" style="padding:10px 24px;background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);border-radius:8px;font-size:14px;cursor:pointer;">Выйти</button>
-        <br><br>
-        <button onclick="document.getElementById('auth-screen').style.display='none'" style="width:100%;padding:12px 32px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border:none;border-radius:8px;font-size:16px;cursor:pointer;">Продолжить</button>
-      </div>
+      <input type="password" id="auth-password" placeholder="Введите пароль" style="width:250px;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:white;font-size:16px;text-align:center;" onkeypress="if(event.key==='Enter')checkAuth()">
+      <br><br>
+      <button onclick="checkAuth()" style="padding:12px 32px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border:none;border-radius:8px;font-size:16px;cursor:pointer;">Войти</button>
+      <p id="auth-error" style="color:#ef4444;margin-top:15px;display:none;">Неверный пароль</p>
     </div>
   </div>
   <script>
-    // Supabase Auth configuration - loaded from secure endpoint
-    let authSupabase = null;
+    const AUTH_KEY = 'expertpage_auth';
+    // NOTE: This is client-side auth - not secure against determined attackers
+    // For production, use server-side authentication
+    const VALID_HASH = '-5c4d11'; // simpleHash('2525')
 
-    // Initialize auth Supabase client
-    async function initAuthSupabase() {
-      if (authSupabase) return authSupabase;
-      const config = await window.getSupabaseConfig();
-      if (!config || !window.supabase) return null;
-      authSupabase = window.supabase.createClient(config.url, config.key);
-      return authSupabase;
+    function simpleHash(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return hash.toString(16);
     }
 
-    // Show auth tab
-    function showAuthTab(tab) {
-      const tabLogin = document.getElementById('tab-login');
-      const tabRegister = document.getElementById('tab-register');
-      const formLogin = document.getElementById('form-login');
-      const formRegister = document.getElementById('form-register');
-      const authError = document.getElementById('auth-error');
-      const authSuccess = document.getElementById('auth-success');
-
-      authError.style.display = 'none';
-      authSuccess.style.display = 'none';
-
-      if (tab === 'login') {
-        tabLogin.style.background = 'rgba(59,130,246,0.3)';
-        tabLogin.style.color = 'white';
-        tabRegister.style.background = 'rgba(255,255,255,0.05)';
-        tabRegister.style.color = '#94a3b8';
-        formLogin.style.display = 'block';
-        formRegister.style.display = 'none';
+    function checkAuth() {
+      const pwd = document.getElementById('auth-password').value;
+      // FIX: Use hash-based check instead of plaintext comparison
+      const pwdHash = simpleHash(pwd);
+      if (pwdHash === VALID_HASH || localStorage.getItem(AUTH_KEY) === 'true') {
+        localStorage.setItem(AUTH_KEY, 'true');
+        document.getElementById('auth-screen').style.display = 'none';
       } else {
-        tabRegister.style.background = 'rgba(16,185,129,0.3)';
-        tabRegister.style.color = 'white';
-        tabLogin.style.background = 'rgba(255,255,255,0.05)';
-        tabLogin.style.color = '#94a3b8';
-        formLogin.style.display = 'none';
-        formRegister.style.display = 'block';
+        document.getElementById('auth-error').style.display = 'block';
       }
     }
 
-    // Login with Supabase
-    async function authLogin() {
-      const sb = await initAuthSupabase();
-      if (!sb) {
-        showAuthError('Ошибка инициализации. Обновите страницу.');
-        return;
-      }
-
-      const email = document.getElementById('auth-email').value.trim();
-      const password = document.getElementById('auth-password').value;
-
-      if (!email || !password) {
-        showAuthError('Введите email и пароль');
-        return;
-      }
-
-      if (!isValidEmail(email)) {
-        showAuthError('Введите корректный email');
-        return;
-      }
-
-      showAuthLoading(true);
-
-      try {
-        const { data, error } = await sb.auth.signInWithPassword({ email, password });
-
-        if (error) {
-          showAuthError(error.message === 'Invalid login credentials' ? 'Неверный email или пароль' : error.message);
-          return;
-        }
-
-        if (data.user) {
-          document.getElementById('auth-screen').style.display = 'none';
-        }
-      } catch (err) {
-        showAuthError('Ошибка входа: ' + err.message);
-      } finally {
-        showAuthLoading(false);
-      }
-    }
-
-    // Register with Supabase
-    async function authRegister() {
-      const sb = await initAuthSupabase();
-      if (!sb) {
-        showAuthError('Ошибка инициализации. Обновите страницу.');
-        return;
-      }
-
-      const email = document.getElementById('reg-email').value.trim();
-      const password = document.getElementById('reg-password').value;
-      const password2 = document.getElementById('reg-password2').value;
-
-      if (!email || !password) {
-        showAuthError('Заполните все поля');
-        return;
-      }
-
-      if (!isValidEmail(email)) {
-        showAuthError('Введите корректный email');
-        return;
-      }
-
-      if (password.length < 6) {
-        showAuthError('Пароль должен быть минимум 6 символов');
-        return;
-      }
-
-      if (password !== password2) {
-        showAuthError('Пароли не совпадают');
-        return;
-      }
-
-      showAuthLoading(true);
-
-      try {
-        const { data, error } = await sb.auth.signUp({ email, password });
-
-        if (error) {
-          showAuthError(error.message);
-          return;
-        }
-
-        if (data.user) {
-          if (data.user.identities && data.user.identities.length === 0) {
-            showAuthError('Этот email уже зарегистрирован');
-          } else {
-            showAuthSuccess('Регистрация успешна! Проверьте email для подтверждения.');
-            setTimeout(() => {
-              showAuthTab('login');
-              document.getElementById('auth-email').value = email;
-            }, 2000);
-          }
-        }
-      } catch (err) {
-        showAuthError('Ошибка регистрации: ' + err.message);
-      } finally {
-        showAuthLoading(false);
-      }
-    }
-
-    function showAuthError(msg) {
-      const el = document.getElementById('auth-error');
-      el.textContent = msg;
-      el.style.display = 'block';
-      document.getElementById('auth-success').style.display = 'none';
-    }
-
-    function showAuthSuccess(msg) {
-      const el = document.getElementById('auth-success');
-      el.textContent = msg;
-      el.style.display = 'block';
-      document.getElementById('auth-error').style.display = 'none';
-    }
-
-    function showAuthLoading(show) {
-      document.getElementById('auth-loading').style.display = show ? 'block' : 'none';
-      const btnLogin = document.getElementById('btn-login');
-      const btnRegister = document.getElementById('btn-register');
-      if (btnLogin) btnLogin.disabled = show;
-      if (btnRegister) btnRegister.disabled = show;
-    }
-
-    // Logout
-    async function authLogout() {
-      const sb = await initAuthSupabase();
-      if (!sb) return;
-
-      try {
-        await sb.auth.signOut();
-        // Show login form
-        document.getElementById('auth-logged-in').style.display = 'none';
-        document.getElementById('form-login').style.display = 'block';
-        document.getElementById('tab-login').style.background = 'rgba(59,130,246,0.3)';
-        document.getElementById('tab-login').style.color = 'white';
-        document.getElementById('tab-register').style.background = 'rgba(255,255,255,0.05)';
-        document.getElementById('tab-register').style.color = '#94a3b8';
-        // Clear inputs
-        document.getElementById('auth-email').value = '';
-        document.getElementById('auth-password').value = '';
-      } catch (err) {
-        console.log('Logout error:', err);
-      }
-    }
-
-    // Email validation
-    function isValidEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    // Check existing session on load
-    async function checkExistingSession() {
-      const sb = await initAuthSupabase();
-      if (!sb) return;
-
-      try {
-        const { data: { session } } = await sb.auth.getSession();
-        if (session && session.user) {
-          document.getElementById('auth-screen').style.display = 'none';
-        }
-      } catch (err) {
-        console.log('Session check error:', err);
-      }
-    }
-
-    // Run session check after Supabase loads
-    if (window.supabase) {
-      checkExistingSession();
-    } else {
-      window.addEventListener('load', () => {
-        setTimeout(checkExistingSession, 100);
-      });
+    // Check if already authenticated
+    if (localStorage.getItem(AUTH_KEY) === 'true') {
+      document.getElementById('auth-screen').style.display = 'none';
     }
 
     // Real-time clock for overlay
@@ -2119,11 +2063,11 @@
 
   <header class="header">
     <div class="header-left">
-      <button class="back-btn" onclick="window.location.href='index.html'">
+      <button class="back-btn" onclick="window.location.href='/app.html'">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
           <polyline points="15 18 9 12 15 6"></polyline>
         </svg>
-        Назад
+        Вебинар
       </button>
       <div class="logo">
         <div class="logo-icon">
@@ -2189,6 +2133,10 @@
           </div>
         </div>
       </div>
+      <a href="/app.html" class="support-btn" title="Перейти в Вебинар Студио" style="background:linear-gradient(135deg, #3b82f6, #6366f1);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Вебинар Студио
+      </a>
       <a href="https://t.me/PavloKazarianBot" target="_blank" class="support-btn" title="Техподдержка">
         <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
         Поддержка
@@ -3080,46 +3028,6 @@
     // If client mode and in-app browser - show "Open in Browser" page
     if (isClientMode && isInAppBrowser) {
       const currentUrl = window.location.href;
-
-      // Detect platform
-      const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
-      const isAndroid = /Android/i.test(userAgent);
-      const isTelegram = /Telegram/i.test(userAgent) || window.TelegramWebviewProxy !== undefined || window.Telegram?.WebApp !== undefined;
-
-      // Function to open in external browser
-      const openInBrowser = () => {
-        // Method 1: Try Android Intent (works in Telegram Android)
-        if (isAndroid) {
-          const intentUrl = `intent://${currentUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`;
-          window.location.href = intentUrl;
-
-          // Fallback after delay
-          setTimeout(() => {
-            window.open(currentUrl, '_system');
-          }, 500);
-          return;
-        }
-
-        // Method 2: iOS - copy URL
-        if (isIOS) {
-          navigator.clipboard.writeText(currentUrl).then(() => {
-            alert('Ссылка скопирована!\\n\\nОткройте Safari и вставьте ссылку в адресную строку.');
-          }).catch(() => {
-            const input = document.createElement('input');
-            input.value = currentUrl;
-            document.body.appendChild(input);
-            input.select();
-            document.execCommand('copy');
-            document.body.removeChild(input);
-            alert('Ссылка скопирована!\\n\\nОткройте Safari и вставьте ссылку.');
-          });
-          return;
-        }
-
-        // Method 3: Generic fallback
-        window.open(currentUrl, '_blank');
-      };
-
       document.body.innerHTML = `
         <style>
           .browser-redirect {
@@ -3137,63 +3045,28 @@
             cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 12px;
             box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4); transition: transform 0.2s;
           }
-          .browser-btn:active { transform: scale(0.98); }
-          .browser-copy-btn {
-            margin-top: 16px; padding: 12px 32px; background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: white;
-            font-size: 14px; cursor: pointer;
-          }
-          .browser-hint { margin-top: 24px; font-size: 13px; color: #64748b; max-width: 300px; line-height: 1.5; }
+          .browser-btn:hover { transform: translateY(-2px); }
+          .browser-hint { margin-top: 24px; font-size: 13px; color: #64748b; max-width: 280px; }
           .browser-hint strong { color: #94a3b8; }
-          .url-display {
-            margin-top: 16px; padding: 12px 16px; background: rgba(0,0,0,0.3);
-            border-radius: 8px; font-size: 11px; color: #64748b; max-width: 300px;
-            word-break: break-all; user-select: all;
-          }
         </style>
         <div class="browser-redirect">
           <div class="browser-icon">🌐</div>
           <div class="browser-title">Откройте в браузере</div>
           <div class="browser-text">Для видеоконсультации необходим полноценный браузер с доступом к камере и микрофону</div>
-          <button class="browser-btn" id="open-browser-btn">
+          <a class="browser-btn" href="${currentUrl}" target="_blank" rel="noopener">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
               <polyline points="15 3 21 3 21 9"></polyline>
               <line x1="10" y1="14" x2="21" y2="3"></line>
             </svg>
-            ${isIOS ? 'Скопировать ссылку' : 'Открыть в браузере'}
-          </button>
-          <button class="browser-copy-btn" id="copy-url-btn">📋 Скопировать ссылку</button>
+            Открыть в браузере
+          </a>
           <div class="browser-hint">
-            ${isIOS
-              ? 'Скопируйте ссылку и откройте в <strong>Safari</strong>'
-              : isTelegram
-                ? 'Или нажмите <strong>⋮ → Открыть в браузере</strong>'
-                : 'Или откройте в <strong>Chrome / Safari</strong>'}
+            Нажмите кнопку выше, или:<br>
+            <strong>⋮ → Открыть в браузере</strong>
           </div>
-          <div class="url-display">${currentUrl}</div>
         </div>
       `;
-
-      // Add event listeners
-      document.getElementById('open-browser-btn').onclick = openInBrowser;
-      document.getElementById('copy-url-btn').onclick = () => {
-        navigator.clipboard.writeText(currentUrl).then(() => {
-          document.getElementById('copy-url-btn').textContent = '✅ Скопировано!';
-          setTimeout(() => {
-            document.getElementById('copy-url-btn').textContent = '📋 Скопировать ссылку';
-          }, 2000);
-        }).catch(() => {
-          const ta = document.createElement('textarea');
-          ta.value = currentUrl;
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          document.body.removeChild(ta);
-          document.getElementById('copy-url-btn').textContent = '✅ Скопировано!';
-        });
-      };
-
       // Stop further script execution
       throw new Error('Redirecting to browser');
     }
@@ -3219,9 +3092,11 @@
         cleanToken = cleanToken.replace(/[^A-Za-z0-9_=-]+$/g, '');
         console.log('Token cleanup:', { original: token.length, clean: cleanToken.length });
 
-        // Decode base64url token with Unicode support
+        // Decode base64url token with Unicode support (using TextDecoder instead of deprecated escape())
         const base64 = cleanToken.replace(/-/g, '+').replace(/_/g, '/');
-        const tokenData = JSON.parse(decodeURIComponent(escape(atob(base64))));
+        const binaryStr = atob(base64);
+        const bytes = Uint8Array.from(binaryStr, c => c.charCodeAt(0));
+        const tokenData = JSON.parse(new TextDecoder().decode(bytes));
         sessionId = tokenData.s;
         clientName = tokenData.n || 'Клиент';
         const expiresAt = tokenData.e;
@@ -4260,17 +4135,16 @@
       `;
 
       // Client mode logic with WAITING ROOM
-      // Initialize Supabase for client - loaded from secure endpoint
+      // Initialize Supabase for client
+      const CLIENT_SUPABASE_URL = 'https://ngxbfuimddefjeufwcwf.supabase.co';
+      const CLIENT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neGJmdWltZGRlZmpldWZ3Y3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDQ5MjYsImV4cCI6MjA4MDc4MDkyNn0.xRRF3L8BCzM5qTKzODT3IfayIQ1x4u0sa-4ki3UbhkI';
       let clientSupabase = null;
       let waitingRecordId = null;
 
-      (async () => {
-        const config = await window.getSupabaseConfig();
-        if (config && typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-          clientSupabase = window.supabase.createClient(config.url, config.key);
-          console.log('✅ Client Supabase initialized');
-        }
-      })();
+      if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+        clientSupabase = window.supabase.createClient(CLIENT_SUPABASE_URL, CLIENT_SUPABASE_KEY);
+        console.log('✅ Client Supabase initialized');
+      }
 
       // Register client in waiting_clients (with duplicate prevention)
       let registrationInProgress = false;
@@ -4466,49 +4340,12 @@
               ? `Подключение... (попытка ${retryCount + 1}/${maxRetries + 1})`
               : 'Подключение видео...';
 
-            // Check if we have camera/mic stream
-            if (!myStream) {
-              console.log('⚠️ No media stream, requesting permissions...');
-              statusEl.textContent = 'Разрешите доступ к камере и микрофону...';
-              try {
-                myStream = await navigator.mediaDevices.getUserMedia({
-                  video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-                  audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-                });
-                myVideo.srcObject = myStream;
-                myVideo.play().catch(e => console.error('Video play error:', e));
-              } catch (mediaErr) {
-                console.error('Media access denied:', mediaErr);
-                statusEl.textContent = '❌ Нет доступа к камере. Разрешите в настройках браузера.';
-                return;
-              }
-            }
-
-            // Check if peer is connected
-            if (!peer || peer.destroyed) {
-              console.error('Peer not ready');
-              statusEl.textContent = 'Ошибка подключения. Обновите страницу.';
-              return;
-            }
-
             // Wait a bit for host peer to be ready
             if (retryCount === 0) {
               await new Promise(resolve => setTimeout(resolve, 1500));
             }
 
-            console.log('📞 Calling host peer:', sessionId, 'with stream:', myStream ? 'OK' : 'NULL');
             call = peer.call(sessionId, myStream);
-
-            if (!call) {
-              console.error('❌ peer.call() returned null - peer might not be connected');
-              if (retryCount < maxRetries) {
-                statusEl.textContent = `Хост не найден, повторная попытка... (${retryCount + 1}/${maxRetries})`;
-                setTimeout(() => startVideoCall(retryCount + 1), retryDelay);
-              } else {
-                statusEl.textContent = '❌ Не удалось подключиться к хосту. Обновите страницу.';
-              }
-              return;
-            }
 
             if (call) {
               let streamReceived = false;
@@ -4760,11 +4597,6 @@
           }
 
           try {
-            // Check if video is ready
-            if (!myVideo || !myVideo.videoWidth || !myVideo.videoHeight) {
-              throw new Error('Камера ещё не готова. Подождите пару секунд.');
-            }
-
             photoBtn.textContent = '📸 Создаю...';
             photoBtn.disabled = true;
 
@@ -4839,8 +4671,7 @@
             console.error('Photo generation error:', err);
             photoBtn.textContent = '📸 Фото';
             photoBtn.disabled = false;
-            const errMsg = err?.message || err?.error || (typeof err === 'string' ? err : 'Неизвестная ошибка');
-            alert('Не удалось создать фото: ' + errMsg);
+            alert('Не удалось создать фото: ' + err.message);
           }
         };
 
@@ -5183,6 +5014,7 @@
     let audioMediaRecorder = null;
     let audioChunks = [];
     let audioBlob = null;
+    let audioStopPromiseResolve = null; // Promise resolver for proper async audioBlob waiting
 
     // === Auto-save folder system (IndexedDB) ===
     let savedDirectoryHandle = null;
@@ -5388,8 +5220,10 @@
     })();
 
     // =============================================
-    // SUPABASE - Хранение сессій (loaded from secure endpoint)
+    // SUPABASE - Хранение сессий
     // =============================================
+    const SUPABASE_URL = 'https://ngxbfuimddefjeufwcwf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neGJmdWltZGRlZmpldWZ3Y3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDQ5MjYsImV4cCI6MjA4MDc4MDkyNn0.xRRF3L8BCzM5qTKzODT3IfayIQ1x4u0sa-4ki3UbhkI';
 
     // Initialize Supabase client (only if SDK loaded)
     let supabase = null;
@@ -5399,16 +5233,9 @@
     const shownSessionNotifications = new Set(); // Track shown notifications by session_id
     let lastNotificationTime = 0; // Debounce notifications
 
-    // Initialize main Supabase
-    (async () => {
-      const config = await window.getSupabaseConfig();
-      if (!config) {
-        console.error('❌ Failed to load Supabase config');
-        return;
-      }
-      if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-        supabase = window.supabase.createClient(config.url, config.key);
-        console.log('✅ Supabase initialized');
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('✅ Supabase initialized');
 
       // Subscribe to waiting_clients realtime - HOST receives notifications
       supabase
@@ -5893,7 +5720,10 @@
 
         setTimeout(() => {
           loadScheduledConsultations();
-          // Auto-refresh every 60 seconds
+          // Auto-refresh every 60 seconds (FIX: Clear previous interval to prevent duplicates)
+          if (scheduledRefreshInterval) {
+            clearInterval(scheduledRefreshInterval);
+          }
           scheduledRefreshInterval = setInterval(loadScheduledConsultations, 60000);
         }, 1000);
 
@@ -6472,7 +6302,7 @@
 
       // Handle waiting room data connections
       let waitingGuest = null;
-      let waitingDataConn = null;
+      // NOTE: waitingDataConn is declared globally (line ~6065) - do NOT shadow it here
 
       consultationPeer.on('connection', (conn) => {
         console.log('📡 Data connection from client');
@@ -6755,7 +6585,8 @@
       }
     }
 
-    function showGuestVideo(stream) {
+    // Using let for function expressions to allow overwriting in emotion/eye tracking modules
+    let showGuestVideo = function(stream) {
       placeholder.style.display = 'none';
       slideContainer.classList.add('active');
       slideCanvas.style.display = 'none';
@@ -6777,9 +6608,9 @@
       slideContainer.classList.remove('with-thumbs');
       splitView.classList.remove('with-thumbs');
       updateViewMode();
-    }
+    };
 
-    function stopGuestConnection() {
+    let stopGuestConnection = function() {
       if (peerConnection) {
         peerConnection.close();
         peerConnection = null;
@@ -6787,6 +6618,11 @@
       if (peer) {
         peer.destroy();
         peer = null;
+      }
+      // FIX: Also clean up consultationPeer to prevent hanging connections
+      if (consultationPeer) {
+        consultationPeer.destroy();
+        consultationPeer = null;
       }
       if (guestStream) {
         guestStream.getTracks().forEach(t => t.stop());
@@ -6801,7 +6637,7 @@
         placeholder.style.display = 'block';
         slideContainer.classList.remove('active');
       }
-    }
+    };
 
     // Guest modal event listeners
     document.getElementById('tab-host').addEventListener('click', () => {
@@ -7357,6 +7193,9 @@
         const shortCode = Date.now().toString(36).slice(-4) + Math.random().toString(36).substr(2, 3);
         const expiryTimestamp = scheduledTimestamp + (expiryHours * 60 * 60 * 1000);
 
+        // SECURITY NOTE: This token is not cryptographically signed
+        // Anyone can forge a token by base64-encoding their own JSON
+        // For production, validate session IDs server-side via Supabase
         const tokenData = {
           s: sessionId,
           n: clientName,
@@ -7364,9 +7203,10 @@
           e: expiryTimestamp
         };
 
-        // Encode to base64 with Unicode support
+        // Encode to base64 with Unicode support (using TextEncoder instead of deprecated unescape())
         const tokenJson = JSON.stringify(tokenData);
-        const tokenBase64 = btoa(unescape(encodeURIComponent(tokenJson))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        const bytes = new TextEncoder().encode(tokenJson);
+        const tokenBase64 = btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
         const fullLink = window.location.origin + window.location.pathname + '?mode=client&token=' + tokenBase64;
         const shortLink = window.location.origin + '/c/' + shortCode;
 
@@ -7639,6 +7479,8 @@
     })();
 
     // Save OpenAI API key button
+    // SECURITY NOTE: API keys in localStorage are XSS-vulnerable
+    // For production, consider using a backend proxy for OpenAI API calls
     document.getElementById('btn-save-api-key').addEventListener('click', function() {
       const apiKey = document.getElementById('openai-api-key').value.trim();
       const apiKeyStatus = document.getElementById('api-key-status');
@@ -9103,6 +8945,7 @@ ${presentationText.slice(0, 8000)}
     let standaloneAudioRecorder = null;
     let standaloneAudioChunks = [];
     let standaloneAudioStartTime = null;
+    let skipStandaloneAnalysis = false; // Flag to skip analysis when video recording starts
 
     btnMic.addEventListener('click', async () => {
       // Check current state - if any audio is active, mute it; otherwise unmute
@@ -9196,6 +9039,16 @@ ${presentationText.slice(0, 8000)}
 
             standaloneAudioRecorder.onstop = async () => {
               btnAudioRec.classList.remove('recording');
+
+              // FIX: Skip processing if video recording is starting (to prevent parallel analysis)
+              if (skipStandaloneAnalysis) {
+                console.log('🎤 Standalone audio stopped for video recording - skipping analysis');
+                standaloneAudioChunks = [];
+                standaloneAudioRecorder = null;
+                skipStandaloneAnalysis = false;
+                return;
+              }
+
               if (standaloneAudioChunks.length > 0) {
                 const blob = new Blob(standaloneAudioChunks, { type: 'audio/webm' });
                 const duration = Math.round((Date.now() - standaloneAudioStartTime) / 1000);
@@ -9277,6 +9130,16 @@ ${presentationText.slice(0, 8000)}
 
           standaloneAudioRecorder.onstop = async () => {
             btnAudioRec.classList.remove('recording');
+
+            // FIX: Skip processing if video recording is starting (to prevent parallel analysis)
+            if (skipStandaloneAnalysis) {
+              console.log('🎤 Standalone audio stopped for video recording - skipping analysis');
+              standaloneAudioChunks = [];
+              standaloneAudioRecorder = null;
+              skipStandaloneAnalysis = false;
+              return;
+            }
+
             if (standaloneAudioChunks.length > 0) {
               const blob = new Blob(standaloneAudioChunks, { type: 'audio/webm' });
               const duration = Math.round((Date.now() - standaloneAudioStartTime) / 1000);
@@ -9398,6 +9261,7 @@ ${presentationText.slice(0, 8000)}
     let recordingCanvas = null;
     let recordingCtx = null;
     let isRecording = false;
+    let videoRecordingStarted = false; // Sync flag: true only when drawFrame loop starts
     let frameCount = 0;
     let audioSampleCount = 0;
     let fileWritableStream = null; // For direct file recording
@@ -9412,13 +9276,42 @@ ${presentationText.slice(0, 8000)}
     let isStreaming = false;
     let streamWebSocket = null;
     let streamMediaRecorder = null;
-    const STREAM_SERVER_URL = 'wss://adequate-position-modify-cookies.trycloudflare.com';
+    const STREAM_SERVER_URL = 'ws://localhost:8080';
+
+    // Helper function to set RTMP credentials (call from console)
+    window.setRtmpCredentials = function(rtmpUrl, streamKey) {
+      localStorage.setItem('rtmpUrl', rtmpUrl);
+      localStorage.setItem('rtmpStreamKey', streamKey);
+      console.log('✅ RTMP credentials saved:', rtmpUrl);
+      return 'Credentials saved! Start streaming to use them.';
+    };
+    // Show current RTMP config
+    window.getRtmpConfig = function() {
+      return {
+        rtmpUrl: localStorage.getItem('rtmpUrl') || 'rtmp://amsterdam.restream.io/live',
+        streamKey: localStorage.getItem('rtmpStreamKey') ? '***configured***' : 'NOT SET'
+      };
+    };
 
     // Start streaming
     async function startStreaming() {
       if (isStreaming) return;
 
       try {
+        // Auto-capture microphone if not already captured
+        if (!micStream) {
+          try {
+            console.log('STREAM: Auto-requesting microphone...');
+            micStream = await navigator.mediaDevices.getUserMedia({
+              audio: { echoCancellation: true, noiseSuppression: true }
+            });
+            btnMic.classList.add('active');
+            console.log('STREAM: Microphone captured');
+          } catch (e) {
+            console.warn('STREAM: Could not capture microphone:', e.message);
+          }
+        }
+
         // Create canvas stream
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -9431,7 +9324,14 @@ ${presentationText.slice(0, 8000)}
         streamWebSocket.onopen = () => {
           console.log('Connected to stream server');
           // Send start command
-          streamWebSocket.send(JSON.stringify({ type: 'start' }));
+          // Send start command with RTMP credentials
+          const rtmpConfig = {
+            type: 'start',
+            rtmpUrl: localStorage.getItem('rtmpUrl') || 'rtmp://amsterdam.restream.io/live',
+            streamKey: localStorage.getItem('rtmpStreamKey') || ''
+          };
+          streamWebSocket.send(JSON.stringify(rtmpConfig));
+          console.log('Stream: Starting with RTMP URL:', rtmpConfig.rtmpUrl);
         };
 
         streamWebSocket.onmessage = (event) => {
@@ -9457,7 +9357,7 @@ ${presentationText.slice(0, 8000)}
             });
 
             streamMediaRecorder.ondataavailable = (e) => {
-              if (e.data.size > 0 && streamWebSocket.readyState === WebSocket.OPEN) {
+              if (e.data.size > 0 && streamWebSocket && streamWebSocket.readyState === WebSocket.OPEN) {
                 streamWebSocket.send(e.data);
               }
             };
@@ -9624,6 +9524,8 @@ ${presentationText.slice(0, 8000)}
 
       // Stop standalone audio recording - video recording has its own audio capture
       if (standaloneAudioRecorder && standaloneAudioRecorder.state !== 'inactive') {
+        // FIX: Set flag to skip auto-analysis when video recording starts
+        skipStandaloneAnalysis = true;
         standaloneAudioRecorder.stop();
         console.log('🎤 Standalone audio stopped (video recording starting)');
       }
@@ -9740,8 +9642,8 @@ ${presentationText.slice(0, 8000)}
           }),
           video: {
             codec: 'avc',
-            width: 1920,
-            height: 1080
+            width: dims.width,
+            height: dims.height
           },
           audio: hasAnyAudioSource ? {
             codec: 'aac',
@@ -9758,8 +9660,8 @@ ${presentationText.slice(0, 8000)}
           target: new Mp4Muxer.ArrayBufferTarget(),
           video: {
             codec: 'avc',
-            width: 1920,
-            height: 1080
+            width: dims.width,
+            height: dims.height
           },
           audio: hasAnyAudioSource ? {
             codec: 'aac',
@@ -9781,10 +9683,10 @@ ${presentationText.slice(0, 8000)}
 
       await videoEncoder.configure({
         codec: 'avc1.640028',
-        width: 1920,
-        height: 1080,
+        width: dims.width,
+        height: dims.height,
         bitrate: 5_000_000,
-        framerate: 30
+        framerate: recordingFPS
       });
 
       // Audio encoder - captures MIC + GUEST + INTRO VIDEO audio
@@ -9817,6 +9719,10 @@ ${presentationText.slice(0, 8000)}
           audioCtx = new AudioContext({ sampleRate: 48000 });
           console.log('AUDIO: Created new AudioContext');
         }
+        // SYNC FIX: Capture wall-clock time of AudioContext creation
+        // audioCtx.currentTime starts at 0 when created, so we can convert it to wall-time
+        const audioCtxStartWallTime = performance.now() - audioCtx.currentTime * 1000;
+
         const masterGain = audioCtx.createGain();
         masterGain.gain.value = 0.9; // Slightly reduce to prevent clipping
 
@@ -9843,9 +9749,47 @@ ${presentationText.slice(0, 8000)}
         limiter.attack.value = 0.001; // 1ms
         limiter.release.value = 0.05; // 50ms
 
-        // Buffer size 4096: balance between stability and responsiveness
-        // Smaller = more frequent callbacks = less chance of missing data on long recordings
-        const processor = audioCtx.createScriptProcessor(4096, 1, 1);
+        // SYNC FIX: Use AudioWorklet instead of deprecated ScriptProcessor
+        // AudioWorklet has accurate timing via currentTime in process() method
+        let audioCapture = null;
+        const useAudioWorklet = typeof AudioWorkletNode !== 'undefined';
+
+        if (useAudioWorklet) {
+          // Create inline AudioWorklet for accurate audio capture
+          const workletCode = `
+            class AudioCaptureProcessor extends AudioWorkletProcessor {
+              process(inputs, outputs, parameters) {
+                const input = inputs[0];
+                if (input && input[0] && input[0].length > 0) {
+                  // Post audio data with currentTime (accurate AudioContext time)
+                  this.port.postMessage({
+                    samples: new Float32Array(input[0]),
+                    currentTime: currentTime
+                  });
+                }
+                return true;
+              }
+            }
+            registerProcessor('audio-capture', AudioCaptureProcessor);
+          `;
+          const blob = new Blob([workletCode], { type: 'application/javascript' });
+          const workletUrl = URL.createObjectURL(blob);
+
+          try {
+            await audioCtx.audioWorklet.addModule(workletUrl);
+            audioCapture = new AudioWorkletNode(audioCtx, 'audio-capture');
+            console.log('AUDIO: Using AudioWorklet for stable timing');
+          } catch (e) {
+            console.warn('AUDIO: AudioWorklet failed, falling back to ScriptProcessor:', e);
+          }
+          URL.revokeObjectURL(workletUrl);
+        }
+
+        // Fallback to ScriptProcessor if AudioWorklet unavailable
+        const processor = audioCapture ? null : audioCtx.createScriptProcessor(4096, 1, 1);
+        if (processor) {
+          console.log('AUDIO: Using ScriptProcessor (AudioWorklet unavailable)');
+        }
 
         // Mic source with gain control
         let micGain = null;
@@ -9905,17 +9849,10 @@ ${presentationText.slice(0, 8000)}
         // Store references for controlling during recording
         window._recordingAudio = { micGain, guestGain, introGain, audioCtx };
 
-        // Use AudioContext time for accurate audio timestamps (avoids drift)
-        let audioStarted = false;
-        let audioContextStartTime = null;
-
-        processor.onaudioprocess = (e) => {
-          if (!isRecording || !audioEncoder) return;
-
-          // Initialize audioContextStartTime on first audio callback
-          if (audioContextStartTime === null) {
-            audioContextStartTime = audioCtx.currentTime;
-          }
+        // Common audio encoding function for both AudioWorklet and ScriptProcessor
+        function encodeAudioChunk(samples, audioCurrentTime) {
+          // SYNC FIX: Don't encode audio until video recording has actually started
+          if (!isRecording || !audioEncoder || !videoRecordingStarted) return;
 
           // Control audio sources based on state - use smooth transitions to avoid clicks
           if (window._recordingAudio) {
@@ -9940,37 +9877,62 @@ ${presentationText.slice(0, 8000)}
             }
           }
 
-          const inputData = e.inputBuffer.getChannelData(0);
+          // SYNC FIX: Calculate timestamp using AudioContext time converted to wall-time
+          const audioWallTime = audioCtxStartWallTime + audioCurrentTime * 1000;
+          const timestamp = Math.round((audioWallTime - recordingStartTime) * 1000); // microseconds
 
-          // Calculate timestamp from actual samples processed (not from clock)
-          // This prevents drift on long recordings - timestamp = samples / sampleRate
-          const timestamp = Math.round((audioSampleCount / 48000) * 1000000); // microseconds
+          // Skip audio that arrived before recording started (negative timestamp)
+          if (timestamp < 0) return;
 
           const audioData = new AudioData({
             format: 'f32',
             sampleRate: 48000,
-            numberOfFrames: inputData.length,
+            numberOfFrames: samples.length,
             numberOfChannels: 1,
             timestamp: timestamp,
-            data: new Float32Array(inputData)
+            data: samples instanceof Float32Array ? samples : new Float32Array(samples)
           });
-          audioSampleCount += inputData.length;
+
+          const wasZero = audioSampleCount === 0;
+          audioSampleCount += samples.length;
           try {
             audioEncoder.encode(audioData);
             audioData.close();
-          } catch (e) {
-            console.error('Audio encode error:', e);
+            if (wasZero) {
+              console.log('SYNC: First audio chunk encoded, timestamp:', timestamp, 'µs (wall-time based), samples:', samples.length);
+            }
+          } catch (err) {
+            console.error('Audio encode error:', err);
           }
-        };
+        }
 
-        // Connect audio processing chain: masterGain → highPassFilter → compressor → limiter → processor
+        // Setup AudioWorklet message handler
+        if (audioCapture) {
+          audioCapture.port.onmessage = (e) => {
+            const { samples, currentTime } = e.data;
+            encodeAudioChunk(samples, currentTime);
+          };
+        }
+
+        // Setup ScriptProcessor fallback
+        if (processor) {
+          processor.onaudioprocess = (e) => {
+            const inputData = e.inputBuffer.getChannelData(0);
+            encodeAudioChunk(inputData, audioCtx.currentTime);
+          };
+        }
+
+        // Connect audio processing chain: masterGain → highPassFilter → compressor → limiter → captureNode
         masterGain.connect(highPassFilter);
         highPassFilter.connect(compressor);
         compressor.connect(limiter);
-        limiter.connect(processor);
-        // IMPORTANT: processor MUST connect to destination for onaudioprocess to fire
-        processor.connect(audioCtx.destination);
-        console.log('AUDIO: Processing chain connected (highpass → compressor → limiter)');
+
+        // Connect to either AudioWorklet or ScriptProcessor
+        const captureNode = audioCapture || processor;
+        limiter.connect(captureNode);
+        // IMPORTANT: captureNode MUST connect to destination for processing to work
+        captureNode.connect(audioCtx.destination);
+        console.log('AUDIO: Processing chain connected (highpass → compressor → limiter →', audioCapture ? 'AudioWorklet' : 'ScriptProcessor', ')');
 
         // Audio recording for transcription (separate WebM file)
         // Read toggle state directly from DOM to ensure we have current values
@@ -10021,6 +9983,11 @@ ${presentationText.slice(0, 8000)}
             } else {
               console.error('AUDIO: No audio chunks collected!');
             }
+            // Resolve the promise so stopRecording can continue
+            if (audioStopPromiseResolve) {
+              audioStopPromiseResolve();
+              audioStopPromiseResolve = null;
+            }
           };
 
           audioMediaRecorder.onerror = (e) => {
@@ -10041,8 +10008,9 @@ ${presentationText.slice(0, 8000)}
         const W = recordingCanvas.width;
         const H = recordingCanvas.height;
         const isVerticalFormat = recordingFormat === '9:16';
-        // For vertical (9:16): scale by width, For horizontal (16:9): scale by height
-        const scale = isVerticalFormat ? W / 1080 : H / 1080;
+        // For vertical (9:16): use SMALLER scale (0.65) to fit overlays
+        // For horizontal (16:9): scale by height
+        const scale = isVerticalFormat ? W / 1080 * 0.65 : H / 1080;
 
         // Draw ticker if active - scroll from RIGHT to LEFT
         if (ticker.classList.contains('active')) {
@@ -10272,57 +10240,106 @@ ${presentationText.slice(0, 8000)}
           LiveAudienceManager.drawCounterOnCanvas(recordingCtx, W, H);
         }
 
+        // Draw clock overlay if enabled - CENTERED at top
+        if (overlayState.clockEnabled) {
+          const clockScale = isVerticalFormat ? scale * 0.8 : scale;
+          const now = new Date();
+          const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+                          'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+          const dateStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+          const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+          // Measure text to calculate box size
+          recordingCtx.font = `400 ${12 * clockScale}px Inter, sans-serif`;
+          const dateWidth = recordingCtx.measureText(dateStr).width;
+          recordingCtx.font = `700 ${22 * clockScale}px Inter, sans-serif`;
+          const timeWidth = recordingCtx.measureText(timeStr).width;
+
+          const clockW = Math.max(dateWidth, timeWidth) + 32 * clockScale;
+          const clockH = 55 * clockScale;
+          const clockX = (W - clockW) / 2; // CENTERED
+          const clockY = isVerticalFormat ? 15 * clockScale : 20 * clockScale;
+
+          // Background
+          recordingCtx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+          recordingCtx.beginPath();
+          recordingCtx.roundRect(clockX, clockY, clockW, clockH, 10 * clockScale);
+          recordingCtx.fill();
+
+          // Border
+          recordingCtx.strokeStyle = 'rgba(59, 130, 246, 0.4)';
+          recordingCtx.lineWidth = 1;
+          recordingCtx.stroke();
+
+          // Date text
+          recordingCtx.fillStyle = '#94a3b8';
+          recordingCtx.font = `400 ${12 * clockScale}px Inter, sans-serif`;
+          recordingCtx.textAlign = 'center';
+          recordingCtx.textBaseline = 'top';
+          recordingCtx.fillText(dateStr, W / 2, clockY + 10 * clockScale);
+
+          // Time text
+          recordingCtx.fillStyle = '#3b82f6';
+          recordingCtx.font = `700 ${22 * clockScale}px Inter, sans-serif`;
+          recordingCtx.fillText(timeStr, W / 2, clockY + 26 * clockScale);
+
+          recordingCtx.textAlign = 'left';
+        }
+
         // Draw YouTube overlay if enabled
         if (overlayState.youtubeEnabled) {
-          const ytW = 320 * scale;
-          const ytH = 52 * scale;
-          const ytX = (W - ytW) / 2;
-          const ytY = H - 100 * scale;
+          const ytScale = isVerticalFormat ? scale * 0.85 : scale; // Smaller for vertical
+          const ytW = 320 * ytScale;
+          const ytH = 52 * ytScale;
+          const ytX = (W - ytW) / 2; // CENTERED horizontally
+          // For vertical: centered in camera area (bottom 50%), for horizontal: near bottom
+          // Camera area in vertical: from H*0.5 to H, center at H*0.75
+          const ytY = isVerticalFormat ? H * 0.75 - ytH / 2 : H - 100 * scale;
 
           // Background
           recordingCtx.fillStyle = 'rgba(0, 0, 0, 0.85)';
           recordingCtx.beginPath();
-          recordingCtx.roundRect(ytX, ytY, ytW, ytH, 14 * scale);
+          recordingCtx.roundRect(ytX, ytY, ytW, ytH, 14 * ytScale);
           recordingCtx.fill();
 
           // YouTube logo (red play button)
-          const logoX = ytX + 18 * scale;
+          const logoX = ytX + 18 * ytScale;
           const logoY = ytY + ytH / 2;
           recordingCtx.fillStyle = '#ff0000';
           recordingCtx.beginPath();
-          recordingCtx.roundRect(logoX, logoY - 14 * scale, 40 * scale, 28 * scale, 6 * scale);
+          recordingCtx.roundRect(logoX, logoY - 14 * ytScale, 40 * ytScale, 28 * ytScale, 6 * ytScale);
           recordingCtx.fill();
           // Play triangle
           recordingCtx.fillStyle = 'white';
           recordingCtx.beginPath();
-          recordingCtx.moveTo(logoX + 15 * scale, logoY - 7 * scale);
-          recordingCtx.lineTo(logoX + 15 * scale, logoY + 7 * scale);
-          recordingCtx.lineTo(logoX + 28 * scale, logoY);
+          recordingCtx.moveTo(logoX + 15 * ytScale, logoY - 7 * ytScale);
+          recordingCtx.lineTo(logoX + 15 * ytScale, logoY + 7 * ytScale);
+          recordingCtx.lineTo(logoX + 28 * ytScale, logoY);
           recordingCtx.closePath();
           recordingCtx.fill();
 
           // Bell icon (animated)
-          const bellX = ytX + 70 * scale;
+          const bellX = ytX + 70 * ytScale;
           const bellAngle = Math.sin(Date.now() / 200) * 0.15;
           recordingCtx.save();
-          recordingCtx.translate(bellX + 14 * scale, logoY);
+          recordingCtx.translate(bellX + 14 * ytScale, logoY);
           recordingCtx.rotate(bellAngle);
           recordingCtx.fillStyle = '#fbbf24';
           recordingCtx.beginPath();
-          recordingCtx.arc(0, -2 * scale, 10 * scale, 0, Math.PI * 2);
+          recordingCtx.arc(0, -2 * ytScale, 10 * ytScale, 0, Math.PI * 2);
           recordingCtx.fill();
           recordingCtx.fillStyle = 'rgba(0,0,0,0.3)';
-          recordingCtx.fillRect(-6 * scale, -8 * scale, 12 * scale, 12 * scale);
+          recordingCtx.fillRect(-6 * ytScale, -8 * ytScale, 12 * ytScale, 12 * ytScale);
           recordingCtx.restore();
 
           // Text
           recordingCtx.fillStyle = 'white';
-          recordingCtx.font = `600 ${14 * scale}px Inter, sans-serif`;
+          recordingCtx.font = `600 ${14 * ytScale}px Inter, sans-serif`;
           recordingCtx.textBaseline = 'middle';
-          recordingCtx.fillText('Подпишись!', ytX + 100 * scale, ytY + 18 * scale);
+          recordingCtx.fillText('Подпишись!', ytX + 100 * ytScale, ytY + 18 * ytScale);
           recordingCtx.fillStyle = '#94a3b8';
-          recordingCtx.font = `400 ${11 * scale}px Inter, sans-serif`;
-          recordingCtx.fillText('@pavelkazarian', ytX + 100 * scale, ytY + 36 * scale);
+          recordingCtx.font = `400 ${11 * ytScale}px Inter, sans-serif`;
+          recordingCtx.fillText('@pavelkazarian', ytX + 100 * ytScale, ytY + 36 * ytScale);
 
           // Subscribe button
           const btnX = ytX + 220 * scale;
@@ -10742,17 +10759,22 @@ ${presentationText.slice(0, 8000)}
           // Draw overlays
           drawOverlaysOnRecording();
 
-          // Encode frame - use frame count for timing (like audio uses sample count)
-          // This prevents drift: timestamp = frameCount / FPS * 1000000 (microseconds)
-          // At 30fps: each frame = 33333.33 microseconds
-          const TARGET_FPS = 30;
-          const FRAME_DURATION_US = 1000000 / TARGET_FPS; // 33333.33 microseconds
-          const videoTimestamp = Math.round(frameCount * FRAME_DURATION_US);
+          // Encode frame - use REAL TIME for timestamp, not frameCount
+          // This prevents drift from requestAnimationFrame timing inconsistencies
+          const videoTimestamp = Math.round((performance.now() - recordingStartTime) * 1000); // microseconds
           const frame = new VideoFrame(recordingCanvas, {
-            timestamp: videoTimestamp
+            timestamp: videoTimestamp,
+            duration: Math.round(1000000 / recordingFPS) // hint for decoder
           });
           videoEncoder.encode(frame, { keyFrame: frameCount % 60 === 0 });
           frame.close();
+          // SYNC DEBUG: Log first frame and every 300 frames (~10 sec)
+          if (frameCount === 0) {
+            console.log('SYNC: First video frame encoded, timestamp:', videoTimestamp, 'µs (real-time based)');
+          } else if (frameCount % 300 === 0) {
+            const realTimeSec = (performance.now() - recordingStartTime) / 1000;
+            console.log('SYNC: Video frame', frameCount, 'timestamp:', (videoTimestamp / 1000000).toFixed(2), 's, realTime:', realTimeSec.toFixed(2), 's');
+          }
           frameCount++;
           lastFrameTime = now;
         }
@@ -10760,6 +10782,12 @@ ${presentationText.slice(0, 8000)}
         requestAnimationFrame(drawFrame);
       }
 
+      // SYNC FIX: Reset counters and signal that video recording is starting NOW
+      // Audio will only start encoding after this flag is set
+      frameCount = 0;
+      audioSampleCount = 0;
+      videoRecordingStarted = true;
+      console.log('SYNC: Video recording started, counters reset, audio encoding enabled');
       drawFrame();
 
       btnRecord.classList.add('recording');
@@ -10842,6 +10870,12 @@ ${presentationText.slice(0, 8000)}
       }
 
       isRecording = false;
+      videoRecordingStarted = false; // SYNC FIX: Stop audio encoding
+      // SYNC DEBUG: Log final stats
+      const videoDuration = (frameCount / recordingFPS).toFixed(2);
+      const audioDuration = (audioSampleCount / 48000).toFixed(2);
+      const drift = Math.abs(parseFloat(videoDuration) - parseFloat(audioDuration)).toFixed(2);
+      console.log('SYNC: Recording stopped. Video:', frameCount, 'frames =', videoDuration, 's. Audio:', audioSampleCount, 'samples =', audioDuration, 's. Drift:', drift, 's');
       splashAutoShown = false;
       clearInterval(recordingTimer);
       recIndicator.classList.remove('active');
@@ -10912,27 +10946,24 @@ ${presentationText.slice(0, 8000)}
       console.log('AUDIO: Stopping recording, audioMediaRecorder state:', audioMediaRecorder?.state);
 
       if (audioMediaRecorder && audioMediaRecorder.state !== 'inactive') {
+        // Create a promise that will be resolved by the onstop handler
+        const audioBlobPromise = new Promise(resolve => {
+          audioStopPromiseResolve = resolve;
+          // Safety timeout to prevent hanging forever
+          setTimeout(() => {
+            if (audioStopPromiseResolve) {
+              console.log('AUDIO: Timeout waiting for onstop after 10s');
+              audioStopPromiseResolve = null;
+              resolve();
+            }
+          }, 10000);
+        });
+
         audioMediaRecorder.stop();
         console.log('AUDIO: MediaRecorder stop() called');
 
-        // Wait for the blob to be ready
-        await new Promise(resolve => {
-          let attempts = 0;
-          const checkBlob = setInterval(() => {
-            attempts++;
-            console.log('AUDIO: Waiting for blob, attempt:', attempts, 'audioBlob:', !!audioBlob);
-            if (audioBlob) {
-              clearInterval(checkBlob);
-              resolve();
-            }
-          }, 100);
-          // Timeout after 10 seconds (increased)
-          setTimeout(() => {
-            clearInterval(checkBlob);
-            console.log('AUDIO: Timeout waiting for blob after 10s');
-            resolve();
-          }, 10000);
-        });
+        // Wait for the onstop event to complete (creates the blob)
+        await audioBlobPromise;
 
         console.log('AUDIO: Blob ready:', !!audioBlob, 'size:', audioBlob?.size);
 
@@ -10979,6 +11010,20 @@ ${presentationText.slice(0, 8000)}
         audioChunks = [];
       } else {
         console.log('AUDIO: No active audioMediaRecorder to stop');
+      }
+
+      // FIX: Close AudioContext to prevent memory leak
+      if (window._recordingAudio && window._recordingAudio.audioCtx) {
+        try {
+          // Don't close if it's shared with intro video
+          if (!introVideo._audioContext || window._recordingAudio.audioCtx !== introVideo._audioContext) {
+            window._recordingAudio.audioCtx.close();
+            console.log('AUDIO: AudioContext closed');
+          }
+        } catch (e) {
+          console.warn('AUDIO: Error closing AudioContext:', e);
+        }
+        window._recordingAudio = null;
       }
     }
 

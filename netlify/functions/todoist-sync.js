@@ -4,6 +4,7 @@
 const TODOIST_API_URL = 'https://api.todoist.com/rest/v2';
 
 const ALLOWED_ORIGINS = [
+  'https://expertpage.pro',
   'https://kazarian-webinar-ai-studio.netlify.app',
   'http://localhost:3000'
 ];

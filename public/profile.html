@@ -3037,6 +3037,41 @@
           </div>
         </div>
 
+        <!-- AI Content Generator -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              AI-помощник
+            </div>
+            <span class="badge" style="background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white;">NEW</span>
+          </div>
+          <p style="font-size: 13px; color: #94a3b8; margin-bottom: 16px;">
+            Опишите себя и свои услуги — AI сгенерирует контент для сайта на всех языках.
+          </p>
+          <div class="form-group">
+            <label>Промпт для AI <span style="color: #64748b; font-weight: 400;">(до 1000 символов)</span></label>
+            <textarea id="ai-site-prompt" rows="4" maxlength="1000" placeholder="Например: Я клинический психолог с 15-летним опытом. Специализируюсь на тревожных расстройствах, депрессии и семейной терапии. Работаю онлайн и офлайн в Киеве. Мой подход — КПТ и гештальт-терапия. Хочу привлечь клиентов 25-45 лет, которые ищут профессиональную помощь."
+              style="resize: vertical; min-height: 100px;"></textarea>
+            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+              <span id="ai-prompt-counter" style="font-size: 12px; color: #64748b;">0 / 1000</span>
+              <span style="font-size: 12px; color: #64748b;">Чем подробнее, тем лучше результат</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; margin-top: 16px;">
+            <button class="btn btn-primary" onclick="generateSiteContent()" id="ai-generate-btn" style="flex: 1; background: linear-gradient(135deg, #8b5cf6, #6366f1);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              Сгенерировать контент
+            </button>
+          </div>
+          <div id="ai-generation-status" style="display: none; margin-top: 16px; padding: 12px; border-radius: 8px; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></div>
+              <span style="color: #a78bfa;">Генерация контента...</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Site URL -->
         <div class="card">
           <div class="card-header">
@@ -8521,6 +8556,88 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
         faqData.forEach((item, index) => {
           addFaqItem(item.question || '', item.answer || '');
         });
+      }
+    }
+
+    // AI Prompt character counter
+    document.addEventListener('DOMContentLoaded', function() {
+      const promptInput = document.getElementById('ai-site-prompt');
+      const counter = document.getElementById('ai-prompt-counter');
+      if (promptInput && counter) {
+        promptInput.addEventListener('input', function() {
+          counter.textContent = `${this.value.length} / 1000`;
+          if (this.value.length > 900) {
+            counter.style.color = '#f59e0b';
+          } else {
+            counter.style.color = '#64748b';
+          }
+        });
+      }
+    });
+
+    // Generate site content with AI
+    async function generateSiteContent() {
+      const prompt = document.getElementById('ai-site-prompt').value.trim();
+      if (!prompt) {
+        showToast('Введите описание для AI', true);
+        return;
+      }
+
+      if (prompt.length < 50) {
+        showToast('Промпт слишком короткий. Опишите себя подробнее (минимум 50 символов)', true);
+        return;
+      }
+
+      const btn = document.getElementById('ai-generate-btn');
+      const status = document.getElementById('ai-generation-status');
+
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner" style="width:16px;height:16px;border-width:2px;"></div> Генерация...';
+      status.style.display = 'block';
+
+      try {
+        const response = await fetch('/.netlify/functions/ai-site-generator', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt,
+            userName: currentUser?.user_metadata?.full_name || ''
+          })
+        });
+
+        if (!response.ok) throw new Error('AI generation failed');
+
+        const data = await response.json();
+
+        // Fill in generated content
+        if (data.headline_uk) document.getElementById('site-headline-uk').value = data.headline_uk;
+        if (data.headline_ru) document.getElementById('site-headline-ru').value = data.headline_ru;
+        if (data.headline_en) document.getElementById('site-headline-en').value = data.headline_en;
+
+        if (data.bio_uk) document.getElementById('site-bio-uk').value = data.bio_uk;
+        if (data.bio_ru) document.getElementById('site-bio-ru').value = data.bio_ru;
+        if (data.bio_en) document.getElementById('site-bio-en').value = data.bio_en;
+
+        if (data.specializations_uk) document.getElementById('site-specializations-uk').value = data.specializations_uk;
+        if (data.specializations_ru) document.getElementById('site-specializations-ru').value = data.specializations_ru;
+        if (data.specializations_en) document.getElementById('site-specializations-en').value = data.specializations_en;
+
+        if (data.education_uk) document.getElementById('site-education-uk').value = data.education_uk;
+        if (data.education_ru) document.getElementById('site-education-ru').value = data.education_ru;
+        if (data.education_en) document.getElementById('site-education-en').value = data.education_en;
+
+        showToast('Контент успешно сгенерирован! Проверьте и отредактируйте.');
+
+        // Scroll to basic info section
+        document.querySelector('#section-mysite .card:nth-child(5)')?.scrollIntoView({ behavior: 'smooth' });
+
+      } catch (error) {
+        console.error('AI generation error:', error);
+        showToast('Ошибка генерации. Попробуйте позже.', true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Сгенерировать контент';
+        status.style.display = 'none';
       }
     }
 

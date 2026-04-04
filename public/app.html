@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- KazarianWEBINARStudio v2.1.2 build:20260401160000 -->
+<!-- ExpertPage.pro v2.1.2 build:20260401160000 -->
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KazarianWEBINARStudio</title>
+  <title>ExpertPage.pro - Вебінар Студіо</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="theme-color" content="#0f172a">
 
@@ -2876,7 +2876,7 @@
             <circle cx="18" cy="28" r="2.5" fill="#ef4444"/>
           </svg>
         </div>
-        <div class="logo-text">Kazarian<span>WEBINAR</span>Studio</div>
+        <div class="logo-text">Expert<span>Page</span>.pro</div>
       </div>
     </div>
     <div class="header-center">
@@ -2991,11 +2991,11 @@
           </button>
           <div style="height:1px; background:rgba(255,255,255,0.1); margin:8px 0;"></div>
           <div style="padding:4px 12px;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Переключить проект</div>
-          <a href="https://kazarian-ai-studio.netlify.app" class="user-dropdown-item" style="color:#f59e0b;">
+          <a href="/studio/" class="user-dropdown-item" style="color:#f59e0b;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
             Суфлер Студио
           </a>
-          <a href="https://kazarian-webinar-ai-studio.netlify.app" class="user-dropdown-item" style="color:#3b82f6;">
+          <a href="/app.html" class="user-dropdown-item" style="color:#3b82f6;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             Вебинар Студио
           </a>
@@ -4261,7 +4261,7 @@
     // Broadcast mode - clean screen for OBS/Zoom capture
     if (isBroadcastMode) {
       document.body.classList.add('broadcast-mode');
-      document.title = 'KazarianStudio - Трансляция';
+      document.title = 'ExpertPage - Трансляція';
     }
     const hostSessionId = urlParams.get('host'); // Host mode with pre-generated session
     let sessionId = urlParams.get('session');
@@ -9153,7 +9153,7 @@
 
     // === Auto-save folder system (IndexedDB) ===
     let savedDirectoryHandle = null;
-    const DB_NAME = 'KazarianStudioDB';
+    const DB_NAME = 'ExpertPageDB';
     const STORE_NAME = 'settings';
 
     async function openDB() {
@@ -9644,7 +9644,7 @@
       if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('Клиент ожидает', {
           body: guestName + ' ждёт подключения к консультации',
-          icon: 'https://kazarian-webinar-ai-studio.netlify.app/favicon.svg'
+          icon: '/favicon.svg'
         });
       } else if ('Notification' in window && Notification.permission !== 'denied') {
         Notification.requestPermission();
@@ -10918,14 +10918,14 @@
         if ('Notification' in window && Notification.permission === 'granted') {
           new Notification('Гость ожидает', {
             body: guestName + ' ждёт подтверждения для входа',
-            icon: 'https://kazarian-webinar-ai-studio.netlify.app/favicon.svg'
+            icon: '/favicon.svg'
           });
         } else if ('Notification' in window && Notification.permission !== 'denied') {
           Notification.requestPermission().then(perm => {
             if (perm === 'granted') {
               new Notification('Гость ожидает', {
                 body: guestName + ' ждёт подтверждения для входа',
-                icon: 'https://kazarian-webinar-ai-studio.netlify.app/favicon.svg'
+                icon: '/favicon.svg'
               });
             }
           });
@@ -19977,7 +19977,7 @@ ${presentationText.slice(0, 8000)}
         <strong>Платник єдиного податку:</strong> 3 група</p>
 
         <h3>3. ПРЕДМЕТ ДОГОВОРУ</h3>
-        <p>3.1. Виконавець зобов'язується надати Замовнику інформаційно-консультаційні послуги у сфері психології через онлайн-платформу KazarianWEBINARStudio, а Замовник зобов'язується прийняти та оплатити такі послуги.</p>
+        <p>3.1. Виконавець зобов'язується надати Замовнику інформаційно-консультаційні послуги у сфері психології через онлайн-платформу ExpertPage.pro, а Замовник зобов'язується прийняти та оплатити такі послуги.</p>
         <p>3.2. Перелік послуг, що надаються:</p>
         <ul>
           <li>Індивідуальні психологічні консультації онлайн</li>
@@ -19986,7 +19986,7 @@ ${presentationText.slice(0, 8000)}
           <li>Психологічний супровід та коучинг</li>
           <li>Консультації з НЛП та еріксонівського гіпнозу</li>
         </ul>
-        <p>3.3. Послуги надаються дистанційно через відеозв'язок на платформі KazarianWEBINARStudio.</p>
+        <p>3.3. Послуги надаються дистанційно через відеозв'язок на платформі ExpertPage.pro.</p>
 
         <h3>4. ВАРТІСТЬ ПОСЛУГ ТА ПОРЯДОК ОПЛАТИ</h3>
         <p>4.1. Вартість послуг визначається Виконавцем та публікується на офіційному веб-сайті або повідомляється Замовнику індивідуально.</p>
@@ -20053,7 +20053,7 @@ ${presentationText.slice(0, 8000)}
         <p><strong>Редакція від:</strong> 12 березня 2026 року</p>
 
         <h3>1. ЗАГАЛЬНІ ПОЛОЖЕННЯ</h3>
-        <p>1.1. Ця Політика конфіденційності (далі - Політика) розроблена відповідно до Закону України "Про захист персональних даних" та регулює порядок обробки і захисту персональних даних користувачів платформи KazarianWEBINARStudio.</p>
+        <p>1.1. Ця Політика конфіденційності (далі - Політика) розроблена відповідно до Закону України "Про захист персональних даних" та регулює порядок обробки і захисту персональних даних користувачів платформи ExpertPage.pro.</p>
         <p>1.2. Оператором персональних даних є ФОП Казар'ян Павло Ашотович (РНОКПП: 2847814635).</p>
         <p>1.3. Використовуючи платформу та/або надаючи свої персональні дані, Користувач надає згоду на обробку своїх персональних даних відповідно до умов цієї Політики.</p>
 
@@ -20156,7 +20156,7 @@ ${presentationText.slice(0, 8000)}
         <p><strong>Редакція від:</strong> 12 березня 2026 року</p>
 
         <h3>1. ХАРАКТЕР ПОСЛУГ</h3>
-        <p>1.1. Послуги, що надаються через платформу KazarianWEBINARStudio Фізичною особою-підприємцем Казар'яном Павлом Ашотовичем, мають <strong>інформаційно-консультаційний та освітній характер</strong> у сфері психології.</p>
+        <p>1.1. Послуги, що надаються через платформу ExpertPage.pro Фізичною особою-підприємцем Казар'яном Павлом Ашотовичем, мають <strong>інформаційно-консультаційний та освітній характер</strong> у сфері психології.</p>
         <p>1.2. Виконавець є практикуючим психологом з вищою освітою та має право надавати психологічні консультації відповідно до чинного законодавства України.</p>
         <p>1.3. Методи роботи включають: психологічне консультування, НЛП (нейролінгвістичне програмування), еріксонівський гіпноз, коучинг.</p>
 
@@ -20196,7 +20196,7 @@ ${presentationText.slice(0, 8000)}
         </ul>
 
         <h3>5. АВТОРСЬКІ ПРАВА</h3>
-        <p>5.1. Усі матеріали платформи KazarianWEBINARStudio (тексти, відео, аудіо, графіка, методики) є об'єктами авторського права та захищені Законом України "Про авторське право і суміжні права".</p>
+        <p>5.1. Усі матеріали платформи ExpertPage.pro (тексти, відео, аудіо, графіка, методики) є об'єктами авторського права та захищені Законом України "Про авторське право і суміжні права".</p>
         <p>5.2. <strong>Заборонено</strong> без письмової згоди Виконавця:</p>
         <ul>
           <li>Копіювати та розповсюджувати матеріали</li>
@@ -20216,7 +20216,7 @@ ${presentationText.slice(0, 8000)}
         </ul>
 
         <h3>7. ПРИЙНЯТТЯ УМОВ</h3>
-        <p>7.1. Використовуючи послуги платформи KazarianWEBINARStudio, Ви підтверджуєте, що:</p>
+        <p>7.1. Використовуючи послуги платформи ExpertPage.pro, Ви підтверджуєте, що:</p>
         <ul>
           <li>Ознайомилися з цією Відмовою від відповідальності</li>
           <li>Розумієте характер та обмеження психологічних послуг</li>

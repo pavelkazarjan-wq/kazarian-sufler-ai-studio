@@ -22,7 +22,7 @@ exports.handler = async (event, context) => {
   try {
     const MERCHANT_ACCOUNT = process.env.WAYFORPAY_MERCHANT_ACCOUNT;
     const MERCHANT_SECRET = process.env.WAYFORPAY_MERCHANT_SECRET;
-    const MERCHANT_DOMAIN = process.env.WAYFORPAY_MERCHANT_DOMAIN || 'kazarian-webinar-ai-studio.netlify.app';
+    const MERCHANT_DOMAIN = process.env.WAYFORPAY_MERCHANT_DOMAIN || 'expertpage.pro';
 
     if (!MERCHANT_ACCOUNT || !MERCHANT_SECRET) {
       throw new Error('WayForPay keys not configured');
@@ -73,8 +73,8 @@ exports.handler = async (event, context) => {
       productName: [productName],
       productCount: [1],
       productPrice: [amount],
-      returnUrl: `${process.env.URL || 'https://kazarian-webinar-ai-studio.netlify.app'}/pip.html?mode=client&payment=success&session=${sessionId}`,
-      serviceUrl: `${process.env.URL || 'https://kazarian-webinar-ai-studio.netlify.app'}/.netlify/functions/wayforpay-callback`,
+      returnUrl: `${process.env.URL || 'https://expertpage.pro'}/pip.html?mode=client&payment=success&session=${sessionId}`,
+      serviceUrl: `${process.env.URL || 'https://expertpage.pro'}/.netlify/functions/wayforpay-callback`,
       language: 'UA'
     };
 
