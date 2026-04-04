@@ -9377,16 +9377,25 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       const editId = document.getElementById('review-edit-id').value;
 
       try {
+        let error;
         if (editId) {
           delete reviewPayload.site_id;
-          await supabaseClient
+          const result = await supabaseClient
             .from('specialist_reviews')
             .update(reviewPayload)
             .eq('id', editId);
+          error = result.error;
         } else {
-          await supabaseClient
+          const result = await supabaseClient
             .from('specialist_reviews')
             .insert(reviewPayload);
+          error = result.error;
+        }
+
+        if (error) {
+          console.error('Save review error:', error);
+          showToast('Ошибка: ' + error.message, true);
+          return;
         }
 
         closeReviewModal();
