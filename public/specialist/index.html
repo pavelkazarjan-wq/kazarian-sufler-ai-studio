@@ -156,6 +156,36 @@
       border-bottom: 1px solid var(--border-color);
     }
 
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Logo - supports static images, GIFs, and animated logos */
+    .header-logo {
+      height: 40px;
+      width: auto;
+      max-width: 120px;
+      object-fit: contain;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .header-logo:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 10px rgba(212, 168, 83, 0.5));
+    }
+
+    .header-logo.animated {
+      animation: logoGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes logoGlow {
+      0%, 100% { filter: drop-shadow(0 0 5px rgba(212, 168, 83, 0.3)); }
+      50% { filter: drop-shadow(0 0 15px rgba(212, 168, 83, 0.6)); }
+    }
+
     .header-name {
       font-family: var(--font-heading);
       font-weight: 600;
@@ -1345,7 +1375,10 @@
 
   <!-- Header -->
   <header class="header">
-    <div class="header-name" id="header-name"></div>
+    <div class="header-brand">
+      <img class="header-logo" id="header-logo" src="" alt="" style="display: none;">
+      <div class="header-name" id="header-name"></div>
+    </div>
     <div class="lang-switcher">
       <button class="lang-btn" data-lang="uk">UA</button>
       <button class="lang-btn" data-lang="ru">RU</button>
@@ -1767,6 +1800,18 @@
 
       // Header
       document.getElementById('header-name').textContent = data.specialist.name;
+
+      // Logo (supports static images and animated GIFs)
+      const logoEl = document.getElementById('header-logo');
+      if (data.specialist.logo) {
+        logoEl.src = data.specialist.logo;
+        logoEl.alt = data.specialist.name + ' Logo';
+        logoEl.style.display = 'block';
+        // Add animated class for GIFs
+        if (data.specialist.logo.toLowerCase().endsWith('.gif')) {
+          logoEl.classList.add('animated');
+        }
+      }
 
       // Hero
       document.getElementById('hero-photo').src = data.specialist.photo || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%233b82f6" width="100" height="100"/><text x="50" y="60" text-anchor="middle" fill="white" font-size="40">' + (data.specialist.name?.[0] || '?') + '</text></svg>';
