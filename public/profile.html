@@ -3943,12 +3943,76 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
               Отзывы
             </div>
+            <button class="btn btn-secondary" onclick="openReviewModal()">+ Добавить</button>
           </div>
           <div id="site-reviews-list">
-            <p style="color: #64748b; text-align: center; padding: 20px;">Отзывы появятся, когда клиенты их оставят</p>
+            <p style="color: #64748b; text-align: center; padding: 20px;">Нет отзывов</p>
           </div>
         </div>
       </section>
+
+      <!-- Review Modal -->
+      <div class="modal-overlay" id="review-modal">
+        <div class="modal" style="max-width: 550px;">
+          <div class="modal-header">
+            <h3 class="modal-title">Добавить отзыв</h3>
+            <button class="modal-close" onclick="closeReviewModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="review-edit-id">
+
+            <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+              <div style="flex-shrink: 0;">
+                <div id="review-photo-preview" style="width: 80px; height: 80px; background: #1e293b; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #334155; cursor: pointer;" onclick="document.getElementById('review-photo-input').click()">
+                  <span style="color: #64748b; font-size: 10px;">Фото</span>
+                </div>
+                <input type="file" id="review-photo-input" accept="image/*" style="display: none;" onchange="uploadReviewPhoto(this)">
+              </div>
+              <div style="flex: 1;">
+                <div class="form-group" style="margin-bottom: 12px;">
+                  <label>Имя клиента *</label>
+                  <input type="text" id="review-client-name" placeholder="Олена К.">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label>Рейтинг</label>
+                  <div id="review-rating" style="display: flex; gap: 4px;">
+                    <span class="star" data-rating="1" onclick="setReviewRating(1)" style="cursor:pointer;font-size:24px;color:#334155;">★</span>
+                    <span class="star" data-rating="2" onclick="setReviewRating(2)" style="cursor:pointer;font-size:24px;color:#334155;">★</span>
+                    <span class="star" data-rating="3" onclick="setReviewRating(3)" style="cursor:pointer;font-size:24px;color:#334155;">★</span>
+                    <span class="star" data-rating="4" onclick="setReviewRating(4)" style="cursor:pointer;font-size:24px;color:#334155;">★</span>
+                    <span class="star" data-rating="5" onclick="setReviewRating(5)" style="cursor:pointer;font-size:24px;color:#fbbf24;">★</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Текст отзыва (укр) *</label>
+              <textarea id="review-text-uk" rows="3" placeholder="Дуже дякую за консультацію..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Текст отзыва (рус)</label>
+              <textarea id="review-text-ru" rows="3" placeholder="Большое спасибо за консультацию..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Review text (EN)</label>
+              <textarea id="review-text-en" rows="3" placeholder="Thank you for the consultation..."></textarea>
+            </div>
+            <div class="form-group">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="review-featured" style="width: 18px; height: 18px;">
+                <span>Выделенный отзыв (показывать первым)</span>
+              </label>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+              <button class="btn btn-primary" onclick="saveReview()">Сохранить</button>
+              <button class="btn btn-secondary" onclick="closeReviewModal()">Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Service Modal -->
       <div class="modal-overlay" id="service-modal">
@@ -9144,30 +9208,39 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       }
     }
 
+    let siteReviews = [];
+    let currentReviewPhotoUrl = null;
+    let currentReviewRating = 5;
+
     function renderSiteReviews(reviews) {
+      siteReviews = reviews;
       const container = document.getElementById('site-reviews-list');
       if (reviews.length === 0) {
-        container.innerHTML = '<p style="color: #64748b; text-align: center; padding: 20px;">Отзывы появятся, когда клиенты их оставят</p>';
+        container.innerHTML = '<p style="color: #64748b; text-align: center; padding: 20px;">Нет отзывов</p>';
         return;
       }
 
       container.innerHTML = reviews.map(r => `
         <div style="padding: 16px; background: rgba(15, 23, 42, 0.5); border-radius: 12px; margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <div>
-              <span style="font-weight: 500;">${r.client_name}</span>
-              <span style="color: #fbbf24; margin-left: 8px;">${'★'.repeat(r.rating || 5)}</span>
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px; ${r.is_approved ? 'background: rgba(16, 185, 129, 0.2); color: #10b981;' : ''}" onclick="toggleReviewApproval('${r.id}', ${!r.is_approved})">
-                ${r.is_approved ? 'Одобрен' : 'Одобрить'}
-              </button>
-              <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px; ${r.is_featured ? 'background: rgba(59, 130, 246, 0.2); color: #3b82f6;' : ''}" onclick="toggleReviewFeatured('${r.id}', ${!r.is_featured})">
-                ${r.is_featured ? 'Выделен' : 'Выделить'}
-              </button>
+          <div style="display: flex; gap: 12px; align-items: flex-start;">
+            ${r.client_photo_url ? `<img src="${r.client_photo_url}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">` : '<div style="width: 48px; height: 48px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 18px;">' + (r.client_name?.charAt(0) || '?') + '</div>'}
+            <div style="flex: 1;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <div>
+                  <span style="font-weight: 500;">${r.client_name}</span>
+                  <span style="color: #fbbf24; margin-left: 8px;">${'★'.repeat(r.rating || 5)}</span>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px; ${r.is_approved ? 'background: rgba(16, 185, 129, 0.2); color: #10b981;' : ''}" onclick="toggleReviewApproval('${r.id}', ${!r.is_approved})">
+                    ${r.is_approved ? '✓' : 'Одобр.'}
+                  </button>
+                  <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="editReview('${r.id}')">✎</button>
+                  <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px; color: #ef4444;" onclick="deleteReview('${r.id}')">✕</button>
+                </div>
+              </div>
+              <p style="font-size: 14px; color: #e2e8f0; margin: 0;">${r.text_uk || r.text_ru || ''}</p>
             </div>
           </div>
-          <p style="font-size: 14px; color: #e2e8f0;">${r.text_uk || r.text_ru || ''}</p>
         </div>
       `).join('');
     }
@@ -9193,6 +9266,151 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
         loadSiteReviews();
       } catch (e) {
         showToast('Ошибка', true);
+      }
+    }
+
+    function openReviewModal(id = null) {
+      document.getElementById('review-edit-id').value = id || '';
+      document.getElementById('review-client-name').value = '';
+      document.getElementById('review-text-uk').value = '';
+      document.getElementById('review-text-ru').value = '';
+      document.getElementById('review-text-en').value = '';
+      document.getElementById('review-featured').checked = false;
+      currentReviewPhotoUrl = null;
+      currentReviewRating = 5;
+
+      document.getElementById('review-photo-preview').innerHTML = '<span style="color: #64748b; font-size: 10px;">Фото</span>';
+      setReviewRating(5);
+
+      if (id) {
+        const review = siteReviews.find(r => r.id === id);
+        if (review) {
+          document.getElementById('review-client-name').value = review.client_name || '';
+          document.getElementById('review-text-uk').value = review.text_uk || '';
+          document.getElementById('review-text-ru').value = review.text_ru || '';
+          document.getElementById('review-text-en').value = review.text_en || '';
+          document.getElementById('review-featured').checked = review.is_featured || false;
+          currentReviewPhotoUrl = review.client_photo_url;
+          currentReviewRating = review.rating || 5;
+
+          if (review.client_photo_url) {
+            document.getElementById('review-photo-preview').innerHTML = `<img src="${review.client_photo_url}" style="width:100%;height:100%;object-fit:cover;">`;
+          }
+          setReviewRating(currentReviewRating);
+        }
+      }
+
+      document.getElementById('review-modal').classList.add('visible');
+    }
+
+    function closeReviewModal() {
+      document.getElementById('review-modal').classList.remove('visible');
+    }
+
+    function editReview(id) {
+      openReviewModal(id);
+    }
+
+    function setReviewRating(rating) {
+      currentReviewRating = rating;
+      document.querySelectorAll('#review-rating .star').forEach((star, i) => {
+        star.style.color = (i + 1) <= rating ? '#fbbf24' : '#334155';
+      });
+    }
+
+    async function uploadReviewPhoto(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      try {
+        const fileName = `review-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${file.name.split('.').pop()}`;
+        const filePath = `${currentUser.id}/reviews/${fileName}`;
+
+        const { error: uploadError } = await supabaseClient.storage
+          .from('user-files')
+          .upload(filePath, file, { upsert: true });
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabaseClient.storage
+          .from('user-files')
+          .getPublicUrl(filePath);
+
+        currentReviewPhotoUrl = urlData.publicUrl + '?t=' + Date.now();
+        document.getElementById('review-photo-preview').innerHTML = `<img src="${currentReviewPhotoUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+      } catch (e) {
+        console.error('Upload review photo error:', e);
+        showToast('Ошибка загрузки фото', true);
+      }
+    }
+
+    async function saveReview() {
+      if (!siteData?.id) {
+        showToast('Сначала сохраните настройки сайта', true);
+        return;
+      }
+
+      const clientName = document.getElementById('review-client-name').value.trim();
+      const textUk = document.getElementById('review-text-uk').value.trim();
+
+      if (!clientName) {
+        showToast('Введите имя клиента', true);
+        return;
+      }
+      if (!textUk) {
+        showToast('Введите текст отзыва', true);
+        return;
+      }
+
+      const reviewPayload = {
+        site_id: siteData.id,
+        client_name: clientName,
+        client_photo_url: currentReviewPhotoUrl,
+        rating: currentReviewRating,
+        text_uk: textUk,
+        text_ru: document.getElementById('review-text-ru').value.trim() || textUk,
+        text_en: document.getElementById('review-text-en').value.trim() || textUk,
+        is_featured: document.getElementById('review-featured').checked,
+        is_approved: true
+      };
+
+      const editId = document.getElementById('review-edit-id').value;
+
+      try {
+        if (editId) {
+          delete reviewPayload.site_id;
+          await supabaseClient
+            .from('specialist_reviews')
+            .update(reviewPayload)
+            .eq('id', editId);
+        } else {
+          await supabaseClient
+            .from('specialist_reviews')
+            .insert(reviewPayload);
+        }
+
+        closeReviewModal();
+        await loadSiteReviews();
+        showToast('Отзыв сохранён');
+      } catch (e) {
+        console.error('Save review error:', e);
+        showToast('Ошибка: ' + e.message, true);
+      }
+    }
+
+    async function deleteReview(id) {
+      if (!confirm('Удалить этот отзыв?')) return;
+
+      try {
+        await supabaseClient
+          .from('specialist_reviews')
+          .delete()
+          .eq('id', id);
+
+        await loadSiteReviews();
+        showToast('Отзыв удалён');
+      } catch (e) {
+        showToast('Ошибка: ' + e.message, true);
       }
     }
 
