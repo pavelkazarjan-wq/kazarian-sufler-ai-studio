@@ -115,19 +115,30 @@ exports.handler = async (event, context) => {
       return site[base + langSuffix] || site[base + fallbackLang] || site[base + '_uk'] || '';
     };
 
+    const getLocalizedArray = (base) => {
+      return site[base + langSuffix] || site[base + fallbackLang] || site[base + '_uk'] || [];
+    };
+
+    // Get site photo for current language
+    const getSitePhoto = () => {
+      return site[`site_photo_url${langSuffix}`] || site.site_photo_url_uk || site.site_photo_url || site.profiles.photo_url;
+    };
+
     const response = {
       specialist: {
         name: site.profiles.full_name,
         title: site.profiles.title,
-        photo: site.site_photo_url || site.profiles.photo_url,
+        photo: getSitePhoto(),
         headline: getLocalizedField('headline'),
         bio: getLocalizedField('bio'),
-        specializations: site.specializations || [],
-        education: site.education,
+        specializations: getLocalizedArray('specializations'),
+        education: getLocalizedField('education'),
         experience_years: site.experience_years,
-        youtube_video: site.youtube_video_url,
+        youtube_video: getLocalizedField('youtube_video_url'),
         video_title: getLocalizedField('video_title')
       },
+      diplomas: site.diplomas || [],
+      photo_gallery: site.gallery || [],
       contacts: {
         phone: site.show_phone ? site.profiles.phone : null,
         telegram: site.show_telegram ? site.profiles.telegram : null,
@@ -165,8 +176,10 @@ exports.handler = async (event, context) => {
         name: site.theme,
         primaryColor: site.primary_color,
         secondaryColor: site.secondary_color,
-        fontFamily: site.font_family
+        fontFamily: site.font_family,
+        favicon: site.favicon_url
       },
+      custom_head_code: site.custom_head_code || '',
       seo: {
         title: getLocalizedField('meta_title') || `${site.profiles.full_name} | ${site.profiles.title}`,
         description: getLocalizedField('meta_description') || getLocalizedField('bio')?.substring(0, 160),

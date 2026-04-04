@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<!-- Course Landing Page v1.0 - Based on landing-template skill - 2026-04-04 -->
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Dynamic SEO -->
+  <title id="page-title">Онлайн курс | Webinar Studio</title>
+  <meta name="description" id="meta-desc" content="">
+  <meta property="og:title" id="og-title" content="">
+  <meta property="og:description" id="og-desc" content="">
+  <meta property="og:image" id="og-image" content="">
+  <meta property="og:type" content="website">
+
+  <!-- Hreflang -->
+  <link rel="alternate" hreflang="uk" id="hreflang-uk" href="">
+  <link rel="alternate" hreflang="ru" id="hreflang-ru" href="">
+  <link rel="alternate" hreflang="en" id="hreflang-en" href="">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" id="favicon-link" href="/favicon.svg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --secondary: #8b5cf6;
+      --accent: #10b981;
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border: rgba(255,255,255,0.1);
+      --success: #16a34a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 50%, var(--bg-dark) 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Loading */
+    .loading-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.3s;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 24px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-logo {
+      font-weight: 700;
+      font-size: 18px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .lang-switcher {
+      display: flex;
+      gap: 8px;
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover,
+    .lang-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .header-cta {
+      padding: 10px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .header-cta:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* BLOCK 1: Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-text h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-text .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    /* Countdown Timer */
+    .countdown {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .countdown-item {
+      text-align: center;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      min-width: 80px;
+    }
+
+    .countdown-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .countdown-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 36px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .hero-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.5);
+    }
+
+    .hero-price {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .price-old {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    .price-new {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--success);
+    }
+
+    .hero-image {
+      position: relative;
+    }
+
+    .hero-image img {
+      width: 100%;
+      border-radius: 24px;
+      box-shadow: 0 30px 60px -20px rgba(0,0,0,0.5);
+    }
+
+    /* BLOCK 2: Benefits */
+    .benefits {
+      padding: 100px 0;
+      background: rgba(30, 41, 59, 0.3);
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .benefit-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .benefit-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 28px;
+    }
+
+    .benefit-card h3 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .benefit-card p {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    /* BLOCK 3: Modules */
+    .modules {
+      padding: 100px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-label {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .modules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .module-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 24px;
+      align-items: center;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.3s;
+    }
+
+    .module-card:hover {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .module-number {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+      color: white;
+    }
+
+    .module-content h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .module-content p {
+      color: var(--text-secondary);
+    }
+
+    .module-result {
+      background: rgba(22, 163, 74, 0.1);
+      border: 1px solid rgba(22, 163, 74, 0.3);
+      border-radius: 12px;
+      padding: 12px 20px;
+      color: var(--success);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    /* BLOCK 4: Target Audience */
+    .audience {
+      padding: 100px 0;
+      background: rgba(30, 41, 59, 0.3);
+    }
+
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .audience-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.3s;
+    }
+
+    .audience-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+    }
+
+    .audience-card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--primary);
+    }
+
+    .audience-card p {
+      color: var(--text-secondary);
+    }
+
+    /* BLOCK 5: Author */
+    .author {
+      padding: 100px 0;
+    }
+
+    .author-content {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+
+    .author-photo {
+      position: relative;
+    }
+
+    .author-photo img {
+      width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+    }
+
+    .author-info h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .author-title {
+      color: var(--primary);
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .author-credentials {
+      list-style: none;
+      margin-bottom: 32px;
+    }
+
+    .author-credentials li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      color: var(--text-secondary);
+    }
+
+    .author-credentials li::before {
+      content: '•';
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* Diplomas Carousel */
+    .diplomas-section {
+      margin-top: 40px;
+    }
+
+    .diplomas-track {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      padding: 10px 0;
+    }
+
+    .diplomas-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .diploma-item {
+      flex-shrink: 0;
+      width: 200px;
+      height: 150px;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .diploma-item:hover {
+      transform: scale(1.05);
+    }
+
+    .diploma-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* BLOCK 6: Results */
+    .results {
+      padding: 100px 0;
+      background: rgba(30, 41, 59, 0.3);
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .result-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      transition: all 0.3s;
+    }
+
+    .result-item:hover {
+      border-color: var(--success);
+      background: rgba(22, 163, 74, 0.05);
+    }
+
+    .result-check {
+      width: 32px;
+      height: 32px;
+      background: rgba(22, 163, 74, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--success);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .result-item span {
+      font-size: 15px;
+    }
+
+    /* BLOCK 7: Video */
+    .video-section {
+      padding: 100px 0;
+    }
+
+    .video-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 30px 60px -20px rgba(0,0,0,0.5);
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* BLOCK 8: Reviews */
+    .reviews {
+      padding: 100px 0;
+      background: rgba(30, 41, 59, 0.3);
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .review-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+    }
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .review-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+    }
+
+    .review-name {
+      font-weight: 600;
+    }
+
+    .review-stars {
+      color: #fbbf24;
+      font-size: 14px;
+    }
+
+    .review-text {
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* BLOCK 9: FAQ */
+    .faq {
+      padding: 100px 0;
+    }
+
+    .faq-list {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      padding: 24px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .faq-question:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .faq-icon {
+      font-size: 24px;
+      transition: transform 0.3s;
+    }
+
+    .faq-item.open .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-answer {
+      padding: 0 24px 24px;
+      color: var(--text-secondary);
+      display: none;
+    }
+
+    .faq-item.open .faq-answer {
+      display: block;
+    }
+
+    /* BLOCK 10: Final CTA */
+    .final-cta {
+      padding: 120px 0;
+      text-align: center;
+      position: relative;
+    }
+
+    .final-cta::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+      pointer-events: none;
+    }
+
+    .final-cta-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .final-cta h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .final-cta p {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+    }
+
+    .final-countdown {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .guarantee {
+      margin-top: 32px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    .footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 16px;
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .footer-copy {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero-content {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-image {
+        display: none;
+      }
+
+      .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .author-content {
+        grid-template-columns: 1fr;
+      }
+
+      .reviews-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero-text h1 {
+        font-size: 2rem;
+      }
+
+      .benefits-grid,
+      .audience-grid,
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .module-card {
+        grid-template-columns: 1fr;
+      }
+
+      .module-number {
+        width: 50px;
+        height: 50px;
+      }
+
+      .countdown {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .countdown-item {
+        min-width: 70px;
+      }
+
+      .section-title {
+        font-size: 1.75rem;
+      }
+
+      .header-cta {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading -->
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-logo" id="header-logo">Course</div>
+    <div class="header-right">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="uk">UA</button>
+        <button class="lang-btn" data-lang="ru">RU</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <button class="header-cta" onclick="scrollToBooking()" id="header-cta-text">Записатися</button>
+    </div>
+  </header>
+
+  <!-- BLOCK 1: Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 id="hero-title">Назва курсу</h1>
+          <p class="subtitle" id="hero-subtitle">Опис курсу в одному реченні</p>
+
+          <div class="countdown" id="countdown" style="display: none;">
+            <div class="countdown-item">
+              <div class="countdown-number" id="days">00</div>
+              <div class="countdown-label" data-i18n="days">днів</div>
+            </div>
+            <div class="countdown-item">
+              <div class="countdown-number" id="hours">00</div>
+              <div class="countdown-label" data-i18n="hours">годин</div>
+            </div>
+            <div class="countdown-item">
+              <div class="countdown-number" id="minutes">00</div>
+              <div class="countdown-label" data-i18n="minutes">хвилин</div>
+            </div>
+            <div class="countdown-item">
+              <div class="countdown-number" id="seconds">00</div>
+              <div class="countdown-label" data-i18n="seconds">секунд</div>
+            </div>
+          </div>
+
+          <a href="#booking" class="hero-cta" id="hero-cta">
+            <span id="hero-cta-text">Записатися на курс</span>
+          </a>
+
+          <div class="hero-price" id="hero-price">
+            <span class="price-old" id="price-old"></span>
+            <span class="price-new" id="price-new"></span>
+          </div>
+        </div>
+        <div class="hero-image">
+          <img id="hero-image" src="" alt="">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 2: Benefits -->
+  <section class="benefits">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label" data-i18n="why_us">Чому ми</div>
+        <h2 class="section-title" data-i18n="benefits_title">Ваші переваги</h2>
+      </div>
+      <div class="benefits-grid" id="benefits-grid">
+        <!-- Benefits will be populated dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 3: Modules -->
+  <section class="modules">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label" data-i18n="program">Програма</div>
+        <h2 class="section-title" data-i18n="modules_title">Що всередині</h2>
+        <p class="section-subtitle" data-i18n="modules_subtitle">Покрокова система, яка веде до результату</p>
+      </div>
+      <div class="modules-list" id="modules-list">
+        <!-- Modules will be populated dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 4: Target Audience -->
+  <section class="audience">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label" data-i18n="for_whom">Для кого</div>
+        <h2 class="section-title" data-i18n="audience_title">Кому підходить курс</h2>
+      </div>
+      <div class="audience-grid" id="audience-grid">
+        <!-- Audience cards will be populated dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 5: Author -->
+  <section class="author">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label" data-i18n="author">Автор</div>
+        <h2 class="section-title" data-i18n="author_title">Хто веде курс</h2>
+      </div>
+      <div class="author-content">
+        <div class="author-photo">
+          <img id="author-photo" src="" alt="">
+        </div>
+        <div class="author-info">
+          <h2 id="author-name"></h2>
+          <p class="author-title" id="author-title-text"></p>
+          <p id="author-bio" style="color: var(--text-secondary); margin-bottom: 24px;"></p>
+          <ul class="author-credentials" id="author-credentials">
+            <!-- Credentials will be populated dynamically -->
+          </ul>
+
+          <div class="diplomas-section" id="diplomas-section" style="display: none;">
+            <h4 style="margin-bottom: 16px;" data-i18n="certificates">Сертифікати та дипломи</h4>
+            <div class="diplomas-track" id="diplomas-track">
+              <!-- Diplomas will be populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 6: Results -->
+  <section class="results">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label" data-i18n="results">Результати</div>
+        <h2 class="section-title" data-i18n="results_title">Що ви отримаєте</h2>
+      </div>
+      <div class="results-grid" id="results-grid">
+        <!-- Results will be populated dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 7: Video -->
+  <section class="video-section" id="video-section" style="display: none;">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label" data-i18n="video">Відео</div>
+        <h2 class="section-title" id="video-title"></h2>
+      </div>
+      <div class="video-wrapper">
+        <div class="video-container" id="video-container">
+          <!-- Video will be inserted dynamically -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 8: Reviews -->
+  <section class="reviews" id="reviews-section" style="display: none;">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label" data-i18n="reviews">Відгуки</div>
+        <h2 class="section-title" data-i18n="reviews_title">Що кажуть учні</h2>
+      </div>
+      <div class="reviews-grid" id="reviews-grid">
+        <!-- Reviews will be populated dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 9: FAQ -->
+  <section class="faq" id="faq-section" style="display: none;">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">FAQ</div>
+        <h2 class="section-title" data-i18n="faq_title">Часті запитання</h2>
+      </div>
+      <div class="faq-list" id="faq-list">
+        <!-- FAQ will be populated dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 10: Final CTA -->
+  <section class="final-cta" id="booking">
+    <div class="container">
+      <div class="final-cta-content">
+        <h2 id="final-title">Готові почати?</h2>
+        <p id="final-subtitle">Приєднуйтесь до курсу вже сьогодні</p>
+
+        <div class="final-countdown" id="final-countdown" style="display: none;">
+          <div class="countdown-item">
+            <div class="countdown-number" id="final-days">00</div>
+            <div class="countdown-label" data-i18n="days">днів</div>
+          </div>
+          <div class="countdown-item">
+            <div class="countdown-number" id="final-hours">00</div>
+            <div class="countdown-label" data-i18n="hours">годин</div>
+          </div>
+          <div class="countdown-item">
+            <div class="countdown-number" id="final-minutes">00</div>
+            <div class="countdown-label" data-i18n="minutes">хвилин</div>
+          </div>
+          <div class="countdown-item">
+            <div class="countdown-number" id="final-seconds">00</div>
+            <div class="countdown-label" data-i18n="seconds">секунд</div>
+          </div>
+        </div>
+
+        <a href="#" class="hero-cta" id="final-cta" style="font-size: 20px; padding: 20px 48px;">
+          <span id="final-cta-text">Записатися на курс</span>
+        </a>
+
+        <p class="guarantee" id="guarantee-text"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="#" id="privacy-link" data-i18n="privacy">Політика конфіденційності</a>
+        <a href="#" id="offer-link" data-i18n="offer">Публічна оферта</a>
+      </div>
+      <p class="footer-copy" id="footer-copy">© 2026</p>
+    </div>
+  </footer>
+
+  <!-- Image Modal -->
+  <div class="modal-overlay" id="image-modal">
+    <img id="modal-image" style="max-width: 90%; max-height: 90%; border-radius: 12px;">
+  </div>
+
+  <script>
+    // Translations
+    const i18n = {
+      uk: {
+        days: 'днів',
+        hours: 'годин',
+        minutes: 'хвилин',
+        seconds: 'секунд',
+        enroll: 'Записатися на курс',
+        why_us: 'Чому ми',
+        benefits_title: 'Ваші переваги',
+        program: 'Програма',
+        modules_title: 'Що всередині',
+        modules_subtitle: 'Покрокова система, яка веде до результату',
+        for_whom: 'Для кого',
+        audience_title: 'Кому підходить курс',
+        author: 'Автор',
+        author_title: 'Хто веде курс',
+        certificates: 'Сертифікати та дипломи',
+        results: 'Результати',
+        results_title: 'Що ви отримаєте',
+        video: 'Відео',
+        reviews: 'Відгуки',
+        reviews_title: 'Що кажуть учні',
+        faq_title: 'Часті запитання',
+        privacy: 'Політика конфіденційності',
+        offer: 'Публічна оферта',
+        result_prefix: 'Результат:'
+      },
+      ru: {
+        days: 'дней',
+        hours: 'часов',
+        minutes: 'минут',
+        seconds: 'секунд',
+        enroll: 'Записаться на курс',
+        why_us: 'Почему мы',
+        benefits_title: 'Ваши преимущества',
+        program: 'Программа',
+        modules_title: 'Что внутри',
+        modules_subtitle: 'Пошаговая система, ведущая к результату',
+        for_whom: 'Для кого',
+        audience_title: 'Кому подходит курс',
+        author: 'Автор',
+        author_title: 'Кто ведёт курс',
+        certificates: 'Сертификаты и дипломы',
+        results: 'Результаты',
+        results_title: 'Что вы получите',
+        video: 'Видео',
+        reviews: 'Отзывы',
+        reviews_title: 'Что говорят ученики',
+        faq_title: 'Частые вопросы',
+        privacy: 'Политика конфиденциальности',
+        offer: 'Публичная оферта',
+        result_prefix: 'Результат:'
+      },
+      en: {
+        days: 'days',
+        hours: 'hours',
+        minutes: 'minutes',
+        seconds: 'seconds',
+        enroll: 'Enroll Now',
+        why_us: 'Why Us',
+        benefits_title: 'Your Benefits',
+        program: 'Program',
+        modules_title: 'What\'s Inside',
+        modules_subtitle: 'A step-by-step system that leads to results',
+        for_whom: 'For Whom',
+        audience_title: 'Who is this course for',
+        author: 'Author',
+        author_title: 'Course Instructor',
+        certificates: 'Certificates & Diplomas',
+        results: 'Results',
+        results_title: 'What You\'ll Get',
+        video: 'Video',
+        reviews: 'Reviews',
+        reviews_title: 'What Students Say',
+        faq_title: 'FAQ',
+        privacy: 'Privacy Policy',
+        offer: 'Terms of Service',
+        result_prefix: 'Result:'
+      }
+    };
+
+    let currentLang = 'uk';
+    let courseData = null;
+    let countdownTimer = null;
+
+    // Get slug from URL
+    function getSlug() {
+      const path = window.location.pathname;
+      const match = path.match(/\/course\/([^\/]+)/);
+      return match ? match[1] : null;
+    }
+
+    // Get language from URL or localStorage
+    function detectLanguage() {
+      const params = new URLSearchParams(window.location.search);
+      const urlLang = params.get('lang');
+      if (urlLang && ['uk', 'ru', 'en'].includes(urlLang)) {
+        return urlLang;
+      }
+      const stored = localStorage.getItem('preferred_lang');
+      if (stored && ['uk', 'ru', 'en'].includes(stored)) {
+        return stored;
+      }
+      const browserLang = navigator.language.substring(0, 2);
+      if (browserLang === 'uk' || browserLang === 'ua') return 'uk';
+      if (browserLang === 'ru') return 'ru';
+      return 'uk';
+    }
+
+    // Switch language
+    function switchLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('preferred_lang', lang);
+
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+
+      // Update i18n texts
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (i18n[lang] && i18n[lang][key]) {
+          el.textContent = i18n[lang][key];
+        }
+      });
+
+      // Re-render dynamic content with new language
+      if (courseData) {
+        renderCourse(courseData);
+      }
+    }
+
+    // Load course data
+    async function loadCourse() {
+      const slug = getSlug();
+      if (!slug) {
+        document.getElementById('loading').classList.add('hidden');
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><h1>Course not found</h1></div>';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/.netlify/functions/course-page?slug=${slug}&lang=${currentLang}`);
+        if (!res.ok) throw new Error('Course not found');
+
+        courseData = await res.json();
+        renderCourse(courseData);
+        document.getElementById('loading').classList.add('hidden');
+      } catch (err) {
+        console.error('Failed to load course:', err);
+        document.getElementById('loading').classList.add('hidden');
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;"><h1>Курс не знайдено</h1><a href="/" style="color:#3b82f6;">На головну</a></div>';
+      }
+    }
+
+    // Render course
+    function renderCourse(data) {
+      const { course, author, modules, benefits, audience, results, faq, reviews, theme } = data;
+
+      // Apply theme colors
+      if (theme && theme.primaryColor) {
+        document.documentElement.style.setProperty('--primary', theme.primaryColor);
+      }
+      if (theme && theme.secondaryColor) {
+        document.documentElement.style.setProperty('--secondary', theme.secondaryColor);
+      }
+
+      // Hero
+      document.getElementById('hero-title').textContent = course.title || '';
+      document.getElementById('hero-subtitle').textContent = course.subtitle || '';
+      document.getElementById('hero-cta-text').textContent = i18n[currentLang].enroll;
+      document.getElementById('header-cta-text').textContent = i18n[currentLang].enroll;
+      document.getElementById('header-logo').textContent = course.title || 'Course';
+
+      if (course.photo) {
+        document.getElementById('hero-image').src = course.photo;
+        document.getElementById('hero-image').alt = course.title;
+      }
+
+      // Price
+      if (course.price) {
+        document.getElementById('price-old').textContent = course.price + ' ₴';
+      }
+      if (course.salePrice) {
+        document.getElementById('price-new').textContent = course.salePrice + ' ₴';
+      } else if (course.price) {
+        document.getElementById('price-new').textContent = course.price + ' ₴';
+        document.getElementById('price-old').style.display = 'none';
+      }
+
+      // Countdown
+      if (course.showTimer && course.timerEnd) {
+        startCountdown(course.timerEnd);
+      }
+
+      // Benefits
+      const benefitsGrid = document.getElementById('benefits-grid');
+      benefitsGrid.innerHTML = '';
+      const icons = ['🎯', '🛡️', '⭐', '🎁'];
+      (benefits || []).forEach((b, i) => {
+        benefitsGrid.innerHTML += `
+          <div class="benefit-card">
+            <div class="benefit-icon">${icons[i % 4]}</div>
+            <h3>${b.title || ''}</h3>
+            <p>${b.text || ''}</p>
+          </div>
+        `;
+      });
+
+      // Modules
+      const modulesList = document.getElementById('modules-list');
+      modulesList.innerHTML = '';
+      (modules || []).forEach((m, i) => {
+        modulesList.innerHTML += `
+          <div class="module-card">
+            <div class="module-number">${i + 1}</div>
+            <div class="module-content">
+              <h3>${m.title || ''}</h3>
+              <p>${m.description || ''}</p>
+            </div>
+            ${m.result ? `<div class="module-result">${i18n[currentLang].result_prefix} ${m.result}</div>` : ''}
+          </div>
+        `;
+      });
+
+      // Audience
+      const audienceGrid = document.getElementById('audience-grid');
+      audienceGrid.innerHTML = '';
+      (audience || []).forEach(a => {
+        audienceGrid.innerHTML += `
+          <div class="audience-card">
+            <h3>${a.title || ''}</h3>
+            <p>${a.text || ''}</p>
+          </div>
+        `;
+      });
+
+      // Author
+      if (author) {
+        document.getElementById('author-name').textContent = author.name || '';
+        document.getElementById('author-title-text').textContent = author.title || '';
+        document.getElementById('author-bio').textContent = author.bio || '';
+        if (author.photo) {
+          document.getElementById('author-photo').src = author.photo;
+        }
+
+        const credsList = document.getElementById('author-credentials');
+        credsList.innerHTML = '';
+        (author.specializations || []).forEach(s => {
+          credsList.innerHTML += `<li>${s}</li>`;
+        });
+        if (author.experience) {
+          credsList.innerHTML += `<li>${author.experience} років досвіду</li>`;
+        }
+      }
+
+      // Diplomas
+      if (author && author.diplomas && author.diplomas.length > 0) {
+        document.getElementById('diplomas-section').style.display = 'block';
+        const track = document.getElementById('diplomas-track');
+        track.innerHTML = '';
+        author.diplomas.forEach(d => {
+          track.innerHTML += `
+            <div class="diploma-item" onclick="openImageModal('${d}')">
+              <img src="${d}" alt="Diploma">
+            </div>
+          `;
+        });
+      }
+
+      // Results
+      const resultsGrid = document.getElementById('results-grid');
+      resultsGrid.innerHTML = '';
+      (results || []).forEach(r => {
+        resultsGrid.innerHTML += `
+          <div class="result-item">
+            <div class="result-check">✓</div>
+            <span>${r}</span>
+          </div>
+        `;
+      });
+
+      // Video
+      if (course.videoUrl) {
+        document.getElementById('video-section').style.display = 'block';
+        document.getElementById('video-title').textContent = course.videoTitle || i18n[currentLang].video;
+        const videoId = extractYouTubeId(course.videoUrl);
+        if (videoId) {
+          document.getElementById('video-container').innerHTML = `
+            <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          `;
+        }
+      }
+
+      // Reviews
+      if (reviews && reviews.length > 0) {
+        document.getElementById('reviews-section').style.display = 'block';
+        const reviewsGrid = document.getElementById('reviews-grid');
+        reviewsGrid.innerHTML = '';
+        reviews.forEach(r => {
+          reviewsGrid.innerHTML += `
+            <div class="review-card">
+              <div class="review-header">
+                <div class="review-avatar">${(r.name || '?')[0].toUpperCase()}</div>
+                <div>
+                  <div class="review-name">${r.name || ''}</div>
+                  <div class="review-stars">${'★'.repeat(r.rating || 5)}</div>
+                </div>
+              </div>
+              <p class="review-text">"${r.text || ''}"</p>
+            </div>
+          `;
+        });
+      }
+
+      // FAQ
+      if (faq && faq.length > 0) {
+        document.getElementById('faq-section').style.display = 'block';
+        const faqList = document.getElementById('faq-list');
+        faqList.innerHTML = '';
+        faq.forEach(f => {
+          faqList.innerHTML += `
+            <div class="faq-item">
+              <div class="faq-question" onclick="toggleFaq(this)">
+                <span>${f.question || ''}</span>
+                <span class="faq-icon">+</span>
+              </div>
+              <div class="faq-answer">${f.answer || ''}</div>
+            </div>
+          `;
+        });
+      }
+
+      // Final CTA
+      document.getElementById('final-title').textContent = course.finalTitle || i18n[currentLang].enroll;
+      document.getElementById('final-subtitle').textContent = course.finalSubtitle || '';
+      document.getElementById('final-cta-text').textContent = i18n[currentLang].enroll;
+      if (course.guarantee) {
+        document.getElementById('guarantee-text').textContent = course.guarantee;
+      }
+
+      // SEO
+      document.getElementById('page-title').textContent = course.metaTitle || course.title;
+      document.getElementById('meta-desc').content = course.metaDescription || course.subtitle;
+      document.getElementById('og-title').content = course.metaTitle || course.title;
+      document.getElementById('og-desc').content = course.metaDescription || course.subtitle;
+      if (course.photo) {
+        document.getElementById('og-image').content = course.photo;
+      }
+
+      // Footer
+      document.getElementById('footer-copy').textContent = `© ${new Date().getFullYear()} ${author?.name || ''}`;
+    }
+
+    // Countdown
+    function startCountdown(endDate) {
+      const end = new Date(endDate).getTime();
+
+      function update() {
+        const now = Date.now();
+        const diff = end - now;
+
+        if (diff <= 0) {
+          clearInterval(countdownTimer);
+          document.getElementById('countdown').style.display = 'none';
+          document.getElementById('final-countdown').style.display = 'none';
+          return;
+        }
+
+        document.getElementById('countdown').style.display = 'flex';
+        document.getElementById('final-countdown').style.display = 'flex';
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('days').textContent = String(days).padStart(2, '0');
+        document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+        document.getElementById('final-days').textContent = String(days).padStart(2, '0');
+        document.getElementById('final-hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('final-minutes').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('final-seconds').textContent = String(seconds).padStart(2, '0');
+      }
+
+      update();
+      countdownTimer = setInterval(update, 1000);
+    }
+
+    // Extract YouTube ID
+    function extractYouTubeId(url) {
+      if (!url) return null;
+      const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+      return match ? match[1] : null;
+    }
+
+    // Toggle FAQ
+    function toggleFaq(el) {
+      el.parentElement.classList.toggle('open');
+    }
+
+    // Scroll to booking
+    function scrollToBooking() {
+      document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Open image modal
+    function openImageModal(url) {
+      document.getElementById('modal-image').src = url;
+      document.getElementById('image-modal').classList.add('show');
+    }
+
+    // Close modal on click
+    document.getElementById('image-modal').addEventListener('click', function() {
+      this.classList.remove('show');
+    });
+
+    // Language switcher
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchLanguage(btn.dataset.lang);
+      });
+    });
+
+    // Initialize
+    currentLang = detectLanguage();
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === currentLang);
+    });
+    loadCourse();
+  </script>
+</body>
+</html>

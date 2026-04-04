@@ -22,6 +22,12 @@
   to = "/specialist/index.html"
   status = 200
 
+# Course landing pages
+[[redirects]]
+  from = "/course/*"
+  to = "/course/index.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]

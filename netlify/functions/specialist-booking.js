@@ -124,6 +124,44 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // Create calendar session if date and time are provided
+    if (preferred_date && preferred_time) {
+      let serviceName = 'Консультація';
+      let serviceDuration = 60;
+
+      if (service_id) {
+        const { data: serviceData } = await supabase
+          .from('specialist_services')
+          .select('name_uk, duration')
+          .eq('id', service_id)
+          .single();
+
+        if (serviceData) {
+          serviceName = serviceData.name_uk || serviceName;
+          serviceDuration = serviceData.duration || serviceDuration;
+        }
+      }
+
+      const sessionData = {
+        user_id: site.user_id,
+        client_name,
+        session_type: 'primary',
+        session_date: preferred_date,
+        session_time: preferred_time,
+        duration: serviceDuration,
+        notes: `Заявка з сайту. ${message ? 'Повідомлення: ' + message : ''}${client_phone ? '\nТел: ' + client_phone : ''}${client_email ? '\nEmail: ' + client_email : ''}`
+      };
+
+      const { error: sessionError } = await supabase
+        .from('calendar_sessions')
+        .insert(sessionData);
+
+      if (sessionError) {
+        console.error('Calendar session error:', sessionError);
+        // Don't fail the booking if session creation fails
+      }
+    }
+
     // Get specialist info for notification
     const { data: profile } = await supabase
       .from('profiles')

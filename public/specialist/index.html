@@ -902,6 +902,127 @@
       }
     }
 
+    /* Carousel Styles */
+    .carousel-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 8px 0;
+      flex: 1;
+    }
+
+    .carousel-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .carousel-item {
+      flex: 0 0 auto;
+      width: 200px;
+      height: 260px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .carousel-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    .carousel-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .carousel-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-card);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .carousel-btn:hover {
+      background: var(--primary);
+      color: white;
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+      .carousel-btn {
+        display: none;
+      }
+
+      .carousel-item {
+        width: 160px;
+        height: 210px;
+      }
+    }
+
+    /* Social Links in Header */
+    .header-social {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .header-social a {
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .header-social a:hover {
+      color: var(--primary);
+    }
+
+    /* Smooth Animations */
+    .fade-in {
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Enhanced Cards with better rounded corners */
+    .service-card, .review-card, .about-content {
+      border-radius: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .service-card:hover, .review-card:hover {
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
     /* Structured Data placeholder */
     .hidden {
       display: none !important;
@@ -967,6 +1088,22 @@
     </div>
   </section>
 
+  <!-- Diplomas & Awards Carousel -->
+  <section id="diplomas-section" style="display: none;">
+    <div class="container">
+      <h2 class="section-title" data-i18n="diplomas_title">Дипломи та сертифікати</h2>
+      <div class="carousel-container">
+        <button class="carousel-btn carousel-prev" onclick="scrollDiplomas(-1)">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="carousel-track" id="diplomas-track"></div>
+        <button class="carousel-btn carousel-next" onclick="scrollDiplomas(1)">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
   <!-- Services -->
   <section id="services">
     <div class="container">
@@ -980,6 +1117,22 @@
     <div class="container">
       <h2 class="section-title" data-i18n="gallery_title">Галерея</h2>
       <div class="gallery-grid" id="gallery-grid"></div>
+    </div>
+  </section>
+
+  <!-- Photo Gallery Carousel -->
+  <section id="photo-gallery-section" style="display: none;">
+    <div class="container">
+      <h2 class="section-title" data-i18n="photo_gallery_title">Фотогалерея</h2>
+      <div class="carousel-container">
+        <button class="carousel-btn carousel-prev" onclick="scrollGallery(-1)">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="carousel-track" id="photo-gallery-track"></div>
+        <button class="carousel-btn carousel-next" onclick="scrollGallery(1)">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
     </div>
   </section>
 
@@ -1073,6 +1226,8 @@
         about_title: 'Про мене',
         services_title: 'Послуги',
         gallery_title: 'Галерея',
+        diplomas_title: 'Дипломи та сертифікати',
+        photo_gallery_title: 'Фотогалерея',
         reviews_title: 'Відгуки',
         booking_title: 'Записатися на консультацію',
         form_name: "Ваше ім'я *",
@@ -1100,6 +1255,8 @@
         about_title: 'Обо мне',
         services_title: 'Услуги',
         gallery_title: 'Галерея',
+        diplomas_title: 'Дипломы и сертификаты',
+        photo_gallery_title: 'Фотогалерея',
         reviews_title: 'Отзывы',
         booking_title: 'Записаться на консультацию',
         form_name: 'Ваше имя *',
@@ -1127,6 +1284,8 @@
         about_title: 'About me',
         services_title: 'Services',
         gallery_title: 'Gallery',
+        diplomas_title: 'Diplomas & Certificates',
+        photo_gallery_title: 'Photo Gallery',
         reviews_title: 'Reviews',
         booking_title: 'Book a consultation',
         form_name: 'Your name *',
@@ -1178,7 +1337,7 @@
     }
 
     // Set language
-    function setLanguage(lang) {
+    function setLanguage(lang, skipFetch = false) {
       currentLang = lang;
       localStorage.setItem('specialist_lang', lang);
       document.documentElement.lang = lang;
@@ -1196,15 +1355,15 @@
         }
       });
 
-      // Re-render content if data loaded
-      if (pageData) {
-        renderPage(pageData);
-      }
-
       // Update URL
       const url = new URL(window.location);
       url.searchParams.set('lang', lang);
       history.replaceState({}, '', url);
+
+      // Re-fetch data with new language if not initial load
+      if (!skipFetch && slug) {
+        fetchPageData();
+      }
     }
 
     // Fetch page data
@@ -1327,8 +1486,8 @@
       });
       document.getElementById('service-select').innerHTML = serviceOptionsHtml;
 
-      // Gallery
-      if (data.gallery.length > 0) {
+      // Gallery (old style - keep for backward compatibility)
+      if (data.gallery && data.gallery.length > 0) {
         document.getElementById('gallery').style.display = 'block';
         let galleryHtml = '';
         data.gallery.forEach(g => {
@@ -1339,6 +1498,34 @@
           `;
         });
         document.getElementById('gallery-grid').innerHTML = galleryHtml;
+      }
+
+      // Diplomas Carousel
+      if (data.diplomas && data.diplomas.length > 0) {
+        document.getElementById('diplomas-section').style.display = 'block';
+        let diplomasHtml = '';
+        data.diplomas.forEach(url => {
+          diplomasHtml += `
+            <div class="carousel-item" onclick="openImageModal('${url}')">
+              <img src="${url}" alt="Диплом" loading="lazy">
+            </div>
+          `;
+        });
+        document.getElementById('diplomas-track').innerHTML = diplomasHtml;
+      }
+
+      // Photo Gallery Carousel
+      if (data.photo_gallery && data.photo_gallery.length > 0) {
+        document.getElementById('photo-gallery-section').style.display = 'block';
+        let photoGalleryHtml = '';
+        data.photo_gallery.forEach(url => {
+          photoGalleryHtml += `
+            <div class="carousel-item" onclick="openImageModal('${url}')">
+              <img src="${url}" alt="Фото" loading="lazy">
+            </div>
+          `;
+        });
+        document.getElementById('photo-gallery-track').innerHTML = photoGalleryHtml;
       }
 
       // Reviews
@@ -1522,6 +1709,31 @@
         setLanguage(btn.dataset.lang);
       });
     });
+
+    // Carousel scroll functions
+    function scrollDiplomas(direction) {
+      const track = document.getElementById('diplomas-track');
+      const scrollAmount = 220; // item width + gap
+      track.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
+
+    function scrollGallery(direction) {
+      const track = document.getElementById('photo-gallery-track');
+      const scrollAmount = 220;
+      track.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
+
+    // Image modal
+    function openImageModal(url) {
+      const modal = document.createElement('div');
+      modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:2000;cursor:pointer;';
+      modal.onclick = () => modal.remove();
+      const img = document.createElement('img');
+      img.src = url;
+      img.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;border-radius:8px;';
+      modal.appendChild(img);
+      document.body.appendChild(modal);
+    }
 
     // Init
     currentLang = detectLanguage();

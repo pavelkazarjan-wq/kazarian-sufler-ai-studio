@@ -2693,6 +2693,34 @@
           </div>
         </div>
 
+        <!-- Site Type Selector -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              Тип сайта
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <label class="site-type-option" style="cursor: pointer;">
+              <input type="radio" name="site-type" value="specialist" checked style="display: none;">
+              <div class="site-type-card" style="padding: 24px; border-radius: 16px; background: rgba(59,130,246,0.1); border: 2px solid var(--primary); text-align: center; transition: all 0.2s;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="40" height="40" style="margin: 0 auto 12px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <div style="font-weight: 600; margin-bottom: 4px;">Визитка специалиста</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Услуги, отзывы, запись на консультацию</div>
+              </div>
+            </label>
+            <label class="site-type-option" style="cursor: pointer;">
+              <input type="radio" name="site-type" value="course" style="display: none;">
+              <div class="site-type-card" style="padding: 24px; border-radius: 16px; background: rgba(255,255,255,0.05); border: 2px solid transparent; text-align: center; transition: all 0.2s;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="40" height="40" style="margin: 0 auto 12px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                <div style="font-weight: 600; margin-bottom: 4px;">Онлайн курс</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Модули, уроки, регистрация на курс</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
         <!-- Site URL -->
         <div class="card">
           <div class="card-header">
@@ -2717,7 +2745,7 @@
           </div>
         </div>
 
-        <!-- Site Photo -->
+        <!-- Site Photo - Multilingual -->
         <div class="card">
           <div class="card-header">
             <div class="card-title">
@@ -2726,27 +2754,67 @@
             </div>
           </div>
           <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
-            Загрузите качественное фото для публичной страницы. Рекомендуемый размер: 800x1000 px (портрет).
+            Загрузите разные фото для каждого языка. Рекомендуемый размер: 800x1000 px (портрет).
           </p>
-          <div style="display: flex; gap: 20px; align-items: flex-start;">
-            <div id="site-photo-preview" style="width: 200px; height: 250px; background: #1e293b; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #334155;">
-              <span style="color: #64748b; font-size: 13px; text-align: center; padding: 20px;">Фото не загружено</span>
-            </div>
-            <div style="flex: 1;">
-              <input type="file" id="site-photo-input" accept="image/*" style="display: none;" onchange="uploadSitePhoto(this)">
-              <button class="btn btn-secondary" onclick="document.getElementById('site-photo-input').click()" style="width: 100%; margin-bottom: 12px;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                Загрузить фото
-              </button>
-              <button class="btn btn-secondary" onclick="removeSitePhoto()" style="width: 100%; color: #ef4444;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                Удалить
-              </button>
-              <p style="font-size: 12px; color: #64748b; margin-top: 12px;">
-                Форматы: JPG, PNG. Максимум: 5 MB
-              </p>
+
+          <!-- Photo Language tabs -->
+          <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+            <button class="btn btn-secondary photo-lang-tab active" data-lang="uk">🇺🇦 UA</button>
+            <button class="btn btn-secondary photo-lang-tab" data-lang="ru">🇷🇺 RU</button>
+            <button class="btn btn-secondary photo-lang-tab" data-lang="en">🇬🇧 EN</button>
+          </div>
+
+          <div class="photo-lang-content" data-lang="uk">
+            <div style="display: flex; gap: 20px; align-items: flex-start;">
+              <div id="site-photo-preview-uk" class="site-photo-preview-box" style="width: 200px; height: 250px; background: #1e293b; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #334155;">
+                <span style="color: #64748b; font-size: 13px; text-align: center; padding: 20px;">Фото (UA)</span>
+              </div>
+              <div style="flex: 1;">
+                <input type="file" id="site-photo-input-uk" accept="image/*" style="display: none;" onchange="uploadSitePhotoLang(this, 'uk')">
+                <button class="btn btn-secondary" onclick="document.getElementById('site-photo-input-uk').click()" style="width: 100%; margin-bottom: 12px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Завантажити фото (UA)
+                </button>
+                <button class="btn btn-secondary" onclick="removeSitePhotoLang('uk')" style="width: 100%; color: #ef4444;">Видалити</button>
+              </div>
             </div>
           </div>
+
+          <div class="photo-lang-content" data-lang="ru" style="display: none;">
+            <div style="display: flex; gap: 20px; align-items: flex-start;">
+              <div id="site-photo-preview-ru" class="site-photo-preview-box" style="width: 200px; height: 250px; background: #1e293b; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #334155;">
+                <span style="color: #64748b; font-size: 13px; text-align: center; padding: 20px;">Фото (RU)</span>
+              </div>
+              <div style="flex: 1;">
+                <input type="file" id="site-photo-input-ru" accept="image/*" style="display: none;" onchange="uploadSitePhotoLang(this, 'ru')">
+                <button class="btn btn-secondary" onclick="document.getElementById('site-photo-input-ru').click()" style="width: 100%; margin-bottom: 12px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Загрузить фото (RU)
+                </button>
+                <button class="btn btn-secondary" onclick="removeSitePhotoLang('ru')" style="width: 100%; color: #ef4444;">Удалить</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="photo-lang-content" data-lang="en" style="display: none;">
+            <div style="display: flex; gap: 20px; align-items: flex-start;">
+              <div id="site-photo-preview-en" class="site-photo-preview-box" style="width: 200px; height: 250px; background: #1e293b; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #334155;">
+                <span style="color: #64748b; font-size: 13px; text-align: center; padding: 20px;">Photo (EN)</span>
+              </div>
+              <div style="flex: 1;">
+                <input type="file" id="site-photo-input-en" accept="image/*" style="display: none;" onchange="uploadSitePhotoLang(this, 'en')">
+                <button class="btn btn-secondary" onclick="document.getElementById('site-photo-input-en').click()" style="width: 100%; margin-bottom: 12px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Upload photo (EN)
+                </button>
+                <button class="btn btn-secondary" onclick="removeSitePhotoLang('en')" style="width: 100%; color: #ef4444;">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <p style="font-size: 12px; color: #64748b; margin-top: 12px;">
+            Форматы: JPG, PNG. Максимум: 5 MB
+          </p>
         </div>
 
         <!-- Basic Info -->
@@ -2771,8 +2839,16 @@
               <input type="text" id="site-headline-uk" placeholder="Допоможу впоратися з тривогою та стресом">
             </div>
             <div class="form-group">
-              <label>О себе (укр)</label>
+              <label>Про себе (укр)</label>
               <textarea id="site-bio-uk" rows="6" placeholder="Розкажіть про свій досвід, підхід до роботи..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Спеціалізації (укр, через кому)</label>
+              <input type="text" id="site-specializations-uk" placeholder="тривожність, депресія, стосунки, самооцінка">
+            </div>
+            <div class="form-group">
+              <label>Освіта (укр)</label>
+              <input type="text" id="site-education-uk" placeholder="КНУ, клінічна психологія">
             </div>
           </div>
 
@@ -2785,6 +2861,14 @@
               <label>О себе (рус)</label>
               <textarea id="site-bio-ru" rows="6" placeholder="Расскажите о своём опыте, подходе к работе..."></textarea>
             </div>
+            <div class="form-group">
+              <label>Специализации (рус, через запятую)</label>
+              <input type="text" id="site-specializations-ru" placeholder="тревожность, депрессия, отношения, самооценка">
+            </div>
+            <div class="form-group">
+              <label>Образование (рус)</label>
+              <input type="text" id="site-education-ru" placeholder="МГУ, клиническая психология">
+            </div>
           </div>
 
           <div class="site-lang-content" data-lang="en" style="display: none;">
@@ -2796,23 +2880,44 @@
               <label>About me (eng)</label>
               <textarea id="site-bio-en" rows="6" placeholder="Tell about your experience, approach..."></textarea>
             </div>
+            <div class="form-group">
+              <label>Specializations (eng, comma-separated)</label>
+              <input type="text" id="site-specializations-en" placeholder="anxiety, depression, relationships, self-esteem">
+            </div>
+            <div class="form-group">
+              <label>Education (eng)</label>
+              <input type="text" id="site-education-en" placeholder="University of Psychology">
+            </div>
           </div>
 
           <div class="form-group">
-            <label>Специализации (через запятую)</label>
-            <input type="text" id="site-specializations" placeholder="тревожность, депрессия, отношения, самооценка">
+            <label>Лет опыта / Years of experience</label>
+            <input type="number" id="site-experience" min="0" max="50" placeholder="5" style="max-width: 120px;">
+          </div>
+        </div>
+
+        <!-- Diplomas & Awards Carousel -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+              Дипломы, награды, достижения
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+            Загрузите фото дипломов, сертификатов, наград. Они будут показаны в карусели на вашем сайте.
+          </p>
+
+          <div id="diplomas-gallery" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+            <!-- Diplomas will be rendered here -->
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-            <div class="form-group">
-              <label>Образование</label>
-              <input type="text" id="site-education" placeholder="МГУ, клиническая психология">
-            </div>
-            <div class="form-group">
-              <label>Лет опыта</label>
-              <input type="number" id="site-experience" min="0" max="50" placeholder="5">
-            </div>
-          </div>
+          <input type="file" id="diploma-upload-input" accept="image/*" multiple style="display: none;" onchange="uploadDiplomas(this)">
+          <button class="btn btn-secondary" onclick="document.getElementById('diploma-upload-input').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Добавить фото (можно несколько)
+          </button>
+          <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Максимум 10 изображений. JPG, PNG до 5 MB каждое.</p>
         </div>
 
         <!-- Video Presentation -->
@@ -2823,13 +2928,48 @@
               Видеопрезентация
             </div>
           </div>
-          <div class="form-group">
-            <label>Ссылка на YouTube видео</label>
-            <input type="url" id="site-youtube-url" placeholder="https://www.youtube.com/watch?v=...">
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+            Добавьте отдельное видео для каждого языка. Посетителям будет показано видео на выбранном ими языке.
+          </p>
+
+          <!-- Video Language tabs -->
+          <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+            <button class="btn btn-secondary video-lang-tab active" data-lang="uk">🇺🇦 UA</button>
+            <button class="btn btn-secondary video-lang-tab" data-lang="ru">🇷🇺 RU</button>
+            <button class="btn btn-secondary video-lang-tab" data-lang="en">🇬🇧 EN</button>
           </div>
-          <div class="form-group">
-            <label>Название видео</label>
-            <input type="text" id="site-video-title" placeholder="Приветственное видео">
+
+          <div class="video-lang-content" data-lang="uk">
+            <div class="form-group">
+              <label>YouTube посилання (укр)</label>
+              <input type="url" id="site-youtube-url-uk" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+            <div class="form-group">
+              <label>Назва відео (укр)</label>
+              <input type="text" id="site-video-title-uk" placeholder="Вітальне відео">
+            </div>
+          </div>
+
+          <div class="video-lang-content" data-lang="ru" style="display: none;">
+            <div class="form-group">
+              <label>Ссылка на YouTube (рус)</label>
+              <input type="url" id="site-youtube-url-ru" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+            <div class="form-group">
+              <label>Название видео (рус)</label>
+              <input type="text" id="site-video-title-ru" placeholder="Приветственное видео">
+            </div>
+          </div>
+
+          <div class="video-lang-content" data-lang="en" style="display: none;">
+            <div class="form-group">
+              <label>YouTube link (eng)</label>
+              <input type="url" id="site-youtube-url-en" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+            <div class="form-group">
+              <label>Video title (eng)</label>
+              <input type="text" id="site-video-title-en" placeholder="Welcome video">
+            </div>
           </div>
         </div>
 
@@ -2946,6 +3086,56 @@
           </div>
         </div>
 
+        <!-- Favicon -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 3v18"/></svg>
+              Favicon (иконка сайта)
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+            Маленькая иконка, которая отображается во вкладке браузера. Рекомендуемый размер: 32x32 или 64x64 px.
+          </p>
+          <div style="display: flex; gap: 20px; align-items: center;">
+            <div id="favicon-preview" style="width: 64px; height: 64px; background: #1e293b; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #334155;">
+              <span style="color: #64748b; font-size: 10px;">64×64</span>
+            </div>
+            <div>
+              <input type="file" id="favicon-input" accept="image/png,image/x-icon,image/svg+xml" style="display: none;" onchange="uploadFavicon(this)">
+              <button class="btn btn-secondary" onclick="document.getElementById('favicon-input').click()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Загрузить
+              </button>
+              <p style="font-size: 12px; color: #64748b; margin-top: 8px;">PNG, ICO или SVG</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom HEAD Code -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Код в HEAD (пиксели, аналитика)
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+            Вставьте код Meta Pixel, Google Analytics, Google Tag Manager или другие скрипты. Код будет добавлен в &lt;head&gt; вашего сайта.
+          </p>
+          <div class="form-group">
+            <label>Код для вставки</label>
+            <textarea id="site-head-code" rows="8" placeholder="<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)...
+</script>
+<!-- End Meta Pixel Code -->" style="font-family: monospace; font-size: 12px;"></textarea>
+          </div>
+          <p style="font-size: 12px; color: #f59e0b; margin-top: 8px;">
+            ⚠️ Будьте осторожны! Неправильный код может сломать сайт.
+          </p>
+        </div>
+
         <!-- Contacts visibility -->
         <div class="card">
           <div class="card-header">
@@ -2990,8 +3180,8 @@
           </div>
         </div>
 
-        <!-- Services management -->
-        <div class="card">
+        <!-- SPECIALIST ONLY: Services management -->
+        <div class="card specialist-only-section">
           <div class="card-header">
             <div class="card-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -3002,6 +3192,309 @@
           <div id="site-services-list">
             <p style="color: #64748b; text-align: center; padding: 20px;">Услуги не добавлены</p>
           </div>
+        </div>
+
+        <!-- COURSE ONLY: Course Info -->
+        <div class="card course-only-section" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              Информация о курсе
+            </div>
+          </div>
+
+          <!-- Course Language tabs -->
+          <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+            <button class="btn btn-secondary course-lang-tab active" data-lang="uk">🇺🇦 UA</button>
+            <button class="btn btn-secondary course-lang-tab" data-lang="ru">🇷🇺 RU</button>
+            <button class="btn btn-secondary course-lang-tab" data-lang="en">🇬🇧 EN</button>
+          </div>
+
+          <div class="course-lang-content" data-lang="uk">
+            <div class="form-group">
+              <label>Название курса (укр)</label>
+              <input type="text" id="course-title-uk" placeholder="Основи психотерапії">
+            </div>
+            <div class="form-group">
+              <label>Краткое описание (укр)</label>
+              <textarea id="course-subtitle-uk" rows="2" placeholder="Практичний курс для початківців"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Полное описание курса (укр)</label>
+              <textarea id="course-description-uk" rows="6" placeholder="Детальний опис того, що ви навчитесь..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Для кого этот курс? (укр)</label>
+              <textarea id="course-target-uk" rows="3" placeholder="Для психологів-початківців, коучів..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Что получит ученик? (укр)</label>
+              <textarea id="course-benefits-uk" rows="4" placeholder="- Сертифікат&#10;- Доступ до матеріалів&#10;- Підтримка куратора"></textarea>
+            </div>
+          </div>
+
+          <div class="course-lang-content" data-lang="ru" style="display: none;">
+            <div class="form-group">
+              <label>Название курса (рус)</label>
+              <input type="text" id="course-title-ru" placeholder="Основы психотерапии">
+            </div>
+            <div class="form-group">
+              <label>Краткое описание (рус)</label>
+              <textarea id="course-subtitle-ru" rows="2" placeholder="Практический курс для начинающих"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Полное описание курса (рус)</label>
+              <textarea id="course-description-ru" rows="6" placeholder="Подробное описание того, что вы изучите..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Для кого этот курс? (рус)</label>
+              <textarea id="course-target-ru" rows="3" placeholder="Для начинающих психологов, коучей..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Что получит ученик? (рус)</label>
+              <textarea id="course-benefits-ru" rows="4" placeholder="- Сертификат&#10;- Доступ к материалам&#10;- Поддержка куратора"></textarea>
+            </div>
+          </div>
+
+          <div class="course-lang-content" data-lang="en" style="display: none;">
+            <div class="form-group">
+              <label>Course title (eng)</label>
+              <input type="text" id="course-title-en" placeholder="Psychotherapy Fundamentals">
+            </div>
+            <div class="form-group">
+              <label>Short description (eng)</label>
+              <textarea id="course-subtitle-en" rows="2" placeholder="Practical course for beginners"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Full course description (eng)</label>
+              <textarea id="course-description-en" rows="6" placeholder="Detailed description of what you'll learn..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Who is this course for? (eng)</label>
+              <textarea id="course-target-en" rows="3" placeholder="For beginner psychologists, coaches..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>What will students get? (eng)</label>
+              <textarea id="course-benefits-en" rows="4" placeholder="- Certificate&#10;- Access to materials&#10;- Curator support"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- COURSE ONLY: Pricing -->
+        <div class="card course-only-section" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Цены и тарифы
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+              <label>Базовая цена (UAH)</label>
+              <input type="number" id="course-price" placeholder="9900" min="0">
+            </div>
+            <div class="form-group">
+              <label>Цена со скидкой (UAH)</label>
+              <input type="number" id="course-sale-price" placeholder="4900" min="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="course-show-timer" style="width: 18px; height: 18px;">
+              <span>Показывать таймер обратного отсчёта</span>
+            </label>
+          </div>
+          <div class="form-group" id="course-timer-settings" style="display: none;">
+            <label>Дата окончания скидки</label>
+            <input type="datetime-local" id="course-timer-end">
+          </div>
+        </div>
+
+        <!-- COURSE ONLY: Modules -->
+        <div class="card course-only-section" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Модули курса
+            </div>
+            <button class="btn btn-secondary" onclick="openModuleModal()">+ Добавить модуль</button>
+          </div>
+          <div id="course-modules-list">
+            <p style="color: #64748b; text-align: center; padding: 20px;">Модули не добавлены</p>
+          </div>
+        </div>
+
+        <!-- COURSE ONLY: Benefits (4 cards) -->
+        <div class="card course-only-section" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              Преимущества (4 карточки)
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+            4 ключевых преимущества вашего курса: формат, среда, результат, бонус/гарантия.
+          </p>
+
+          <div id="course-benefits-cards">
+            <div class="benefit-card-edit" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <span style="background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">1</span>
+                <span style="font-weight: 600; color: #e2e8f0;">ФОРМАТ</span>
+              </div>
+              <input type="text" id="benefit-1-title-uk" placeholder="Регулярная терапия" style="margin-bottom: 8px;">
+              <textarea id="benefit-1-text-uk" rows="2" placeholder="4 живые встречи в месяц вместо разовых консультаций по 50€"></textarea>
+            </div>
+            <div class="benefit-card-edit" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <span style="background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">2</span>
+                <span style="font-weight: 600; color: #e2e8f0;">СРЕДА</span>
+              </div>
+              <input type="text" id="benefit-2-title-uk" placeholder="Безопасное пространство" style="margin-bottom: 8px;">
+              <textarea id="benefit-2-text-uk" rows="2" placeholder="Поддержка и принятие без оценки и давления"></textarea>
+            </div>
+            <div class="benefit-card-edit" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <span style="background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">3</span>
+                <span style="font-weight: 600; color: #e2e8f0;">РЕЗУЛЬТАТ</span>
+              </div>
+              <input type="text" id="benefit-3-title-uk" placeholder="Реальные изменения" style="margin-bottom: 8px;">
+              <textarea id="benefit-3-text-uk" rows="2" placeholder="Ясность в желаниях, цели и постепенное улучшение жизни"></textarea>
+            </div>
+            <div class="benefit-card-edit" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <span style="background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">4</span>
+                <span style="font-weight: 600; color: #e2e8f0;">БОНУС</span>
+              </div>
+              <input type="text" id="benefit-4-title-uk" placeholder="Доступ навсегда" style="margin-bottom: 8px;">
+              <textarea id="benefit-4-text-uk" rows="2" placeholder="Все встречи и материалы остаются у вас даже через год"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- COURSE ONLY: Target Audience (4 avatars) -->
+        <div class="card course-only-section" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Кому подходит (4 аватара)
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+            Опишите 4 типа клиентов. Человек должен узнать себя и сказать «это про меня».
+          </p>
+
+          <div id="course-avatars">
+            <div class="avatar-card-edit" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+              <input type="text" id="avatar-1-title-uk" placeholder="Для тех, кто переживает кризис" style="margin-bottom: 8px; font-weight: 600;">
+              <textarea id="avatar-1-text-uk" rows="2" placeholder="Если вы чувствуете тревогу, бессонницу или потерю смысла"></textarea>
+            </div>
+            <div class="avatar-card-edit" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+              <input type="text" id="avatar-2-title-uk" placeholder="Для тех, кто ищет себя" style="margin-bottom: 8px; font-weight: 600;">
+              <textarea id="avatar-2-text-uk" rows="2" placeholder="Если хотите понять свои истинные желания и цели"></textarea>
+            </div>
+            <div class="avatar-card-edit" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+              <input type="text" id="avatar-3-title-uk" placeholder="Для тех, кто устал нести всё один" style="margin-bottom: 8px; font-weight: 600;">
+              <textarea id="avatar-3-text-uk" rows="2" placeholder="Если не хватает поддержки, а разовые консультации не дают стойкого результата"></textarea>
+            </div>
+            <div class="avatar-card-edit" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px;">
+              <input type="text" id="avatar-4-title-uk" placeholder="Для тех, кто готов к изменениям" style="margin-bottom: 8px; font-weight: 600;">
+              <textarea id="avatar-4-text-uk" rows="2" placeholder="Если хотите не просто говорить о проблеме, а действовать"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- COURSE ONLY: Results (8 points) -->
+        <div class="card course-only-section" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Результаты (8 пунктов)
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+            8 конкретных изменений после прохождения курса. Начинайте с глагола в будущем времени.
+          </p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" id="course-results">
+            <input type="text" id="result-1-uk" placeholder="✓ Перестанете откладывать важные решения">
+            <input type="text" id="result-2-uk" placeholder="✓ Научитесь говорить «нет» без вины">
+            <input type="text" id="result-3-uk" placeholder="✓ Обретёте ясность в желаниях">
+            <input type="text" id="result-4-uk" placeholder="✓ Улучшите отношения с близкими">
+            <input type="text" id="result-5-uk" placeholder="✓ Справитесь с тревогой">
+            <input type="text" id="result-6-uk" placeholder="✓ Повысите уверенность в себе">
+            <input type="text" id="result-7-uk" placeholder="✓ Найдёте внутреннюю опору">
+            <input type="text" id="result-8-uk" placeholder="✓ Начнёте жить своей жизнью">
+          </div>
+        </div>
+
+        <!-- COURSE ONLY: FAQ -->
+        <div class="card course-only-section" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Часто задаваемые вопросы (FAQ)
+            </div>
+            <button class="btn btn-secondary" onclick="addFaqItem()">+ Добавить вопрос</button>
+          </div>
+          <div id="course-faq-list">
+            <div class="faq-item" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+              <input type="text" class="faq-question" placeholder="Сколько времени это займёт?" style="margin-bottom: 8px; font-weight: 600;">
+              <textarea class="faq-answer" rows="2" placeholder="Курс рассчитан на 8 недель, по 2 часа в неделю..."></textarea>
+              <button class="btn btn-secondary" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;" onclick="this.closest('.faq-item').remove()">Удалить</button>
+            </div>
+            <div class="faq-item" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+              <input type="text" class="faq-question" placeholder="Что если не подойдёт?" style="margin-bottom: 8px; font-weight: 600;">
+              <textarea class="faq-answer" rows="2" placeholder="Первая неделя — пробная. Если не понравится, вернём 100% оплаты."></textarea>
+              <button class="btn btn-secondary" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;" onclick="this.closest('.faq-item').remove()">Удалить</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- COURSE ONLY: Final CTA -->
+        <div class="card course-only-section" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Финальный CTA и Гарантия
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+            Финальный призыв к действию в конце страницы
+          </p>
+
+          <label class="field-label">Финальный заголовок (укр)</label>
+          <input type="text" id="final-title-uk" placeholder="Готовы начать трансформацию?">
+
+          <label class="field-label">Финальный подзаголовок (укр)</label>
+          <input type="text" id="final-subtitle-uk" placeholder="Места ограничены. Присоединяйтесь сейчас.">
+
+          <label class="field-label">Текст гарантии (укр)</label>
+          <textarea id="guarantee-uk" rows="3" placeholder="Гарантия возврата 100% в течение первой недели, если курс вам не подойдёт."></textarea>
+        </div>
+
+        <!-- Photo Gallery Carousel -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Фотогалерея
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+            Загрузите фото счастливых клиентов, скриншоты отзывов, фото с мероприятий. Они будут показаны в карусели.
+          </p>
+
+          <div id="photo-gallery" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+            <!-- Photos will be rendered here -->
+          </div>
+
+          <input type="file" id="gallery-upload-input" accept="image/*" multiple style="display: none;" onchange="uploadGalleryPhotos(this)">
+          <button class="btn btn-secondary" onclick="document.getElementById('gallery-upload-input').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Добавить фото (можно несколько)
+          </button>
+          <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Максимум 20 изображений. JPG, PNG до 5 MB каждое.</p>
         </div>
 
         <!-- Reviews -->
@@ -3060,6 +3553,37 @@
             <div style="display: flex; gap: 12px; margin-top: 20px;">
               <button class="btn btn-primary" onclick="saveService()" style="flex: 1;">Сохранить</button>
               <button class="btn btn-secondary" onclick="closeServiceModal()">Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module Modal (for courses) -->
+      <div class="modal-overlay" id="module-modal">
+        <div class="modal" style="max-width: 600px;">
+          <div class="modal-header">
+            <h3 class="modal-title">Добавить модуль курса</h3>
+            <button class="modal-close" onclick="closeModuleModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="module-edit-id">
+            <div class="form-group">
+              <label>Название модуля (укр) *</label>
+              <input type="text" id="module-title-uk" placeholder="Стабілізація та ресурси">
+            </div>
+            <div class="form-group">
+              <label>Описание (что происходит в модуле)</label>
+              <textarea id="module-description-uk" rows="3" placeholder="Навчаємось знаходити внутрішню опору та керувати станами..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Результат модуля</label>
+              <input type="text" id="module-result-uk" placeholder="Перестанете реагувати на тригери">
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+              <button class="btn btn-primary" onclick="saveModule()" style="flex: 1;">Сохранить</button>
+              <button class="btn btn-secondary" onclick="closeModuleModal()">Отмена</button>
             </div>
           </div>
         </div>
@@ -3519,6 +4043,59 @@
         selectedApproach = opt.dataset.approach;
       });
     });
+
+    // Site type toggle (specialist vs course)
+    let currentSiteType = 'specialist';
+
+    document.querySelectorAll('input[name="site-type"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        currentSiteType = e.target.value;
+        toggleSiteTypeSections(currentSiteType);
+
+        // Update card styles
+        document.querySelectorAll('.site-type-option .site-type-card').forEach(card => {
+          card.style.background = 'rgba(255,255,255,0.05)';
+          card.style.borderColor = 'transparent';
+        });
+        e.target.closest('.site-type-option').querySelector('.site-type-card').style.background = 'rgba(59,130,246,0.1)';
+        e.target.closest('.site-type-option').querySelector('.site-type-card').style.borderColor = 'var(--primary)';
+      });
+    });
+
+    function toggleSiteTypeSections(type) {
+      document.querySelectorAll('.specialist-only-section').forEach(s => {
+        s.style.display = type === 'specialist' ? 'block' : 'none';
+      });
+      document.querySelectorAll('.course-only-section').forEach(s => {
+        s.style.display = type === 'course' ? 'block' : 'none';
+      });
+    }
+
+    // Course language tabs
+    document.querySelectorAll('.course-lang-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const lang = tab.dataset.lang;
+        document.querySelectorAll('.course-lang-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.course-lang-content').forEach(c => {
+          c.style.display = c.dataset.lang === lang ? 'block' : 'none';
+        });
+      });
+    });
+
+    // Add FAQ item
+    function addFaqItem(question = '', answer = '') {
+      const list = document.getElementById('course-faq-list');
+      const item = document.createElement('div');
+      item.className = 'faq-item';
+      item.style.cssText = 'background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; margin-bottom: 12px;';
+      item.innerHTML = `
+        <input type="text" class="faq-question" placeholder="Введите вопрос..." style="margin-bottom: 8px; font-weight: 600;" value="${question.replace(/"/g, '&quot;')}">
+        <textarea class="faq-answer" rows="2" placeholder="Введите ответ...">${answer}</textarea>
+        <button class="btn btn-secondary" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;" onclick="this.closest('.faq-item').remove()">Удалить</button>
+      `;
+      list.appendChild(item);
+    }
 
     async function initProfile() {
       document.getElementById('save-btn').disabled = true;
@@ -6595,7 +7172,10 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
     // ============ MY SITE SECTION ============
     let siteData = null;
     let siteServices = [];
-    let sitePhotoUrl = null;
+    let sitePhotoUrls = { uk: null, ru: null, en: null };
+    let siteDiplomas = [];
+    let siteGallery = [];
+    let siteFaviconUrl = null;
 
     // Language tabs for site editor
     document.querySelectorAll('.site-lang-tab').forEach(tab => {
@@ -6621,8 +7201,32 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       });
     });
 
-    // Site photo functions
-    async function uploadSitePhoto(input) {
+    // Video language tabs
+    document.querySelectorAll('.video-lang-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const lang = tab.dataset.lang;
+        document.querySelectorAll('.video-lang-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.video-lang-content').forEach(c => {
+          c.style.display = c.dataset.lang === lang ? 'block' : 'none';
+        });
+      });
+    });
+
+    // Photo language tabs
+    document.querySelectorAll('.photo-lang-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const lang = tab.dataset.lang;
+        document.querySelectorAll('.photo-lang-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.photo-lang-content').forEach(c => {
+          c.style.display = c.dataset.lang === lang ? 'block' : 'none';
+        });
+      });
+    });
+
+    // Site photo functions (multilingual)
+    async function uploadSitePhotoLang(input, lang) {
       if (!input.files || !input.files[0]) return;
       const file = input.files[0];
 
@@ -6638,7 +7242,7 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
 
       try {
         showToast('Загрузка...');
-        const fileName = `site-photo-${Date.now()}.${file.name.split('.').pop()}`;
+        const fileName = `site-photo-${lang}-${Date.now()}.${file.name.split('.').pop()}`;
         const filePath = `${currentUser.id}/${fileName}`;
 
         const { data, error } = await supabaseClient.storage
@@ -6651,8 +7255,8 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
           .from('avatars')
           .getPublicUrl(filePath);
 
-        sitePhotoUrl = urlData.publicUrl + '?t=' + Date.now();
-        updateSitePhotoPreview(sitePhotoUrl);
+        sitePhotoUrls[lang] = urlData.publicUrl + '?t=' + Date.now();
+        updateSitePhotoPreviewLang(lang, sitePhotoUrls[lang]);
         showToast('Фото загружено!');
       } catch (e) {
         console.error('Upload error:', e);
@@ -6660,20 +7264,179 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       }
     }
 
-    function updateSitePhotoPreview(url) {
-      const preview = document.getElementById('site-photo-preview');
+    function updateSitePhotoPreviewLang(lang, url) {
+      const preview = document.getElementById(`site-photo-preview-${lang}`);
+      if (!preview) return;
+
+      const labels = { uk: 'Фото (UA)', ru: 'Фото (RU)', en: 'Photo (EN)' };
       if (url) {
         preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;">`;
-        sitePhotoUrl = url;
+        sitePhotoUrls[lang] = url;
       } else {
-        preview.innerHTML = '<span style="color: #64748b; font-size: 13px; text-align: center; padding: 20px;">Фото не загружено</span>';
-        sitePhotoUrl = null;
+        preview.innerHTML = `<span style="color: #64748b; font-size: 13px; text-align: center; padding: 20px;">${labels[lang]}</span>`;
+        sitePhotoUrls[lang] = null;
       }
     }
 
-    function removeSitePhoto() {
-      updateSitePhotoPreview(null);
+    function removeSitePhotoLang(lang) {
+      updateSitePhotoPreviewLang(lang, null);
       showToast('Фото удалено');
+    }
+
+    // Diplomas/Awards upload
+    async function uploadDiplomas(input) {
+      if (!input.files || input.files.length === 0) return;
+      const files = Array.from(input.files);
+
+      if (siteDiplomas.length + files.length > 10) {
+        showToast('Максимум 10 изображений', true);
+        return;
+      }
+
+      showToast('Загрузка...');
+
+      for (const file of files) {
+        if (file.size > 5 * 1024 * 1024) continue;
+        if (!file.type.startsWith('image/')) continue;
+
+        try {
+          const fileName = `diploma-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${file.name.split('.').pop()}`;
+          const filePath = `${currentUser.id}/diplomas/${fileName}`;
+
+          const { error } = await supabaseClient.storage
+            .from('avatars')
+            .upload(filePath, file, { upsert: true });
+
+          if (!error) {
+            const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(filePath);
+            siteDiplomas.push(urlData.publicUrl);
+          }
+        } catch (e) {
+          console.error('Diploma upload error:', e);
+        }
+      }
+
+      renderDiplomas();
+      showToast('Дипломы загружены!');
+      input.value = '';
+    }
+
+    function renderDiplomas() {
+      const container = document.getElementById('diplomas-gallery');
+      if (siteDiplomas.length === 0) {
+        container.innerHTML = '<p style="color:#64748b;padding:20px;">Нет загруженных дипломов</p>';
+        return;
+      }
+      container.innerHTML = siteDiplomas.map((url, idx) => `
+        <div style="position:relative;width:120px;height:120px;border-radius:12px;overflow:hidden;background:#1e293b;">
+          <img src="${url}" style="width:100%;height:100%;object-fit:cover;">
+          <button onclick="removeDiploma(${idx})" style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(239,68,68,0.9);border:none;color:white;cursor:pointer;font-size:14px;">×</button>
+        </div>
+      `).join('');
+    }
+
+    function removeDiploma(idx) {
+      siteDiplomas.splice(idx, 1);
+      renderDiplomas();
+    }
+
+    // Photo Gallery upload
+    async function uploadGalleryPhotos(input) {
+      if (!input.files || input.files.length === 0) return;
+      const files = Array.from(input.files);
+
+      if (siteGallery.length + files.length > 20) {
+        showToast('Максимум 20 изображений', true);
+        return;
+      }
+
+      showToast('Загрузка...');
+
+      for (const file of files) {
+        if (file.size > 5 * 1024 * 1024) continue;
+        if (!file.type.startsWith('image/')) continue;
+
+        try {
+          const fileName = `gallery-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${file.name.split('.').pop()}`;
+          const filePath = `${currentUser.id}/gallery/${fileName}`;
+
+          const { error } = await supabaseClient.storage
+            .from('avatars')
+            .upload(filePath, file, { upsert: true });
+
+          if (!error) {
+            const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(filePath);
+            siteGallery.push(urlData.publicUrl);
+          }
+        } catch (e) {
+          console.error('Gallery upload error:', e);
+        }
+      }
+
+      renderGallery();
+      showToast('Фото загружены!');
+      input.value = '';
+    }
+
+    function renderGallery() {
+      const container = document.getElementById('photo-gallery');
+      if (siteGallery.length === 0) {
+        container.innerHTML = '<p style="color:#64748b;padding:20px;">Нет загруженных фото</p>';
+        return;
+      }
+      container.innerHTML = siteGallery.map((url, idx) => `
+        <div style="position:relative;width:120px;height:120px;border-radius:12px;overflow:hidden;background:#1e293b;">
+          <img src="${url}" style="width:100%;height:100%;object-fit:cover;">
+          <button onclick="removeGalleryPhoto(${idx})" style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(239,68,68,0.9);border:none;color:white;cursor:pointer;font-size:14px;">×</button>
+        </div>
+      `).join('');
+    }
+
+    function removeGalleryPhoto(idx) {
+      siteGallery.splice(idx, 1);
+      renderGallery();
+    }
+
+    // Favicon upload
+    async function uploadFavicon(input) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+
+      if (file.size > 1 * 1024 * 1024) {
+        showToast('Файл слишком большой (макс. 1 MB)', true);
+        return;
+      }
+
+      try {
+        showToast('Загрузка...');
+        const fileName = `favicon-${Date.now()}.${file.name.split('.').pop()}`;
+        const filePath = `${currentUser.id}/${fileName}`;
+
+        const { error } = await supabaseClient.storage
+          .from('avatars')
+          .upload(filePath, file, { upsert: true });
+
+        if (error) throw error;
+
+        const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(filePath);
+        siteFaviconUrl = urlData.publicUrl + '?t=' + Date.now();
+        updateFaviconPreview(siteFaviconUrl);
+        showToast('Favicon загружен!');
+      } catch (e) {
+        console.error('Favicon upload error:', e);
+        showToast('Ошибка загрузки: ' + e.message, true);
+      }
+    }
+
+    function updateFaviconPreview(url) {
+      const preview = document.getElementById('favicon-preview');
+      if (url) {
+        preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:contain;">`;
+        siteFaviconUrl = url;
+      } else {
+        preview.innerHTML = '<span style="color: #64748b; font-size: 10px;">64×64</span>';
+        siteFaviconUrl = null;
+      }
     }
 
     // Theme selection
@@ -6718,6 +7481,27 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
         if (siteData?.id) {
           loadSiteReviews();
         }
+
+        // Load course modules
+        if (siteData?.id) {
+          loadCourseModules();
+        }
+
+        // Set site type radio
+        if (siteData?.site_type) {
+          const radio = document.querySelector(`input[name="site-type"][value="${siteData.site_type}"]`);
+          if (radio) {
+            radio.checked = true;
+            toggleSiteTypeSections(siteData.site_type);
+            // Update card styles
+            document.querySelectorAll('.site-type-option .site-type-card').forEach(card => {
+              card.style.background = 'rgba(255,255,255,0.05)';
+              card.style.borderColor = 'transparent';
+            });
+            radio.closest('.site-type-option').querySelector('.site-type-card').style.background = 'rgba(59,130,246,0.1)';
+            radio.closest('.site-type-option').querySelector('.site-type-card').style.borderColor = 'var(--primary)';
+          }
+        }
       } catch (e) {
         console.error('Load site data error:', e);
       }
@@ -6735,12 +7519,37 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       document.getElementById('site-bio-ru').value = data.bio_ru || '';
       document.getElementById('site-bio-en').value = data.bio_en || '';
 
-      document.getElementById('site-specializations').value = (data.specializations || []).join(', ');
-      document.getElementById('site-education').value = data.education || '';
+      // Specializations per language
+      if (document.getElementById('site-specializations-uk')) {
+        document.getElementById('site-specializations-uk').value = (data.specializations_uk || []).join(', ');
+      }
+      if (document.getElementById('site-specializations-ru')) {
+        document.getElementById('site-specializations-ru').value = (data.specializations_ru || []).join(', ');
+      }
+      if (document.getElementById('site-specializations-en')) {
+        document.getElementById('site-specializations-en').value = (data.specializations_en || []).join(', ');
+      }
+
+      // Education per language
+      if (document.getElementById('site-education-uk')) {
+        document.getElementById('site-education-uk').value = data.education_uk || '';
+      }
+      if (document.getElementById('site-education-ru')) {
+        document.getElementById('site-education-ru').value = data.education_ru || '';
+      }
+      if (document.getElementById('site-education-en')) {
+        document.getElementById('site-education-en').value = data.education_en || '';
+      }
+
       document.getElementById('site-experience').value = data.experience_years || '';
 
-      document.getElementById('site-youtube-url').value = data.youtube_video_url || '';
-      document.getElementById('site-video-title').value = data.video_title_uk || '';
+      // YouTube videos per language
+      document.getElementById('site-youtube-url-uk').value = data.youtube_video_url_uk || '';
+      document.getElementById('site-youtube-url-ru').value = data.youtube_video_url_ru || '';
+      document.getElementById('site-youtube-url-en').value = data.youtube_video_url_en || '';
+      document.getElementById('site-video-title-uk').value = data.video_title_uk || '';
+      document.getElementById('site-video-title-ru').value = data.video_title_ru || '';
+      document.getElementById('site-video-title-en').value = data.video_title_en || '';
 
       const themeRadio = document.querySelector(`input[name="site-theme"][value="${data.theme || 'modern'}"]`);
       if (themeRadio) {
@@ -6769,16 +7578,150 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       document.getElementById('site-disclaimer-ru').value = data.disclaimer_ru || '';
       document.getElementById('site-disclaimer-en').value = data.disclaimer_en || '';
 
-      // Site photo
-      if (data.site_photo_url) {
-        updateSitePhotoPreview(data.site_photo_url);
+      // Site photos per language
+      if (data.site_photo_url_uk) {
+        sitePhotoUrls.uk = data.site_photo_url_uk;
+        updateSitePhotoPreviewLang('uk', data.site_photo_url_uk);
+      }
+      if (data.site_photo_url_ru) {
+        sitePhotoUrls.ru = data.site_photo_url_ru;
+        updateSitePhotoPreviewLang('ru', data.site_photo_url_ru);
+      }
+      if (data.site_photo_url_en) {
+        sitePhotoUrls.en = data.site_photo_url_en;
+        updateSitePhotoPreviewLang('en', data.site_photo_url_en);
+      }
+
+      // Diplomas and Gallery
+      if (data.diplomas && Array.isArray(data.diplomas)) {
+        siteDiplomas = data.diplomas;
+        renderDiplomas();
+      }
+      if (data.gallery && Array.isArray(data.gallery)) {
+        siteGallery = data.gallery;
+        renderGallery();
+      }
+
+      // Favicon
+      if (data.favicon_url) {
+        siteFaviconUrl = data.favicon_url;
+        updateFaviconPreview(data.favicon_url);
+      }
+
+      // Custom HEAD code
+      if (document.getElementById('site-head-code')) {
+        document.getElementById('site-head-code').value = data.custom_head_code || '';
+      }
+
+      // Site type
+      const siteType = data.site_type || 'specialist';
+      const siteTypeRadio = document.querySelector(`input[name="site-type"][value="${siteType}"]`);
+      if (siteTypeRadio) {
+        siteTypeRadio.checked = true;
+        currentSiteType = siteType;
+        toggleSiteTypeSections(siteType);
+      }
+
+      // Course fields
+      if (document.getElementById('course-title-uk')) {
+        document.getElementById('course-title-uk').value = data.course_title_uk || '';
+      }
+      if (document.getElementById('course-title-ru')) {
+        document.getElementById('course-title-ru').value = data.course_title_ru || '';
+      }
+      if (document.getElementById('course-title-en')) {
+        document.getElementById('course-title-en').value = data.course_title_en || '';
+      }
+      if (document.getElementById('course-subtitle-uk')) {
+        document.getElementById('course-subtitle-uk').value = data.course_subtitle_uk || '';
+      }
+      if (document.getElementById('course-subtitle-ru')) {
+        document.getElementById('course-subtitle-ru').value = data.course_subtitle_ru || '';
+      }
+      if (document.getElementById('course-subtitle-en')) {
+        document.getElementById('course-subtitle-en').value = data.course_subtitle_en || '';
+      }
+      if (document.getElementById('course-description-uk')) {
+        document.getElementById('course-description-uk').value = data.course_description_uk || '';
+      }
+      if (document.getElementById('course-description-ru')) {
+        document.getElementById('course-description-ru').value = data.course_description_ru || '';
+      }
+      if (document.getElementById('course-description-en')) {
+        document.getElementById('course-description-en').value = data.course_description_en || '';
+      }
+
+      // Course pricing
+      if (document.getElementById('course-price')) {
+        document.getElementById('course-price').value = data.course_price || '';
+      }
+      if (document.getElementById('course-sale-price')) {
+        document.getElementById('course-sale-price').value = data.course_sale_price || '';
+      }
+      if (document.getElementById('course-show-timer')) {
+        document.getElementById('course-show-timer').checked = data.course_show_timer || false;
+      }
+      if (document.getElementById('course-timer-end')) {
+        document.getElementById('course-timer-end').value = data.course_timer_end || '';
+      }
+
+      // Benefits cards (4)
+      for (let i = 1; i <= 4; i++) {
+        const titleEl = document.getElementById(`benefit-${i}-title-uk`);
+        const textEl = document.getElementById(`benefit-${i}-text-uk`);
+        if (titleEl) titleEl.value = data[`benefit_${i}_title_uk`] || '';
+        if (textEl) textEl.value = data[`benefit_${i}_text_uk`] || '';
+      }
+
+      // Target audience avatars (4)
+      for (let i = 1; i <= 4; i++) {
+        const titleEl = document.getElementById(`avatar-${i}-title-uk`);
+        const textEl = document.getElementById(`avatar-${i}-text-uk`);
+        if (titleEl) titleEl.value = data[`avatar_${i}_title_uk`] || '';
+        if (textEl) textEl.value = data[`avatar_${i}_text_uk`] || '';
+      }
+
+      // Results (8)
+      for (let i = 1; i <= 8; i++) {
+        const el = document.getElementById(`result-${i}-uk`);
+        if (el) el.value = data[`result_${i}_uk`] || '';
+      }
+
+      // FAQ
+      const faqData = data.faq_uk || [];
+      populateFaqItems(faqData);
+
+      // Final CTA
+      if (document.getElementById('final-title-uk')) {
+        document.getElementById('final-title-uk').value = data.final_title_uk || '';
+      }
+      if (document.getElementById('final-subtitle-uk')) {
+        document.getElementById('final-subtitle-uk').value = data.final_subtitle_uk || '';
+      }
+      if (document.getElementById('guarantee-uk')) {
+        document.getElementById('guarantee-uk').value = data.guarantee_uk || '';
       }
 
       // Update preview link
       if (data.slug && data.is_published) {
         const previewLink = document.getElementById('site-preview-link');
-        previewLink.href = `/p/${data.slug}`;
+        const siteTypeForUrl = data.site_type === 'course' ? 'course' : 'p';
+        previewLink.href = `/${siteTypeForUrl}/${data.slug}`;
         previewLink.style.display = 'inline-flex';
+      }
+    }
+
+    // Helper to populate FAQ items
+    function populateFaqItems(faqData) {
+      const container = document.getElementById('course-faq-list');
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      if (faqData && faqData.length > 0) {
+        faqData.forEach((item, index) => {
+          addFaqItem(item.question || '', item.answer || '');
+        });
       }
     }
 
@@ -6797,30 +7740,43 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
         return;
       }
 
-      const specializations = document.getElementById('site-specializations').value
-        .split(',')
-        .map(s => s.trim())
-        .filter(s => s);
+      // Specializations per language
+      const parseCommaList = (val) => val ? val.split(',').map(s => s.trim()).filter(s => s) : [];
 
       const sitePayload = {
         user_id: currentUser.id,
         slug,
         is_published: document.getElementById('site-published').checked,
 
+        // Headlines
         headline_uk: document.getElementById('site-headline-uk').value,
         headline_ru: document.getElementById('site-headline-ru').value,
         headline_en: document.getElementById('site-headline-en').value,
 
+        // Bio
         bio_uk: document.getElementById('site-bio-uk').value,
         bio_ru: document.getElementById('site-bio-ru').value,
         bio_en: document.getElementById('site-bio-en').value,
 
-        specializations,
-        education: document.getElementById('site-education').value,
+        // Specializations per language
+        specializations_uk: parseCommaList(document.getElementById('site-specializations-uk')?.value),
+        specializations_ru: parseCommaList(document.getElementById('site-specializations-ru')?.value),
+        specializations_en: parseCommaList(document.getElementById('site-specializations-en')?.value),
+
+        // Education per language
+        education_uk: document.getElementById('site-education-uk')?.value || '',
+        education_ru: document.getElementById('site-education-ru')?.value || '',
+        education_en: document.getElementById('site-education-en')?.value || '',
+
         experience_years: parseInt(document.getElementById('site-experience').value) || 0,
 
-        youtube_video_url: document.getElementById('site-youtube-url').value,
-        video_title_uk: document.getElementById('site-video-title').value,
+        // YouTube videos per language
+        youtube_video_url_uk: document.getElementById('site-youtube-url-uk').value,
+        youtube_video_url_ru: document.getElementById('site-youtube-url-ru').value,
+        youtube_video_url_en: document.getElementById('site-youtube-url-en').value,
+        video_title_uk: document.getElementById('site-video-title-uk').value,
+        video_title_ru: document.getElementById('site-video-title-ru').value,
+        video_title_en: document.getElementById('site-video-title-en').value,
 
         theme: document.querySelector('input[name="site-theme"]:checked')?.value || 'modern',
         primary_color: document.getElementById('site-primary-color').value,
@@ -6844,9 +7800,95 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
         disclaimer_ru: document.getElementById('site-disclaimer-ru').value,
         disclaimer_en: document.getElementById('site-disclaimer-en').value,
 
-        // Site photo
-        site_photo_url: sitePhotoUrl
+        // Site photos per language
+        site_photo_url_uk: sitePhotoUrls.uk,
+        site_photo_url_ru: sitePhotoUrls.ru,
+        site_photo_url_en: sitePhotoUrls.en,
+
+        // Carousels
+        diplomas: siteDiplomas,
+        gallery: siteGallery,
+
+        // Favicon and HEAD code
+        favicon_url: siteFaviconUrl,
+        custom_head_code: document.getElementById('site-head-code')?.value || '',
+
+        // Site type
+        site_type: document.querySelector('input[name="site-type"]:checked')?.value || 'specialist',
+
+        // Course fields
+        course_title_uk: document.getElementById('course-title-uk')?.value || '',
+        course_title_ru: document.getElementById('course-title-ru')?.value || '',
+        course_title_en: document.getElementById('course-title-en')?.value || '',
+        course_subtitle_uk: document.getElementById('course-subtitle-uk')?.value || '',
+        course_subtitle_ru: document.getElementById('course-subtitle-ru')?.value || '',
+        course_subtitle_en: document.getElementById('course-subtitle-en')?.value || '',
+        course_description_uk: document.getElementById('course-description-uk')?.value || '',
+        course_description_ru: document.getElementById('course-description-ru')?.value || '',
+        course_description_en: document.getElementById('course-description-en')?.value || '',
+        course_target_uk: document.getElementById('course-target-uk')?.value || '',
+        course_target_ru: document.getElementById('course-target-ru')?.value || '',
+        course_target_en: document.getElementById('course-target-en')?.value || '',
+        course_benefits_uk: document.getElementById('course-benefits-uk')?.value || '',
+        course_benefits_ru: document.getElementById('course-benefits-ru')?.value || '',
+        course_benefits_en: document.getElementById('course-benefits-en')?.value || '',
+
+        // Course pricing
+        course_price: parseFloat(document.getElementById('course-price')?.value) || null,
+        course_sale_price: parseFloat(document.getElementById('course-sale-price')?.value) || null,
+        course_show_timer: document.getElementById('course-show-timer')?.checked || false,
+        course_timer_end: document.getElementById('course-timer-end')?.value || null,
+
+        // Benefits cards
+        benefit_1_title_uk: document.getElementById('benefit-1-title-uk')?.value || '',
+        benefit_1_text_uk: document.getElementById('benefit-1-text-uk')?.value || '',
+        benefit_2_title_uk: document.getElementById('benefit-2-title-uk')?.value || '',
+        benefit_2_text_uk: document.getElementById('benefit-2-text-uk')?.value || '',
+        benefit_3_title_uk: document.getElementById('benefit-3-title-uk')?.value || '',
+        benefit_3_text_uk: document.getElementById('benefit-3-text-uk')?.value || '',
+        benefit_4_title_uk: document.getElementById('benefit-4-title-uk')?.value || '',
+        benefit_4_text_uk: document.getElementById('benefit-4-text-uk')?.value || '',
+
+        // Target audience avatars
+        avatar_1_title_uk: document.getElementById('avatar-1-title-uk')?.value || '',
+        avatar_1_text_uk: document.getElementById('avatar-1-text-uk')?.value || '',
+        avatar_2_title_uk: document.getElementById('avatar-2-title-uk')?.value || '',
+        avatar_2_text_uk: document.getElementById('avatar-2-text-uk')?.value || '',
+        avatar_3_title_uk: document.getElementById('avatar-3-title-uk')?.value || '',
+        avatar_3_text_uk: document.getElementById('avatar-3-text-uk')?.value || '',
+        avatar_4_title_uk: document.getElementById('avatar-4-title-uk')?.value || '',
+        avatar_4_text_uk: document.getElementById('avatar-4-text-uk')?.value || '',
+
+        // Results
+        result_1_uk: document.getElementById('result-1-uk')?.value || '',
+        result_2_uk: document.getElementById('result-2-uk')?.value || '',
+        result_3_uk: document.getElementById('result-3-uk')?.value || '',
+        result_4_uk: document.getElementById('result-4-uk')?.value || '',
+        result_5_uk: document.getElementById('result-5-uk')?.value || '',
+        result_6_uk: document.getElementById('result-6-uk')?.value || '',
+        result_7_uk: document.getElementById('result-7-uk')?.value || '',
+        result_8_uk: document.getElementById('result-8-uk')?.value || '',
+
+        // FAQ
+        faq_uk: collectFaqItems(),
+
+        // Final CTA
+        final_title_uk: document.getElementById('final-title-uk')?.value || '',
+        final_subtitle_uk: document.getElementById('final-subtitle-uk')?.value || '',
+        guarantee_uk: document.getElementById('guarantee-uk')?.value || ''
       };
+
+      function collectFaqItems() {
+        const items = [];
+        document.querySelectorAll('#course-faq-list .faq-item').forEach(item => {
+          const question = item.querySelector('.faq-question')?.value || '';
+          const answer = item.querySelector('.faq-answer')?.value || '';
+          if (question || answer) {
+            items.push({ question, answer });
+          }
+        });
+        return items;
+      }
 
       try {
         let result;
@@ -7017,6 +8059,138 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
         siteServices = siteServices.filter(s => s.id !== id);
         renderSiteServices();
         showToast('Услуга удалена');
+      } catch (e) {
+        showToast('Ошибка: ' + e.message, true);
+      }
+    }
+
+    // Course Modules
+    let courseModules = [];
+
+    async function loadCourseModules() {
+      if (!siteData?.id) return;
+
+      try {
+        const { data: modules } = await supabaseClient
+          .from('course_modules')
+          .select('*')
+          .eq('site_id', siteData.id)
+          .order('sort_order');
+
+        courseModules = modules || [];
+        renderCourseModules();
+      } catch (e) {
+        console.error('Load modules error:', e);
+      }
+    }
+
+    function renderCourseModules() {
+      const container = document.getElementById('course-modules-list');
+      if (!container) return;
+
+      if (courseModules.length === 0) {
+        container.innerHTML = '<p style="color: #64748b; text-align: center; padding: 20px;">Модули не добавлены</p>';
+        return;
+      }
+
+      container.innerHTML = courseModules.map((m, idx) => `
+        <div style="padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 12px; display: flex; gap: 16px; align-items: flex-start;">
+          <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), #8b5cf6); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; flex-shrink: 0;">
+            ${idx + 1}
+          </div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; margin-bottom: 4px;">${m.title_uk || ''}</div>
+            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 6px;">${m.description_uk || ''}</p>
+            ${m.result_uk ? `<span style="font-size: 12px; color: #16a34a; background: rgba(22, 163, 74, 0.1); padding: 4px 8px; border-radius: 4px;">Результат: ${m.result_uk}</span>` : ''}
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary" style="padding: 6px 10px;" onclick="openModuleModal('${m.id}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="btn btn-secondary" style="padding: 6px 10px;" onclick="deleteModule('${m.id}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openModuleModal(id = null) {
+      document.getElementById('module-edit-id').value = id || '';
+      document.getElementById('module-title-uk').value = '';
+      document.getElementById('module-description-uk').value = '';
+      document.getElementById('module-result-uk').value = '';
+
+      if (id) {
+        const module = courseModules.find(m => m.id === id);
+        if (module) {
+          document.getElementById('module-title-uk').value = module.title_uk || '';
+          document.getElementById('module-description-uk').value = module.description_uk || '';
+          document.getElementById('module-result-uk').value = module.result_uk || '';
+        }
+      }
+
+      document.getElementById('module-modal').classList.add('visible');
+    }
+
+    function closeModuleModal() {
+      document.getElementById('module-modal').classList.remove('visible');
+    }
+
+    async function saveModule() {
+      const id = document.getElementById('module-edit-id').value;
+      const title = document.getElementById('module-title-uk').value.trim();
+      const description = document.getElementById('module-description-uk').value.trim();
+      const result = document.getElementById('module-result-uk').value.trim();
+
+      if (!title) {
+        showToast('Введите название модуля', true);
+        return;
+      }
+
+      try {
+        const moduleData = {
+          site_id: siteData.id,
+          title_uk: title,
+          description_uk: description,
+          result_uk: result,
+          sort_order: id ? undefined : courseModules.length
+        };
+
+        if (id) {
+          delete moduleData.sort_order;
+          delete moduleData.site_id;
+          await supabaseClient
+            .from('course_modules')
+            .update(moduleData)
+            .eq('id', id);
+        } else {
+          await supabaseClient
+            .from('course_modules')
+            .insert(moduleData);
+        }
+
+        closeModuleModal();
+        await loadCourseModules();
+        showToast('Модуль сохранён');
+      } catch (e) {
+        console.error('Save module error:', e);
+        showToast('Ошибка: ' + e.message, true);
+      }
+    }
+
+    async function deleteModule(id) {
+      if (!confirm('Удалить этот модуль?')) return;
+
+      try {
+        await supabaseClient
+          .from('course_modules')
+          .delete()
+          .eq('id', id);
+
+        courseModules = courseModules.filter(m => m.id !== id);
+        renderCourseModules();
+        showToast('Модуль удалён');
       } catch (e) {
         showToast('Ошибка: ' + e.message, true);
       }
