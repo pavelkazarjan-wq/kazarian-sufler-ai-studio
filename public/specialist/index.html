@@ -1933,16 +1933,21 @@
       let reviewsHtml = '';
       data.reviews.forEach(r => {
         const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        // Avatar - photo or first letter
+        const avatarHtml = r.client_photo
+          ? `<img class="review-avatar" src="${r.client_photo}" alt="${r.client_name}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">`
+          : `<div class="review-avatar">${r.client_name[0]}</div>`;
+        // Screenshots gallery
         let screenshotsHtml = '';
         if (r.screenshots && r.screenshots.length > 0) {
           screenshotsHtml = `<div class="review-screenshots" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
-            ${r.screenshots.map(url => `<img src="${url}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid var(--border);" onclick="window.open('${url}', '_blank')">`).join('')}
+            ${r.screenshots.map(url => `<img src="${url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid var(--border);" onclick="window.open('${url}', '_blank')" alt="Screenshot">`).join('')}
           </div>`;
         }
         reviewsHtml += `
           <div class="review-card ${r.is_featured ? 'featured' : ''}">
             <div class="review-header">
-              <div class="review-avatar">${r.client_name[0]}</div>
+              ${avatarHtml}
               <div>
                 <div class="review-name">${r.client_name}</div>
                 <div class="review-rating">${stars}</div>
