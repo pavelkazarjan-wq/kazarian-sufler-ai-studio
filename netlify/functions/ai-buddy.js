@@ -1,9 +1,7 @@
 // AI Buddy - Smart assistant for site editing
-// Uses Gemini API to help fill and review site content
+// Uses OpenAI GPT to help fill and review site content
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 const SYSTEM_PROMPT = `Ти - AI Бадді, помічник для заповнення сайтів-візиток психологів та курсів. Спілкуєшся як друг-підліток: легко, дружньо, з жартами.
 
@@ -96,50 +94,69 @@ exports.handler = async (event, context) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message is required' }) };
     }
 
-    if (!GEMINI_API_KEY) {
-      // Fallback response if no API key
+    if (!OPENAI_API_KEY) {
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({
           action: 'chat',
-          message: 'Йо! Зараз я в режимі демо. Попроси адміна підключити Gemini API, і я зможу реально допомагати!'
+          message: 'Йо! Зараз я в режимі демо. Попроси адміна підключити OpenAI API, і я зможу реально допомагати!'
         })
       };
     }
 
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    // Build conversation history
-    let conversationHistory = SYSTEM_PROMPT + '\n\n';
+    // Build messages for OpenAI
+    const messages = [
+      { role: 'system', content: SYSTEM_PROMPT }
+    ];
 
     // Add site context
     if (siteContext) {
-      conversationHistory += `КОНТЕКСТ САЙТУ:\n`;
-      conversationHistory += `Тип: ${siteContext.siteType === 'course' ? 'Курс' : 'Візитка спеціаліста'}\n`;
-      if (siteContext.headline_uk) conversationHistory += `Заголовок (UK): ${siteContext.headline_uk}\n`;
-      if (siteContext.bio_uk) conversationHistory += `Про себе (UK): ${siteContext.bio_uk.substring(0, 200)}...\n`;
-      if (siteContext.specializations) conversationHistory += `Спеціалізації: ${siteContext.specializations}\n`;
-      if (siteContext.experience) conversationHistory += `Досвід: ${siteContext.experience} років\n`;
-      if (siteContext.course_title_uk) conversationHistory += `Назва курсу: ${siteContext.course_title_uk}\n`;
-      conversationHistory += '\n';
+      let contextText = `КОНТЕКСТ САЙТУ:\n`;
+      contextText += `Тип: ${siteContext.siteType === 'course' ? 'Курс' : 'Візитка спеціаліста'}\n`;
+      if (siteContext.headline_uk) contextText += `Заголовок (UK): ${siteContext.headline_uk}\n`;
+      if (siteContext.bio_uk) contextText += `Про себе (UK): ${siteContext.bio_uk.substring(0, 200)}...\n`;
+      if (siteContext.specializations) contextText += `Спеціалізації: ${siteContext.specializations}\n`;
+      if (siteContext.experience) contextText += `Досвід: ${siteContext.experience} років\n`;
+      if (siteContext.course_title_uk) contextText += `Назва курсу: ${siteContext.course_title_uk}\n`;
+      messages.push({ role: 'system', content: contextText });
     }
 
     // Add history
     if (history && history.length > 0) {
-      conversationHistory += 'ІСТОРІЯ ДІАЛОГУ:\n';
       history.forEach(msg => {
-        conversationHistory += `${msg.type === 'user' ? 'Користувач' : 'Бадді'}: ${msg.text || msg.message}\n`;
+        messages.push({
+          role: msg.type === 'user' ? 'user' : 'assistant',
+          content: msg.text || msg.message
+        });
       });
-      conversationHistory += '\n';
     }
 
-    conversationHistory += `ЗАПИТ КОРИСТУВАЧА: ${message}\n\n`;
-    conversationHistory += 'Відповідай ТІЛЬКИ валідним JSON. Без пояснень до або після JSON.';
+    // Add current message
+    messages.push({ role: 'user', content: message + '\n\nВідповідай ТІЛЬКИ валідним JSON.' });
 
-    const result = await model.generateContent(conversationHistory);
-    const responseText = result.response.text();
+    // Call OpenAI API
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: messages,
+        temperature: 0.7,
+        max_tokens: 2000
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`OpenAI API error: ${error}`);
+    }
+
+    const data = await response.json();
+    const responseText = data.choices[0].message.content;
 
     // Try to parse JSON from response
     let jsonResponse;
