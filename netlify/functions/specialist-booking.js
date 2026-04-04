@@ -1,10 +1,12 @@
 // API for booking consultations from public specialist pages
-// POST: Creates a booking request
+// POST: Creates a booking request and adds to waiting_clients for dashboard
 
+const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ngxbfuimddefjeufwcwf.supabase.co';
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+const BASE_URL = process.env.URL || 'https://expertpage.pro';
 
 exports.handler = async (event, context) => {
   const headers = {
@@ -124,7 +126,10 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Create calendar session if date and time are provided
+    // Create waiting_clients entry for dashboard display
+    let consultationLink = null;
+    let shortCode = null;
+
     if (preferred_date && preferred_time) {
       let serviceName = 'Консультація';
       let serviceDuration = 60;
@@ -142,6 +147,56 @@ exports.handler = async (event, context) => {
         }
       }
 
+      // Generate session ID and token for consultation link
+      const sessionId = 'cons-' + crypto.randomBytes(12).toString('hex');
+      shortCode = crypto.randomBytes(4).toString('hex');
+
+      // Parse scheduled time
+      const dateTimeStr = `${preferred_date}T${preferred_time}:00`;
+      const scheduledTime = new Date(dateTimeStr);
+      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+
+      // Create token for consultation link
+      const consultationData = {
+        s: sessionId,
+        n: client_name,
+        e: expiresAt.getTime(),
+        c: Date.now(),
+        t: scheduledTime.getTime()
+      };
+      const token = Buffer.from(JSON.stringify(consultationData)).toString('base64url');
+      consultationLink = `${BASE_URL}/pip.html?mode=client&token=${token}`;
+      const shortLink = `${BASE_URL}/c/${shortCode}`;
+
+      // Create notes with booking info
+      const notesText = `Заявка з сайту /p/${slug}. ${serviceName}.${message ? '\nПовідомлення: ' + message : ''}`;
+
+      // Insert into waiting_clients for dashboard display
+      const { error: waitingError } = await supabase
+        .from('waiting_clients')
+        .insert({
+          session_id: sessionId,
+          client_name,
+          status: 'scheduled',
+          scheduled_time: scheduledTime.toISOString(),
+          token: token,
+          link: consultationLink,
+          short_code: shortCode,
+          client_phone: client_phone || null,
+          client_email: client_email || null,
+          notes: notesText,
+          expires_at: expiresAt.toISOString(),
+          user_id: site.user_id
+        });
+
+      if (waitingError) {
+        console.error('Waiting clients error:', waitingError);
+        // Don't fail the booking
+      } else {
+        console.log('✅ Created waiting_clients entry:', sessionId);
+      }
+
+      // Also create calendar session for profile calendar
       const sessionData = {
         user_id: site.user_id,
         client_name,
@@ -149,7 +204,7 @@ exports.handler = async (event, context) => {
         session_date: preferred_date,
         session_time: preferred_time,
         duration: serviceDuration,
-        notes: `Заявка з сайту. ${message ? 'Повідомлення: ' + message : ''}${client_phone ? '\nТел: ' + client_phone : ''}${client_email ? '\nEmail: ' + client_email : ''}`
+        notes: notesText
       };
 
       const { error: sessionError } = await supabase
@@ -158,7 +213,6 @@ exports.handler = async (event, context) => {
 
       if (sessionError) {
         console.error('Calendar session error:', sessionError);
-        // Don't fail the booking if session creation fails
       }
     }
 
@@ -206,9 +260,13 @@ exports.handler = async (event, context) => {
         success: true,
         booking_id: booking.id,
         payment_required: paymentRequired,
+        consultation_link: consultationLink,
+        short_code: shortCode,
         message: paymentRequired
           ? 'Заявка створена. Очікуйте посилання на оплату.'
-          : 'Заявка створена. Спеціаліст зв\'яжеться з вами найближчим часом.'
+          : consultationLink
+            ? 'Заявка створена! Посилання на консультацію надіслано.'
+            : 'Заявка створена. Спеціаліст зв\'яжеться з вами найближчим часом.'
       })
     };
 
