@@ -15,11 +15,13 @@
   from = "/studio/*"
   to = "https://kazarian-ai-studio.netlify.app/:splat"
   status = 301
+  force = true
 
 [[redirects]]
   from = "/studio"
   to = "https://kazarian-ai-studio.netlify.app/"
   status = 301
+  force = true
 
 # Sufler Studio (renamed from /studio/)
 [[redirects]]
