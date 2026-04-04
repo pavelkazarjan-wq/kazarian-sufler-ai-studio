@@ -496,6 +496,63 @@
       box-shadow: 0 12px 30px rgba(139, 92, 246, 0.5);
     }
 
+    /* External Buttons */
+    .external-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .external-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .external-btn.primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+    .external-btn.primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .external-btn.secondary {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    .external-btn.secondary:hover {
+      background: rgba(59, 130, 246, 0.1);
+      transform: translateY(-3px);
+    }
+
+    .external-btn.accent {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #1a1a2e;
+      box-shadow: 0 4px 15px rgba(212, 168, 83, 0.3);
+    }
+    .external-btn.accent:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(212, 168, 83, 0.5);
+    }
+
+    .external-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
     /* Video Section */
     .video-section {
       padding: 60px 0;
@@ -1652,6 +1709,9 @@
 
           <!-- Social Icons Bar -->
           <div class="hero-social" id="hero-social"></div>
+
+          <!-- External Buttons -->
+          <div class="external-buttons" id="external-buttons"></div>
         </div>
       </div>
     </div>
@@ -2312,6 +2372,24 @@
         </a>`;
       }
       document.getElementById('hero-social').innerHTML = socialHtml;
+
+      // External buttons
+      if (data.external_buttons && data.external_buttons.length > 0) {
+        const extButtonsHtml = data.external_buttons
+          .filter(btn => btn.label && btn.url)
+          .map(btn => {
+            const style = btn.style || 'primary';
+            return `<a class="external-btn ${style}" href="${btn.url}" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+              ${btn.label}
+            </a>`;
+          }).join('');
+        document.getElementById('external-buttons').innerHTML = extButtonsHtml;
+      }
 
       // Footer links - always show legal links
       const footerHtml = `

@@ -208,6 +208,7 @@ exports.handler = async (event, context) => {
         payment_required: site.payment_required,
         busy_slots: busySlots || []
       },
+      external_buttons: site.external_buttons || [],
       lang: lang,
       available_langs: ['uk', 'ru', 'en']
     };
