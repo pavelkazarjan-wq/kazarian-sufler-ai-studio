@@ -1,9 +1,7 @@
 // AI Site Generator - Generate site content from user prompt
-// Uses Gemini API to create multilingual content for specialist pages
+// Uses OpenAI GPT to create multilingual content for specialist pages
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 const SYSTEM_PROMPT = `Ти - експертний копірайтер для створення персональних сайтів спеціалістів (психологи, коучі, лікарі, маркетологи тощо).
 
@@ -49,7 +47,8 @@ exports.handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type': 'application/json'
   };
 
   if (event.httpMethod === 'OPTIONS') {
@@ -83,7 +82,7 @@ exports.handler = async (event, context) => {
       };
     }
 
-    if (!GEMINI_API_KEY) {
+    if (!OPENAI_API_KEY) {
       return {
         statusCode: 500,
         headers,
@@ -91,19 +90,35 @@ exports.handler = async (event, context) => {
       };
     }
 
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
     const userMessage = userName
       ? `Ім'я спеціаліста: ${userName}\n\nОпис від користувача:\n${prompt}`
       : `Опис від користувача:\n${prompt}`;
 
-    const result = await model.generateContent([
-      { text: SYSTEM_PROMPT },
-      { text: userMessage }
-    ]);
+    // Call OpenAI API
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: userMessage + '\n\nВідповідай ТІЛЬКИ валідним JSON.' }
+        ],
+        temperature: 0.7,
+        max_tokens: 2000
+      })
+    });
 
-    const responseText = result.response.text();
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`OpenAI API error: ${errorText}`);
+    }
+
+    const data = await response.json();
+    const responseText = data.choices[0].message.content;
 
     // Parse JSON from response
     let jsonMatch = responseText.match(/\{[\s\S]*\}/);
