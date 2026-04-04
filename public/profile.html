@@ -8286,7 +8286,7 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
           .from('specialist_sites')
           .select('*')
           .eq('user_id', currentUser.id)
-          .single();
+          .maybeSingle();
 
         if (data) {
           siteData = data;

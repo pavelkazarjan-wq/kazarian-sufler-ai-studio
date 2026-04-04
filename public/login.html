@@ -364,19 +364,6 @@
       </form>
     </div>
 
-    <!-- Project Switcher -->
-    <div style="margin-top:20px;text-align:center;">
-      <a href="/studio/"
-         style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;transition:transform 0.2s;"
-         onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
-          <rect x="2" y="3" width="20" height="14" rx="2"></rect>
-          <line x1="8" y1="21" x2="16" y2="21"></line>
-          <line x1="12" y1="17" x2="12" y2="21"></line>
-        </svg>
-        Суфлер Студио
-      </a>
-    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -385,6 +372,17 @@
     let supabaseClient = null;
     let SUPABASE_URL = '';
     let SUPABASE_ANON_KEY = '';
+
+    // Get redirect URL from query params
+    function getRedirectUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect');
+      // Only allow internal redirects (starting with /)
+      if (redirect && redirect.startsWith('/')) {
+        return redirect;
+      }
+      return '/app.html';
+    }
 
     (async () => {
       try {
@@ -398,7 +396,7 @@
         // Check if already logged in
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
-          window.location.href = '/app.html';
+          window.location.href = getRedirectUrl();
         }
       } catch (e) {
         console.error('Config load failed:', e);
@@ -499,8 +497,8 @@
           localStorage.removeItem('webinar_remember_email');
         }
 
-        // Success - redirect to app
-        window.location.href = '/app.html';
+        // Success - redirect
+        window.location.href = getRedirectUrl();
 
       } catch (err) {
         showError('Ошибка подключения');
@@ -557,8 +555,8 @@
 
         // Check if email confirmation is required
         if (data.session) {
-          // Auto-confirmed, redirect to app
-          window.location.href = '/app.html';
+          // Auto-confirmed, redirect
+          window.location.href = getRedirectUrl();
         } else {
           // Email confirmation required
           showSuccess('Проверьте почту для подтверждения аккаунта');

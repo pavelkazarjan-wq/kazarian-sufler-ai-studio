@@ -1,9 +1,7 @@
 // AI Legal Assistant - Generates legal documents for websites
-// Uses Gemini API to create Offer Agreement, Privacy Policy, Disclaimer
+// Uses OpenAI GPT to create Offer Agreement, Privacy Policy, Disclaimer
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 const LEGAL_SYSTEM_PROMPT = `Ти — AI юрист, який створює юридичні документи для українських підприємців (ФОП та ТОВ).
 
@@ -90,7 +88,7 @@ exports.handler = async (event, context) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Company name is required' }) };
     }
 
-    if (!GEMINI_API_KEY) {
+    if (!OPENAI_API_KEY) {
       // Return demo documents if no API key
       return {
         statusCode: 200,
@@ -99,32 +97,51 @@ exports.handler = async (event, context) => {
       };
     }
 
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    let prompt = LEGAL_SYSTEM_PROMPT + '\n\n';
-    prompt += 'ДАНІ ДЛЯ ДОКУМЕНТІВ:\n';
-    prompt += `Назва: ${companyName}\n`;
-    prompt += `ЄДРПОУ/ІПН: ${companyCode || 'не вказано'}\n`;
-    prompt += `Адреса: ${address || 'не вказано'}\n`;
-    prompt += `Email: ${email || 'не вказано'}\n`;
-    prompt += `Послуги: ${services || 'Психологічні консультації, коучинг, тренінги'}\n`;
-    prompt += `Тип сайту: ${siteType === 'course' ? 'Онлайн курс' : 'Психологічні послуги'}\n\n`;
+    let userPrompt = 'ДАНІ ДЛЯ ДОКУМЕНТІВ:\n';
+    userPrompt += `Назва: ${companyName}\n`;
+    userPrompt += `ЄДРПОУ/ІПН: ${companyCode || 'не вказано'}\n`;
+    userPrompt += `Адреса: ${address || 'не вказано'}\n`;
+    userPrompt += `Email: ${email || 'не вказано'}\n`;
+    userPrompt += `Послуги: ${services || 'Психологічні консультації, коучинг, тренінги'}\n`;
+    userPrompt += `Тип сайту: ${siteType === 'course' ? 'Онлайн курс' : 'Психологічні послуги'}\n\n`;
 
     if (type === 'offer') {
-      prompt += 'Згенеруй ТІЛЬКИ договір оферти (offer_uk, offer_ru, offer_en).\n';
+      userPrompt += 'Згенеруй ТІЛЬКИ договір оферти (offer_uk, offer_ru, offer_en).\n';
     } else if (type === 'privacy') {
-      prompt += 'Згенеруй ТІЛЬКИ політику конфіденційності (privacy_uk, privacy_ru, privacy_en).\n';
+      userPrompt += 'Згенеруй ТІЛЬКИ політику конфіденційності (privacy_uk, privacy_ru, privacy_en).\n';
     } else if (type === 'disclaimer') {
-      prompt += 'Згенеруй ТІЛЬКИ відмову від відповідальності (disclaimer_uk, disclaimer_ru, disclaimer_en).\n';
+      userPrompt += 'Згенеруй ТІЛЬКИ відмову від відповідальності (disclaimer_uk, disclaimer_ru, disclaimer_en).\n';
     } else {
-      prompt += 'Згенеруй ВСІ три документи на трьох мовах.\n';
+      userPrompt += 'Згенеруй ВСІ три документи на трьох мовах.\n';
     }
 
-    prompt += '\nВідповідай ТІЛЬКИ валідним JSON. Без пояснень до або після JSON.';
+    userPrompt += '\nВідповідай ТІЛЬКИ валідним JSON. Без пояснень до або після JSON.';
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    // Call OpenAI API
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: LEGAL_SYSTEM_PROMPT },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.5,
+        max_tokens: 4000
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`OpenAI API error: ${errorText}`);
+    }
+
+    const data = await response.json();
+    const responseText = data.choices[0].message.content;
 
     // Parse JSON from response
     let jsonResponse;

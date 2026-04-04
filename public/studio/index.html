@@ -1991,7 +1991,7 @@
     ESC — выход из режима трансляции
   </div>
 
-  <!-- Auth screen -->
+  <!-- Auth loading screen -->
   <div id="auth-screen" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#0f172a;display:flex;align-items:center;justify-content:center;z-index:10000;">
     <div style="text-align:center;padding:40px;">
       <div style="width:60px;height:60px;margin:0 auto 20px;background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899);border-radius:16px;display:flex;align-items:center;justify-content:center;">
@@ -2001,44 +2001,33 @@
         </svg>
       </div>
       <h2 style="color:white;font-family:Inter,sans-serif;margin-bottom:20px;">WEBINAR Studio</h2>
-      <input type="password" id="auth-password" placeholder="Введите пароль" style="width:250px;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:white;font-size:16px;text-align:center;" onkeypress="if(event.key==='Enter')checkAuth()">
-      <br><br>
-      <button onclick="checkAuth()" style="padding:12px 32px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border:none;border-radius:8px;font-size:16px;cursor:pointer;">Войти</button>
-      <p id="auth-error" style="color:#ef4444;margin-top:15px;display:none;">Неверный пароль</p>
+      <div style="width:40px;height:40px;margin:0 auto;border:3px solid rgba(255,255,255,0.2);border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite;"></div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
     </div>
   </div>
   <script>
-    const AUTH_KEY = 'expertpage_auth';
-    // NOTE: This is client-side auth - not secure against determined attackers
-    // For production, use server-side authentication
-    const VALID_HASH = '-5c4d11'; // simpleHash('2525')
+    // Supabase Auth Check
+    const SUPABASE_URL = 'https://ngxbfuimddefjeufwcwf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neGJmdWltZGRlZmpldWZ3Y3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDQ5MjYsImV4cCI6MjA4MDc4MDkyNn0.xRRF3L8BCzM5qTKzODT3IfayIQ1x4u0sa-4ki3UbhkI';
 
-    function simpleHash(str) {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-      }
-      return hash.toString(16);
-    }
+    (async function checkSupabaseAuth() {
+      try {
+        const authClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { data: { session }, error } = await authClient.auth.getSession();
 
-    function checkAuth() {
-      const pwd = document.getElementById('auth-password').value;
-      // FIX: Use hash-based check instead of plaintext comparison
-      const pwdHash = simpleHash(pwd);
-      if (pwdHash === VALID_HASH || localStorage.getItem(AUTH_KEY) === 'true') {
-        localStorage.setItem(AUTH_KEY, 'true');
+        if (!session) {
+          // Not logged in - redirect to login
+          window.location.href = '/login.html?redirect=' + encodeURIComponent('/studio/');
+          return;
+        }
+
+        // Logged in - hide auth screen
         document.getElementById('auth-screen').style.display = 'none';
-      } else {
-        document.getElementById('auth-error').style.display = 'block';
+      } catch (e) {
+        console.error('Auth check failed:', e);
+        window.location.href = '/login.html';
       }
-    }
-
-    // Check if already authenticated
-    if (localStorage.getItem(AUTH_KEY) === 'true') {
-      document.getElementById('auth-screen').style.display = 'none';
-    }
+    })();
 
     // Real-time clock for overlay
     function updateOverlayClock() {
