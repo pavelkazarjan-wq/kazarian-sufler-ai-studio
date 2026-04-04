@@ -3330,11 +3330,11 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
               <div class="form-group" style="margin: 0;">
                 <label style="font-size: 12px; color: #94a3b8;">Адреса реєстрації</label>
-                <input type="text" id="legal-address" placeholder="м. Київ, вул. Хрещатик, 1">
+                <input type="text" id="ai-legal-address" placeholder="м. Київ, вул. Хрещатик, 1">
               </div>
               <div class="form-group" style="margin: 0;">
                 <label style="font-size: 12px; color: #94a3b8;">Email для звернень</label>
-                <input type="email" id="legal-email" placeholder="legal@example.com">
+                <input type="email" id="ai-legal-email" placeholder="legal@example.com">
               </div>
             </div>
 
@@ -7818,8 +7818,8 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
     async function generateLegalDocs(type = 'all') {
       const companyName = document.getElementById('legal-company-name')?.value || '';
       const companyCode = document.getElementById('legal-company-code')?.value || '';
-      const address = document.getElementById('legal-address')?.value || '';
-      const email = document.getElementById('legal-email')?.value || '';
+      const address = document.getElementById('ai-legal-address')?.value || '';
+      const email = document.getElementById('ai-legal-email')?.value || '';
       const services = document.getElementById('legal-services')?.value || '';
 
       if (!companyName) {
