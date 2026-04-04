@@ -132,10 +132,13 @@ exports.handler = async (event, context) => {
       });
     }
 
-    // Add current message
-    messages.push({ role: 'user', content: message + '\n\nВідповідай ТІЛЬКИ валідним JSON.' });
+    // Add current message with strict JSON instruction
+    messages.push({
+      role: 'user',
+      content: message + '\n\nВАЖЛИВО: Якщо просять заповнити/згенерувати тексти - ОБОВ\'ЯЗКОВО використай action: "fill" з полями fields. Відповідай ТІЛЬКИ валідним JSON без markdown.'
+    });
 
-    // Call OpenAI API
+    // Call OpenAI API with JSON mode
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -145,8 +148,9 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: messages,
+        response_format: { type: 'json_object' },
         temperature: 0.7,
-        max_tokens: 2000
+        max_tokens: 3000
       })
     });
 

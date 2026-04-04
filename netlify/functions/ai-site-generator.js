@@ -107,6 +107,7 @@ exports.handler = async (event, context) => {
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: userMessage + '\n\nВідповідай ТІЛЬКИ валідним JSON.' }
         ],
+        response_format: { type: 'json_object' },
         temperature: 0.7,
         max_tokens: 2000
       })
