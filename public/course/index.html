@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Course Landing Page v1.0 - Based on landing-template skill - 2026-04-04 -->
+<!-- Course Landing Page v2.0 - Creative Modern Design - 2026-04-04 -->
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
@@ -24,20 +24,22 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --primary: #3b82f6;
-      --secondary: #8b5cf6;
-      --accent: #10b981;
-      --bg-dark: #0f172a;
-      --bg-card: #1e293b;
-      --text-primary: #e2e8f0;
-      --text-secondary: #94a3b8;
-      --text-muted: #64748b;
-      --border: rgba(255,255,255,0.1);
-      --success: #16a34a;
+      --gold: #d4a853;
+      --gold-light: #f0d78c;
+      --gold-dark: #b8860b;
+      --bg-dark: #1a1512;
+      --bg-card: #2a2320;
+      --bg-section: #0f0d0b;
+      --text-primary: #f5f0e8;
+      --text-secondary: #b8a89a;
+      --text-muted: #8b7355;
+      --accent: #e8c547;
+      --border-gold: rgba(212, 168, 83, 0.3);
+      --gradient-gold: linear-gradient(135deg, #d4a853, #f0d78c, #d4a853);
     }
 
     * {
@@ -47,11 +49,17 @@
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 50%, var(--bg-dark) 100%);
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
       color: var(--text-primary);
-      line-height: 1.6;
+      line-height: 1.7;
       min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
     }
 
     /* Loading */
@@ -63,7 +71,7 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
-      transition: opacity 0.3s;
+      transition: opacity 0.5s;
     }
 
     .loading-overlay.hidden {
@@ -72,10 +80,10 @@
     }
 
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid var(--border);
-      border-top-color: var(--primary);
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(212, 168, 83, 0.2);
+      border-top-color: var(--gold);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -84,34 +92,66 @@
       to { transform: rotate(360deg); }
     }
 
+    /* Decorative blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .blob-1 {
+      width: 400px;
+      height: 400px;
+      background: var(--gold);
+      top: -100px;
+      right: -100px;
+    }
+
+    .blob-2 {
+      width: 300px;
+      height: 300px;
+      background: var(--gold-dark);
+      bottom: 10%;
+      left: -100px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
     /* Header */
     .header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      padding: 16px 24px;
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(10px);
+      padding: 16px 32px;
+      background: rgba(26, 21, 18, 0.95);
+      backdrop-filter: blur(20px);
       z-index: 100;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--border-gold);
     }
 
     .header-logo {
-      font-weight: 700;
-      font-size: 18px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-family: 'Playfair Display', serif;
+      font-weight: 800;
+      font-size: 22px;
+      color: var(--gold);
+      letter-spacing: 1px;
     }
 
     .header-right {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 20px;
     }
 
     .lang-switcher {
@@ -120,382 +160,505 @@
     }
 
     .lang-btn {
-      padding: 6px 12px;
-      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border: 1px solid var(--border-gold);
       background: transparent;
       color: var(--text-secondary);
-      border-radius: 6px;
+      border-radius: 20px;
       cursor: pointer;
-      font-size: 13px;
-      transition: all 0.2s;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s;
     }
 
     .lang-btn:hover,
     .lang-btn.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
+      background: var(--gold);
+      color: var(--bg-dark);
+      border-color: var(--gold);
     }
 
     .header-cta {
-      padding: 10px 24px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
+      padding: 12px 28px;
+      background: var(--gradient-gold);
+      color: var(--bg-dark);
       border: none;
-      border-radius: 8px;
-      font-weight: 600;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(212, 168, 83, 0.3);
     }
 
     .header-cta:hover {
       transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(212, 168, 83, 0.4);
     }
 
-    /* Main Container */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* BLOCK 1: Hero */
+    /* ============ HERO SECTION ============ */
     .hero {
       min-height: 100vh;
       display: flex;
       align-items: center;
-      padding: 120px 0 80px;
+      padding: 120px 0 60px;
       position: relative;
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
-      pointer-events: none;
+      background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-section) 100%);
     }
 
     .hero-content {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.2fr 1fr;
       gap: 60px;
       align-items: center;
       position: relative;
       z-index: 1;
     }
 
-    .hero-text h1 {
-      font-size: 3rem;
-      font-weight: 800;
+    .hero-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      background: rgba(212, 168, 83, 0.1);
+      border: 1px solid var(--border-gold);
+      border-radius: 30px;
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
       line-height: 1.1;
       margin-bottom: 24px;
-      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--text-primary);
     }
 
-    .hero-text .subtitle {
-      font-size: 1.25rem;
+    .hero h1 span {
+      color: var(--gold);
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
       color: var(--text-secondary);
       margin-bottom: 32px;
+      max-width: 500px;
     }
 
-    /* Countdown Timer */
-    .countdown {
+    .hero-features {
       display: flex;
-      gap: 16px;
+      flex-direction: column;
+      gap: 12px;
       margin-bottom: 32px;
     }
 
-    .countdown-item {
-      text-align: center;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 20px;
-      min-width: 80px;
-    }
-
-    .countdown-number {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .countdown-label {
-      font-size: 12px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .hero-cta {
-      display: inline-flex;
+    .hero-feature {
+      display: flex;
       align-items: center;
       gap: 12px;
-      padding: 18px 36px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .hero-feature svg {
+      width: 20px;
+      height: 20px;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      padding: 16px 36px;
+      background: var(--gradient-gold);
+      color: var(--bg-dark);
       border: none;
-      border-radius: 12px;
-      font-size: 18px;
+      border-radius: 30px;
       font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 25px rgba(212, 168, 83, 0.35);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 35px rgba(212, 168, 83, 0.5);
+    }
+
+    .btn-secondary {
+      padding: 16px 36px;
+      background: transparent;
+      color: var(--gold);
+      border: 2px solid var(--gold);
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       cursor: pointer;
       transition: all 0.3s;
       text-decoration: none;
     }
 
-    .hero-cta:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.5);
+    .btn-secondary:hover {
+      background: var(--gold);
+      color: var(--bg-dark);
     }
 
-    .hero-price {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-top: 24px;
-    }
-
-    .price-old {
-      font-size: 1.25rem;
-      color: var(--text-muted);
-      text-decoration: line-through;
-    }
-
-    .price-new {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--success);
-    }
-
+    /* Hero Image */
     .hero-image {
       position: relative;
     }
 
+    .hero-image-wrapper {
+      position: relative;
+      border-radius: 30px;
+      overflow: hidden;
+      border: 3px solid var(--border-gold);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-image-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 30px;
+      padding: 3px;
+      background: var(--gradient-gold);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
     .hero-image img {
       width: 100%;
-      border-radius: 24px;
-      box-shadow: 0 30px 60px -20px rgba(0,0,0,0.5);
+      height: auto;
+      display: block;
     }
 
-    /* BLOCK 2: Benefits */
-    .benefits {
-      padding: 100px 0;
-      background: rgba(30, 41, 59, 0.3);
-    }
-
-    .benefits-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-    }
-
-    .benefit-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px 24px;
-      text-align: center;
-      transition: all 0.3s;
-    }
-
-    .benefit-card:hover {
-      transform: translateY(-5px);
-      border-color: var(--primary);
-      background: rgba(59, 130, 246, 0.1);
-    }
-
-    .benefit-icon {
-      width: 64px;
-      height: 64px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 16px;
-      display: flex;
+    /* Timer */
+    .timer-box {
+      background: rgba(212, 168, 83, 0.1);
+      border: 1px solid var(--border-gold);
+      border-radius: 20px;
+      padding: 16px 24px;
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      font-size: 28px;
+      gap: 16px;
+      margin-top: 20px;
     }
 
-    .benefit-card h3 {
-      font-size: 1.125rem;
+    .timer-label {
+      font-size: 12px;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .timer-digits {
+      display: flex;
+      gap: 8px;
+    }
+
+    .timer-unit {
+      text-align: center;
+    }
+
+    .timer-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-primary);
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .timer-name {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .timer-separator {
+      font-size: 24px;
+      color: var(--gold);
       font-weight: 700;
-      margin-bottom: 12px;
     }
 
-    .benefit-card p {
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-
-    /* BLOCK 3: Modules */
-    .modules {
+    /* ============ SECTION STYLES ============ */
+    .section {
       padding: 100px 0;
+      position: relative;
     }
 
-    .section-header {
+    .section-dark {
+      background: var(--bg-section);
+    }
+
+    .section-title {
       text-align: center;
       margin-bottom: 60px;
     }
 
-    .section-label {
-      display: inline-block;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    .section-title h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
       margin-bottom: 16px;
+      color: var(--text-primary);
     }
 
-    .section-title {
-      font-size: 2.5rem;
-      font-weight: 800;
-      margin-bottom: 16px;
+    .section-title h2 span {
+      color: var(--gold);
     }
 
-    .section-subtitle {
+    .section-title p {
       color: var(--text-secondary);
-      font-size: 1.125rem;
+      font-size: 1.1rem;
       max-width: 600px;
       margin: 0 auto;
     }
 
-    .modules-list {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .module-card {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 24px;
-      align-items: center;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      transition: all 0.3s;
-    }
-
-    .module-card:hover {
-      border-color: var(--primary);
-      background: rgba(59, 130, 246, 0.05);
-    }
-
-    .module-number {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      font-weight: 800;
-      color: white;
-    }
-
-    .module-content h3 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .module-content p {
-      color: var(--text-secondary);
-    }
-
-    .module-result {
-      background: rgba(22, 163, 74, 0.1);
-      border: 1px solid rgba(22, 163, 74, 0.3);
-      border-radius: 12px;
-      padding: 12px 20px;
-      color: var(--success);
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    /* BLOCK 4: Target Audience */
-    .audience {
-      padding: 100px 0;
-      background: rgba(30, 41, 59, 0.3);
-    }
-
-    .audience-grid {
+    /* ============ MODULES SECTION ============ */
+    .modules-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 24px;
     }
 
+    .module-card {
+      background: var(--bg-card);
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border-gold);
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    .module-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--gold) 0%, transparent 50%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .module-card:hover::before {
+      opacity: 1;
+    }
+
+    .module-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 50px rgba(212, 168, 83, 0.15);
+    }
+
+    .module-image {
+      height: 180px;
+      overflow: hidden;
+    }
+
+    .module-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+
+    .module-card:hover .module-image img {
+      transform: scale(1.1);
+    }
+
+    .module-content {
+      padding: 24px;
+    }
+
+    .module-number {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(212, 168, 83, 0.15);
+      color: var(--gold);
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .module-content h3 {
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+    }
+
+    .module-content p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .module-result {
+      padding-top: 16px;
+      border-top: 1px solid var(--border-gold);
+      font-size: 13px;
+    }
+
+    .module-result strong {
+      color: var(--gold);
+    }
+
+    /* ============ AUDIENCE SECTION ============ */
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
     .audience-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      transition: all 0.3s;
+      background: var(--bg-card);
+      border-radius: 24px;
+      padding: 32px 24px;
+      text-align: center;
+      border: 1px solid var(--border-gold);
+      transition: all 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .audience-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient-gold);
+      transform: scaleX(0);
+      transition: transform 0.4s;
+    }
+
+    .audience-card:hover::after {
+      transform: scaleX(1);
     }
 
     .audience-card:hover {
-      border-color: var(--primary);
-      transform: translateY(-3px);
+      transform: translateY(-8px);
+      box-shadow: 0 15px 40px rgba(212, 168, 83, 0.1);
+    }
+
+    .audience-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(212, 168, 83, 0.1);
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--border-gold);
+    }
+
+    .audience-avatar svg {
+      width: 36px;
+      height: 36px;
+      color: var(--gold);
     }
 
     .audience-card h3 {
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 1rem;
       margin-bottom: 12px;
-      color: var(--primary);
+      color: var(--text-primary);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
     }
 
     .audience-card p {
       color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
     }
 
-    /* BLOCK 5: Author */
-    .author {
-      padding: 100px 0;
+    /* ============ AUTHOR SECTION ============ */
+    .author-section {
+      background: linear-gradient(135deg, var(--bg-section) 0%, var(--bg-card) 100%);
     }
 
     .author-content {
       display: grid;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 400px 1fr;
       gap: 60px;
-      align-items: start;
+      align-items: center;
     }
 
-    .author-photo {
+    .author-image-wrapper {
       position: relative;
     }
 
-    .author-photo img {
+    .author-image {
+      border-radius: 30px;
+      overflow: hidden;
+      border: 3px solid var(--border-gold);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .author-image img {
       width: 100%;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+      height: auto;
+      display: block;
+    }
+
+    .author-badge {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gradient-gold);
+      color: var(--bg-dark);
+      padding: 10px 30px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 14px;
+      white-space: nowrap;
+      box-shadow: 0 10px 30px rgba(212, 168, 83, 0.3);
     }
 
     .author-info h2 {
       font-size: 2rem;
-      font-weight: 800;
       margin-bottom: 8px;
+      color: var(--gold);
     }
 
-    .author-title {
-      color: var(--primary);
-      font-size: 1.125rem;
-      font-weight: 600;
+    .author-info h3 {
+      font-size: 1.5rem;
       margin-bottom: 24px;
+      color: var(--text-primary);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
     }
 
     .author-credentials {
@@ -507,131 +670,167 @@
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       color: var(--text-secondary);
-    }
-
-    .author-credentials li::before {
-      content: '•';
-      color: var(--primary);
-      font-weight: bold;
-    }
-
-    /* Diplomas Carousel */
-    .diplomas-section {
-      margin-top: 40px;
-    }
-
-    .diplomas-track {
-      display: flex;
-      gap: 16px;
-      overflow-x: auto;
-      scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
-      padding: 10px 0;
-    }
-
-    .diplomas-track::-webkit-scrollbar {
-      display: none;
-    }
-
-    .diploma-item {
-      flex-shrink: 0;
-      width: 200px;
-      height: 150px;
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-
-    .diploma-item:hover {
-      transform: scale(1.05);
-    }
-
-    .diploma-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* BLOCK 6: Results */
-    .results {
-      padding: 100px 0;
-      background: rgba(30, 41, 59, 0.3);
-    }
-
-    .results-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-
-    .result-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px 24px;
-      transition: all 0.3s;
-    }
-
-    .result-item:hover {
-      border-color: var(--success);
-      background: rgba(22, 163, 74, 0.05);
-    }
-
-    .result-check {
-      width: 32px;
-      height: 32px;
-      background: rgba(22, 163, 74, 0.2);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--success);
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-
-    .result-item span {
       font-size: 15px;
     }
 
-    /* BLOCK 7: Video */
+    .author-credentials li svg {
+      width: 20px;
+      height: 20px;
+      color: var(--gold);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ============ RESULTS SECTION ============ */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .result-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 28px;
+      text-align: center;
+      border: 1px solid var(--border-gold);
+      transition: all 0.4s;
+    }
+
+    .result-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--gold);
+      box-shadow: 0 15px 40px rgba(212, 168, 83, 0.15);
+    }
+
+    .result-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(212, 168, 83, 0.1);
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--border-gold);
+    }
+
+    .result-icon svg {
+      width: 28px;
+      height: 28px;
+      color: var(--gold);
+    }
+
+    .result-card p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ============ DIPLOMAS SECTION ============ */
+    .diplomas-section {
+      background: var(--bg-dark);
+    }
+
+    .diplomas-carousel {
+      display: flex;
+      gap: 24px;
+      overflow-x: auto;
+      padding: 20px 0;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .diplomas-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .diploma-card {
+      flex: 0 0 300px;
+      scroll-snap-align: center;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid var(--border-gold);
+      transition: all 0.4s;
+    }
+
+    .diploma-card:hover {
+      transform: scale(1.02);
+      border-color: var(--gold);
+      box-shadow: 0 15px 40px rgba(212, 168, 83, 0.2);
+    }
+
+    .diploma-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ============ VIDEO SECTION ============ */
     .video-section {
-      padding: 100px 0;
+      background: var(--bg-section);
     }
 
     .video-wrapper {
       max-width: 800px;
       margin: 0 auto;
-    }
-
-    .video-container {
-      position: relative;
-      padding-bottom: 56.25%;
-      border-radius: 20px;
+      border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 30px 60px -20px rgba(0,0,0,0.5);
+      border: 3px solid var(--border-gold);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      position: relative;
     }
 
-    .video-container iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
+    .video-wrapper iframe {
+      width: 100%;
+      aspect-ratio: 16/9;
+      display: block;
+    }
+
+    .video-placeholder {
+      background: var(--bg-card);
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .video-placeholder img {
       width: 100%;
       height: 100%;
+      object-fit: cover;
     }
 
-    /* BLOCK 8: Reviews */
-    .reviews {
-      padding: 100px 0;
-      background: rgba(30, 41, 59, 0.3);
+    .video-play-btn {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: var(--gradient-gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 40px rgba(212, 168, 83, 0.4);
+      transition: all 0.3s;
     }
 
+    .video-play-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .video-play-btn svg {
+      width: 32px;
+      height: 32px;
+      color: var(--bg-dark);
+      margin-left: 4px;
+    }
+
+    /* ============ REVIEWS SECTION ============ */
     .reviews-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -639,10 +838,17 @@
     }
 
     .review-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
+      background: var(--bg-card);
+      border-radius: 24px;
+      padding: 28px;
+      border: 1px solid var(--border-gold);
+      transition: all 0.4s;
+    }
+
+    .review-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--gold);
+      box-shadow: 0 15px 40px rgba(212, 168, 83, 0.1);
     }
 
     .review-header {
@@ -653,87 +859,103 @@
     }
 
     .review-avatar {
-      width: 50px;
-      height: 50px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      color: white;
+      object-fit: cover;
+      border: 2px solid var(--border-gold);
     }
 
     .review-name {
-      font-weight: 600;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
     }
 
     .review-stars {
-      color: #fbbf24;
-      font-size: 14px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .review-stars svg {
+      width: 16px;
+      height: 16px;
+      color: var(--gold);
+      fill: var(--gold);
     }
 
     .review-text {
       color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.7;
       font-style: italic;
     }
 
-    /* BLOCK 9: FAQ */
-    .faq {
-      padding: 100px 0;
-    }
-
+    /* ============ FAQ SECTION ============ */
     .faq-list {
       max-width: 800px;
       margin: 0 auto;
     }
 
     .faq-item {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      margin-bottom: 12px;
+      background: var(--bg-card);
+      border-radius: 16px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-gold);
       overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .faq-item:hover {
+      border-color: var(--gold);
     }
 
     .faq-question {
-      padding: 24px;
-      cursor: pointer;
+      padding: 20px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      cursor: pointer;
+      color: var(--text-primary);
       font-weight: 600;
-      transition: background 0.3s;
+      font-size: 15px;
     }
 
-    .faq-question:hover {
-      background: rgba(255,255,255,0.05);
-    }
-
-    .faq-icon {
-      font-size: 24px;
+    .faq-question svg {
+      width: 24px;
+      height: 24px;
+      color: var(--gold);
       transition: transform 0.3s;
     }
 
-    .faq-item.open .faq-icon {
+    .faq-item.open .faq-question svg {
       transform: rotate(45deg);
     }
 
     .faq-answer {
-      padding: 0 24px 24px;
-      color: var(--text-secondary);
-      display: none;
+      padding: 0 24px;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.3s;
     }
 
     .faq-item.open .faq-answer {
-      display: block;
+      padding: 0 24px 20px;
+      max-height: 500px;
     }
 
-    /* BLOCK 10: Final CTA */
+    .faq-answer p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* ============ FINAL CTA SECTION ============ */
     .final-cta {
-      padding: 120px 0;
+      background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-section) 100%);
       text-align: center;
       position: relative;
+      overflow: hidden;
     }
 
     .final-cta::before {
@@ -742,110 +964,240 @@
       top: 0;
       left: 0;
       right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
-      pointer-events: none;
-    }
-
-    .final-cta-content {
-      position: relative;
-      z-index: 1;
+      height: 2px;
+      background: var(--gradient-gold);
     }
 
     .final-cta h2 {
-      font-size: 2.5rem;
-      font-weight: 800;
+      font-size: clamp(2rem, 4vw, 3rem);
       margin-bottom: 16px;
     }
 
-    .final-cta p {
-      font-size: 1.25rem;
+    .final-cta .subtitle {
       color: var(--text-secondary);
+      font-size: 1.2rem;
       margin-bottom: 40px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    .final-countdown {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      margin-bottom: 40px;
+    .price-box {
+      background: var(--bg-dark);
+      border: 2px solid var(--gold);
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 500px;
+      margin: 0 auto 40px;
+      position: relative;
     }
 
-    .guarantee {
-      margin-top: 32px;
-      font-size: 14px;
+    .price-old {
+      font-size: 1.5rem;
       color: var(--text-muted);
+      text-decoration: line-through;
+      margin-bottom: 8px;
     }
 
-    /* Footer */
+    .price-current {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .price-current span {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+    }
+
+    .guarantee-text {
+      background: rgba(212, 168, 83, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 24px;
+    }
+
+    .guarantee-text svg {
+      width: 20px;
+      height: 20px;
+      color: var(--gold);
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    /* ============ FOOTER ============ */
     .footer {
+      background: var(--bg-section);
       padding: 40px 0;
-      border-top: 1px solid var(--border);
-      text-align: center;
+      border-top: 1px solid var(--border-gold);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
     }
 
     .footer-links {
       display: flex;
-      justify-content: center;
       gap: 24px;
-      margin-bottom: 16px;
     }
 
     .footer-links a {
       color: var(--text-secondary);
       text-decoration: none;
       font-size: 14px;
-      transition: color 0.2s;
+      transition: color 0.3s;
     }
 
     .footer-links a:hover {
-      color: var(--primary);
+      color: var(--gold);
     }
 
-    .footer-copy {
-      color: var(--text-muted);
-      font-size: 13px;
+    .footer-contacts {
+      display: flex;
+      gap: 20px;
     }
 
-    /* Modal */
+    .footer-contacts a {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border-gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+    }
+
+    .footer-contacts a:hover {
+      background: var(--gold);
+      color: var(--bg-dark);
+      border-color: var(--gold);
+    }
+
+    .footer-contacts svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ============ MODAL ============ */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8);
-      display: none;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      padding: 20px;
     }
 
-    .modal-overlay.show {
-      display: flex;
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .modal-content {
       background: var(--bg-card);
-      border-radius: 20px;
-      padding: 40px;
-      max-width: 500px;
-      width: 90%;
+      border-radius: 24px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 1px solid var(--border-gold);
+      position: relative;
     }
 
-    /* Responsive */
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      background: rgba(212, 168, 83, 0.1);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+    }
+
+    .modal-close:hover {
+      background: var(--gold);
+      color: var(--bg-dark);
+    }
+
+    .modal-body {
+      padding: 40px;
+    }
+
+    .modal-body h2 {
+      margin-bottom: 24px;
+      color: var(--gold);
+    }
+
+    .modal-body p {
+      color: var(--text-secondary);
+      white-space: pre-line;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    /* ============ RESPONSIVE ============ */
     @media (max-width: 1024px) {
       .hero-content {
         grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero-subtitle,
+      .hero-features {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-cta-group {
+        justify-content: center;
       }
 
       .hero-image {
-        display: none;
+        max-width: 500px;
+        margin: 0 auto;
       }
 
-      .benefits-grid {
+      .modules-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .audience-grid {
         grid-template-columns: repeat(2, 1fr);
       }
 
       .author-content {
         grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .author-image-wrapper {
+        max-width: 350px;
+        margin: 0 auto 40px;
+      }
+
+      .results-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
 
       .reviews-grid {
@@ -854,41 +1206,66 @@
     }
 
     @media (max-width: 768px) {
-      .hero-text h1 {
-        font-size: 2rem;
-      }
-
-      .benefits-grid,
-      .audience-grid,
-      .results-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .module-card {
-        grid-template-columns: 1fr;
-      }
-
-      .module-number {
-        width: 50px;
-        height: 50px;
-      }
-
-      .countdown {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .countdown-item {
-        min-width: 70px;
-      }
-
-      .section-title {
-        font-size: 1.75rem;
+      .header {
+        padding: 12px 16px;
       }
 
       .header-cta {
         display: none;
       }
+
+      .section {
+        padding: 60px 0;
+      }
+
+      .hero {
+        padding: 100px 0 40px;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .audience-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timer-box {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease-out;
+    }
+
+    .animate-on-scroll.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
@@ -898,16 +1275,20 @@
     <div class="spinner"></div>
   </div>
 
+  <!-- Decorative blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
   <!-- Header -->
   <header class="header">
-    <div class="header-logo" id="header-logo">Course</div>
+    <div class="header-logo" id="header-logo">КУРС</div>
     <div class="header-right">
       <div class="lang-switcher">
-        <button class="lang-btn" data-lang="uk">UA</button>
+        <button class="lang-btn active" data-lang="uk">UA</button>
         <button class="lang-btn" data-lang="ru">RU</button>
         <button class="lang-btn" data-lang="en">EN</button>
       </div>
-      <button class="header-cta" onclick="scrollToBooking()" id="header-cta-text">Записатися</button>
+      <button class="header-cta" onclick="scrollToCTA()">Записатися</button>
     </div>
   </header>
 
@@ -916,199 +1297,186 @@
     <div class="container">
       <div class="hero-content">
         <div class="hero-text">
-          <h1 id="hero-title">Назва курсу</h1>
-          <p class="subtitle" id="hero-subtitle">Опис курсу в одному реченні</p>
-
-          <div class="countdown" id="countdown" style="display: none;">
-            <div class="countdown-item">
-              <div class="countdown-number" id="days">00</div>
-              <div class="countdown-label" data-i18n="days">днів</div>
+          <div class="hero-badge" id="hero-badge">Трансформаційний курс</div>
+          <h1 id="hero-title">Час <span>Трансформацій</span></h1>
+          <p class="hero-subtitle" id="hero-subtitle">
+            Терапевтичний курс для людей, які прагнуть осмисленого життя стати та звільнитись від токсичного досвіду.
+          </p>
+          <div class="hero-features" id="hero-features">
+            <div class="hero-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>8 тижнів глибокої роботи</span>
             </div>
-            <div class="countdown-item">
-              <div class="countdown-number" id="hours">00</div>
-              <div class="countdown-label" data-i18n="hours">годин</div>
+            <div class="hero-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Особистий супровід автора</span>
             </div>
-            <div class="countdown-item">
-              <div class="countdown-number" id="minutes">00</div>
-              <div class="countdown-label" data-i18n="minutes">хвилин</div>
-            </div>
-            <div class="countdown-item">
-              <div class="countdown-number" id="seconds">00</div>
-              <div class="countdown-label" data-i18n="seconds">секунд</div>
+            <div class="hero-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Практичні техніки щодня</span>
             </div>
           </div>
-
-          <a href="#booking" class="hero-cta" id="hero-cta">
-            <span id="hero-cta-text">Записатися на курс</span>
-          </a>
-
-          <div class="hero-price" id="hero-price">
-            <span class="price-old" id="price-old"></span>
-            <span class="price-new" id="price-new"></span>
+          <div class="hero-cta-group">
+            <a href="#final-cta" class="btn-primary">Записатись на курс</a>
+            <a href="#modules" class="btn-secondary">Дізнатись більше</a>
+          </div>
+          <div class="timer-box" id="timer-box" style="display: none;">
+            <div class="timer-label">До закінчення знижки:</div>
+            <div class="timer-digits" id="countdown">
+              <div class="timer-unit"><div class="timer-value" id="days">00</div><div class="timer-name">дні</div></div>
+              <div class="timer-separator">:</div>
+              <div class="timer-unit"><div class="timer-value" id="hours">00</div><div class="timer-name">год</div></div>
+              <div class="timer-separator">:</div>
+              <div class="timer-unit"><div class="timer-value" id="minutes">00</div><div class="timer-name">хв</div></div>
+              <div class="timer-separator">:</div>
+              <div class="timer-unit"><div class="timer-value" id="seconds">00</div><div class="timer-name">сек</div></div>
+            </div>
           </div>
         </div>
         <div class="hero-image">
-          <img id="hero-image" src="" alt="">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- BLOCK 2: Benefits -->
-  <section class="benefits">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-label" data-i18n="why_us">Чому ми</div>
-        <h2 class="section-title" data-i18n="benefits_title">Ваші переваги</h2>
-      </div>
-      <div class="benefits-grid" id="benefits-grid">
-        <!-- Benefits will be populated dynamically -->
-      </div>
-    </div>
-  </section>
-
-  <!-- BLOCK 3: Modules -->
-  <section class="modules">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-label" data-i18n="program">Програма</div>
-        <h2 class="section-title" data-i18n="modules_title">Що всередині</h2>
-        <p class="section-subtitle" data-i18n="modules_subtitle">Покрокова система, яка веде до результату</p>
-      </div>
-      <div class="modules-list" id="modules-list">
-        <!-- Modules will be populated dynamically -->
-      </div>
-    </div>
-  </section>
-
-  <!-- BLOCK 4: Target Audience -->
-  <section class="audience">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-label" data-i18n="for_whom">Для кого</div>
-        <h2 class="section-title" data-i18n="audience_title">Кому підходить курс</h2>
-      </div>
-      <div class="audience-grid" id="audience-grid">
-        <!-- Audience cards will be populated dynamically -->
-      </div>
-    </div>
-  </section>
-
-  <!-- BLOCK 5: Author -->
-  <section class="author">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-label" data-i18n="author">Автор</div>
-        <h2 class="section-title" data-i18n="author_title">Хто веде курс</h2>
-      </div>
-      <div class="author-content">
-        <div class="author-photo">
-          <img id="author-photo" src="" alt="">
-        </div>
-        <div class="author-info">
-          <h2 id="author-name"></h2>
-          <p class="author-title" id="author-title-text"></p>
-          <p id="author-bio" style="color: var(--text-secondary); margin-bottom: 24px;"></p>
-          <ul class="author-credentials" id="author-credentials">
-            <!-- Credentials will be populated dynamically -->
-          </ul>
-
-          <div class="diplomas-section" id="diplomas-section" style="display: none;">
-            <h4 style="margin-bottom: 16px;" data-i18n="certificates">Сертифікати та дипломи</h4>
-            <div class="diplomas-track" id="diplomas-track">
-              <!-- Diplomas will be populated dynamically -->
-            </div>
+          <div class="hero-image-wrapper">
+            <img id="hero-photo" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=700&fit=crop" alt="Автор курсу">
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 2: Modules (Що всередині?) -->
+  <section class="section section-dark" id="modules">
+    <div class="container">
+      <div class="section-title animate-on-scroll">
+        <h2>Що <span>всередині</span>?</h2>
+        <p>Структурована програма з практичними інструментами на кожному етапі</p>
+      </div>
+      <div class="modules-grid" id="modules-grid">
+        <!-- Modules will be rendered here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 3: Audience (Кому підійде?) -->
+  <section class="section" id="audience">
+    <div class="container">
+      <div class="section-title animate-on-scroll">
+        <h2>Кому <span>підійде</span> клуб?</h2>
+        <p>Якщо впізнаєте себе хоча б в одному пункті — ви на правильному шляху</p>
+      </div>
+      <div class="audience-grid" id="audience-grid">
+        <!-- Audience cards will be rendered here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 4: Author -->
+  <section class="section author-section" id="author">
+    <div class="container">
+      <div class="author-content animate-on-scroll">
+        <div class="author-image-wrapper">
+          <div class="author-image">
+            <img id="author-photo" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=600&fit=crop" alt="Автор">
+          </div>
+          <div class="author-badge" id="author-badge">Автор курсу</div>
+        </div>
+        <div class="author-info">
+          <h2 id="author-label">Автор клубу</h2>
+          <h3 id="author-name">Ведучий</h3>
+          <p id="author-bio" class="author-bio" style="color: var(--text-secondary); margin-bottom: 24px;"></p>
+          <ul class="author-credentials" id="author-credentials">
+            <!-- Credentials will be rendered here -->
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK 5: Diplomas -->
+  <section class="section diplomas-section" id="diplomas">
+    <div class="container">
+      <div class="section-title animate-on-scroll">
+        <h2><span>Сертифікати</span></h2>
+      </div>
+      <div class="diplomas-carousel" id="diplomas-carousel">
+        <!-- Diplomas will be rendered here -->
       </div>
     </div>
   </section>
 
   <!-- BLOCK 6: Results -->
-  <section class="results">
+  <section class="section section-dark" id="results">
     <div class="container">
-      <div class="section-header">
-        <div class="section-label" data-i18n="results">Результати</div>
-        <h2 class="section-title" data-i18n="results_title">Що ви отримаєте</h2>
+      <div class="section-title animate-on-scroll">
+        <h2>Завершивши, у вас <span>з'являться результати</span></h2>
       </div>
       <div class="results-grid" id="results-grid">
-        <!-- Results will be populated dynamically -->
+        <!-- Results will be rendered here -->
       </div>
     </div>
   </section>
 
   <!-- BLOCK 7: Video -->
-  <section class="video-section" id="video-section" style="display: none;">
+  <section class="section video-section" id="video" style="display: none;">
     <div class="container">
-      <div class="section-header">
-        <div class="section-label" data-i18n="video">Відео</div>
-        <h2 class="section-title" id="video-title"></h2>
+      <div class="section-title animate-on-scroll">
+        <h2 id="video-title">Подивіться <span>відео</span></h2>
       </div>
-      <div class="video-wrapper">
-        <div class="video-container" id="video-container">
-          <!-- Video will be inserted dynamically -->
-        </div>
+      <div class="video-wrapper" id="video-wrapper">
+        <!-- Video will be rendered here -->
       </div>
     </div>
   </section>
 
   <!-- BLOCK 8: Reviews -->
-  <section class="reviews" id="reviews-section" style="display: none;">
+  <section class="section" id="reviews">
     <div class="container">
-      <div class="section-header">
-        <div class="section-label" data-i18n="reviews">Відгуки</div>
-        <h2 class="section-title" data-i18n="reviews_title">Що кажуть учні</h2>
+      <div class="section-title animate-on-scroll">
+        <h2>Відгуки людей які <span>вже досягли результатів</span></h2>
       </div>
       <div class="reviews-grid" id="reviews-grid">
-        <!-- Reviews will be populated dynamically -->
+        <!-- Reviews will be rendered here -->
       </div>
     </div>
   </section>
 
   <!-- BLOCK 9: FAQ -->
-  <section class="faq" id="faq-section" style="display: none;">
+  <section class="section section-dark" id="faq">
     <div class="container">
-      <div class="section-header">
-        <div class="section-label">FAQ</div>
-        <h2 class="section-title" data-i18n="faq_title">Часті запитання</h2>
+      <div class="section-title animate-on-scroll">
+        <h2><span>Популярні</span> запитання</h2>
       </div>
       <div class="faq-list" id="faq-list">
-        <!-- FAQ will be populated dynamically -->
+        <!-- FAQ items will be rendered here -->
       </div>
     </div>
   </section>
 
   <!-- BLOCK 10: Final CTA -->
-  <section class="final-cta" id="booking">
+  <section class="section final-cta" id="final-cta">
     <div class="container">
-      <div class="final-cta-content">
-        <h2 id="final-title">Готові почати?</h2>
-        <p id="final-subtitle">Приєднуйтесь до курсу вже сьогодні</p>
+      <h2 id="final-title">Зробіть <span>перший крок</span> до змін</h2>
+      <p class="subtitle" id="final-subtitle">Місця обмежені. Приєднуйтесь зараз та отримайте бонуси.</p>
 
-        <div class="final-countdown" id="final-countdown" style="display: none;">
-          <div class="countdown-item">
-            <div class="countdown-number" id="final-days">00</div>
-            <div class="countdown-label" data-i18n="days">днів</div>
-          </div>
-          <div class="countdown-item">
-            <div class="countdown-number" id="final-hours">00</div>
-            <div class="countdown-label" data-i18n="hours">годин</div>
-          </div>
-          <div class="countdown-item">
-            <div class="countdown-number" id="final-minutes">00</div>
-            <div class="countdown-label" data-i18n="minutes">хвилин</div>
-          </div>
-          <div class="countdown-item">
-            <div class="countdown-number" id="final-seconds">00</div>
-            <div class="countdown-label" data-i18n="seconds">секунд</div>
-          </div>
+      <div class="price-box">
+        <div class="price-old" id="price-old" style="display: none;">₴ 5000</div>
+        <div class="price-current" id="price-current">₴ 3500 <span>/ місяць</span></div>
+        <a href="#" class="btn-primary" id="cta-btn" style="width: 100%; justify-content: center;">Записатись на курс</a>
+        <div class="guarantee-text" id="guarantee-text" style="display: none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span></span>
         </div>
+      </div>
 
-        <a href="#" class="hero-cta" id="final-cta" style="font-size: 20px; padding: 20px 48px;">
-          <span id="final-cta-text">Записатися на курс</span>
-        </a>
-
-        <p class="guarantee" id="guarantee-text"></p>
+      <div class="timer-box" id="timer-box-bottom" style="display: none; margin: 0 auto;">
+        <div class="timer-label">До закінчення знижки:</div>
+        <div class="timer-digits" id="countdown-bottom">
+          <div class="timer-unit"><div class="timer-value" id="days-b">00</div><div class="timer-name">дні</div></div>
+          <div class="timer-separator">:</div>
+          <div class="timer-unit"><div class="timer-value" id="hours-b">00</div><div class="timer-name">год</div></div>
+          <div class="timer-separator">:</div>
+          <div class="timer-unit"><div class="timer-value" id="minutes-b">00</div><div class="timer-name">хв</div></div>
+          <div class="timer-separator">:</div>
+          <div class="timer-unit"><div class="timer-value" id="seconds-b">00</div><div class="timer-name">сек</div></div>
+        </div>
       </div>
     </div>
   </section>
@@ -1116,102 +1484,60 @@
   <!-- Footer -->
   <footer class="footer">
     <div class="container">
-      <div class="footer-links">
-        <a href="#" id="privacy-link" data-i18n="privacy">Політика конфіденційності</a>
-        <a href="#" id="offer-link" data-i18n="offer">Публічна оферта</a>
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="#" onclick="openModal('offer'); return false;">Договір оферти</a>
+          <a href="#" onclick="openModal('privacy'); return false;">Політика конфіденційності</a>
+          <a href="#" onclick="openModal('disclaimer'); return false;">Відмова від відповідальності</a>
+        </div>
+        <div class="footer-contacts" id="footer-contacts">
+          <!-- Contacts will be rendered here -->
+        </div>
       </div>
-      <p class="footer-copy" id="footer-copy">© 2026</p>
     </div>
   </footer>
 
-  <!-- Image Modal -->
-  <div class="modal-overlay" id="image-modal">
-    <img id="modal-image" style="max-width: 90%; max-height: 90%; border-radius: 12px;">
+  <!-- Legal Modals -->
+  <div class="modal-overlay" id="modal-offer">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('offer')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal-body">
+        <h2>Договір оферти</h2>
+        <p id="modal-offer-text"></p>
+      </div>
+    </div>
   </div>
 
-  <script>
-    // Translations
-    const i18n = {
-      uk: {
-        days: 'днів',
-        hours: 'годин',
-        minutes: 'хвилин',
-        seconds: 'секунд',
-        enroll: 'Записатися на курс',
-        why_us: 'Чому ми',
-        benefits_title: 'Ваші переваги',
-        program: 'Програма',
-        modules_title: 'Що всередині',
-        modules_subtitle: 'Покрокова система, яка веде до результату',
-        for_whom: 'Для кого',
-        audience_title: 'Кому підходить курс',
-        author: 'Автор',
-        author_title: 'Хто веде курс',
-        certificates: 'Сертифікати та дипломи',
-        results: 'Результати',
-        results_title: 'Що ви отримаєте',
-        video: 'Відео',
-        reviews: 'Відгуки',
-        reviews_title: 'Що кажуть учні',
-        faq_title: 'Часті запитання',
-        privacy: 'Політика конфіденційності',
-        offer: 'Публічна оферта',
-        result_prefix: 'Результат:'
-      },
-      ru: {
-        days: 'дней',
-        hours: 'часов',
-        minutes: 'минут',
-        seconds: 'секунд',
-        enroll: 'Записаться на курс',
-        why_us: 'Почему мы',
-        benefits_title: 'Ваши преимущества',
-        program: 'Программа',
-        modules_title: 'Что внутри',
-        modules_subtitle: 'Пошаговая система, ведущая к результату',
-        for_whom: 'Для кого',
-        audience_title: 'Кому подходит курс',
-        author: 'Автор',
-        author_title: 'Кто ведёт курс',
-        certificates: 'Сертификаты и дипломы',
-        results: 'Результаты',
-        results_title: 'Что вы получите',
-        video: 'Видео',
-        reviews: 'Отзывы',
-        reviews_title: 'Что говорят ученики',
-        faq_title: 'Частые вопросы',
-        privacy: 'Политика конфиденциальности',
-        offer: 'Публичная оферта',
-        result_prefix: 'Результат:'
-      },
-      en: {
-        days: 'days',
-        hours: 'hours',
-        minutes: 'minutes',
-        seconds: 'seconds',
-        enroll: 'Enroll Now',
-        why_us: 'Why Us',
-        benefits_title: 'Your Benefits',
-        program: 'Program',
-        modules_title: 'What\'s Inside',
-        modules_subtitle: 'A step-by-step system that leads to results',
-        for_whom: 'For Whom',
-        audience_title: 'Who is this course for',
-        author: 'Author',
-        author_title: 'Course Instructor',
-        certificates: 'Certificates & Diplomas',
-        results: 'Results',
-        results_title: 'What You\'ll Get',
-        video: 'Video',
-        reviews: 'Reviews',
-        reviews_title: 'What Students Say',
-        faq_title: 'FAQ',
-        privacy: 'Privacy Policy',
-        offer: 'Terms of Service',
-        result_prefix: 'Result:'
-      }
-    };
+  <div class="modal-overlay" id="modal-privacy">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('privacy')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal-body">
+        <h2>Політика конфіденційності</h2>
+        <p id="modal-privacy-text"></p>
+      </div>
+    </div>
+  </div>
 
+  <div class="modal-overlay" id="modal-disclaimer">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('disclaimer')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal-body">
+        <h2>Відмова від відповідальності</h2>
+        <p id="modal-disclaimer-text"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Head Code Placeholder -->
+  <div id="custom-head-code"></div>
+
+  <script>
     let currentLang = 'uk';
     let courseData = null;
     let countdownTimer = null;
@@ -1230,250 +1556,62 @@
       if (urlLang && ['uk', 'ru', 'en'].includes(urlLang)) {
         return urlLang;
       }
-      const stored = localStorage.getItem('preferred_lang');
-      if (stored && ['uk', 'ru', 'en'].includes(stored)) {
-        return stored;
+      const storedLang = localStorage.getItem('preferred_lang');
+      if (storedLang && ['uk', 'ru', 'en'].includes(storedLang)) {
+        return storedLang;
       }
       const browserLang = navigator.language.substring(0, 2);
-      if (browserLang === 'uk' || browserLang === 'ua') return 'uk';
       if (browserLang === 'ru') return 'ru';
+      if (browserLang === 'en') return 'en';
       return 'uk';
     }
 
-    // Switch language
-    function switchLanguage(lang) {
+    // Set language
+    function setLanguage(lang) {
       currentLang = lang;
       localStorage.setItem('preferred_lang', lang);
-
       document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.lang === lang);
       });
-
-      // Update i18n texts
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.dataset.i18n;
-        if (i18n[lang] && i18n[lang][key]) {
-          el.textContent = i18n[lang][key];
-        }
-      });
-
-      // Re-render dynamic content with new language
       if (courseData) {
-        renderCourse(courseData);
+        renderPage(courseData);
       }
     }
 
     // Load course data
-    async function loadCourse() {
+    async function loadCourseData() {
       const slug = getSlug();
       if (!slug) {
         document.getElementById('loading').classList.add('hidden');
-        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><h1>Course not found</h1></div>';
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#d4a853;font-size:24px;">Курс не знайдено</div>';
         return;
       }
 
       try {
-        const res = await fetch(`/.netlify/functions/course-page?slug=${slug}&lang=${currentLang}`);
-        if (!res.ok) throw new Error('Course not found');
-
-        courseData = await res.json();
-        renderCourse(courseData);
+        const response = await fetch(`/.netlify/functions/course-page?slug=${slug}&lang=${currentLang}`);
+        if (!response.ok) throw new Error('Course not found');
+        courseData = await response.json();
+        renderPage(courseData);
+      } catch (error) {
+        console.error('Error loading course:', error);
         document.getElementById('loading').classList.add('hidden');
-      } catch (err) {
-        console.error('Failed to load course:', err);
-        document.getElementById('loading').classList.add('hidden');
-        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;"><h1>Курс не знайдено</h1><a href="/" style="color:#3b82f6;">На головну</a></div>';
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#d4a853;font-size:24px;">Курс не знайдено</div>';
       }
     }
 
-    // Render course
-    function renderCourse(data) {
-      const { course, author, modules, benefits, audience, results, faq, reviews, theme } = data;
+    // Render page
+    function renderPage(data) {
+      const course = data.course;
+      const author = data.author;
+      const theme = data.theme;
 
       // Apply theme colors
-      if (theme && theme.primaryColor) {
-        document.documentElement.style.setProperty('--primary', theme.primaryColor);
-      }
-      if (theme && theme.secondaryColor) {
-        document.documentElement.style.setProperty('--secondary', theme.secondaryColor);
-      }
-
-      // Hero
-      document.getElementById('hero-title').textContent = course.title || '';
-      document.getElementById('hero-subtitle').textContent = course.subtitle || '';
-      document.getElementById('hero-cta-text').textContent = i18n[currentLang].enroll;
-      document.getElementById('header-cta-text').textContent = i18n[currentLang].enroll;
-      document.getElementById('header-logo').textContent = course.title || 'Course';
-
-      if (course.photo) {
-        document.getElementById('hero-image').src = course.photo;
-        document.getElementById('hero-image').alt = course.title;
-      }
-
-      // Price
-      if (course.price) {
-        document.getElementById('price-old').textContent = course.price + ' ₴';
-      }
-      if (course.salePrice) {
-        document.getElementById('price-new').textContent = course.salePrice + ' ₴';
-      } else if (course.price) {
-        document.getElementById('price-new').textContent = course.price + ' ₴';
-        document.getElementById('price-old').style.display = 'none';
-      }
-
-      // Countdown
-      if (course.showTimer && course.timerEnd) {
-        startCountdown(course.timerEnd);
-      }
-
-      // Benefits
-      const benefitsGrid = document.getElementById('benefits-grid');
-      benefitsGrid.innerHTML = '';
-      const icons = ['🎯', '🛡️', '⭐', '🎁'];
-      (benefits || []).forEach((b, i) => {
-        benefitsGrid.innerHTML += `
-          <div class="benefit-card">
-            <div class="benefit-icon">${icons[i % 4]}</div>
-            <h3>${b.title || ''}</h3>
-            <p>${b.text || ''}</p>
-          </div>
-        `;
-      });
-
-      // Modules
-      const modulesList = document.getElementById('modules-list');
-      modulesList.innerHTML = '';
-      (modules || []).forEach((m, i) => {
-        modulesList.innerHTML += `
-          <div class="module-card">
-            <div class="module-number">${i + 1}</div>
-            <div class="module-content">
-              <h3>${m.title || ''}</h3>
-              <p>${m.description || ''}</p>
-            </div>
-            ${m.result ? `<div class="module-result">${i18n[currentLang].result_prefix} ${m.result}</div>` : ''}
-          </div>
-        `;
-      });
-
-      // Audience
-      const audienceGrid = document.getElementById('audience-grid');
-      audienceGrid.innerHTML = '';
-      (audience || []).forEach(a => {
-        audienceGrid.innerHTML += `
-          <div class="audience-card">
-            <h3>${a.title || ''}</h3>
-            <p>${a.text || ''}</p>
-          </div>
-        `;
-      });
-
-      // Author
-      if (author) {
-        document.getElementById('author-name').textContent = author.name || '';
-        document.getElementById('author-title-text').textContent = author.title || '';
-        document.getElementById('author-bio').textContent = author.bio || '';
-        if (author.photo) {
-          document.getElementById('author-photo').src = author.photo;
-        }
-
-        const credsList = document.getElementById('author-credentials');
-        credsList.innerHTML = '';
-        (author.specializations || []).forEach(s => {
-          credsList.innerHTML += `<li>${s}</li>`;
-        });
-        if (author.experience) {
-          credsList.innerHTML += `<li>${author.experience} років досвіду</li>`;
-        }
-      }
-
-      // Diplomas
-      if (author && author.diplomas && author.diplomas.length > 0) {
-        document.getElementById('diplomas-section').style.display = 'block';
-        const track = document.getElementById('diplomas-track');
-        track.innerHTML = '';
-        author.diplomas.forEach(d => {
-          track.innerHTML += `
-            <div class="diploma-item" onclick="openImageModal('${d}')">
-              <img src="${d}" alt="Diploma">
-            </div>
-          `;
-        });
-      }
-
-      // Results
-      const resultsGrid = document.getElementById('results-grid');
-      resultsGrid.innerHTML = '';
-      (results || []).forEach(r => {
-        resultsGrid.innerHTML += `
-          <div class="result-item">
-            <div class="result-check">✓</div>
-            <span>${r}</span>
-          </div>
-        `;
-      });
-
-      // Video
-      if (course.videoUrl) {
-        document.getElementById('video-section').style.display = 'block';
-        document.getElementById('video-title').textContent = course.videoTitle || i18n[currentLang].video;
-        const videoId = extractYouTubeId(course.videoUrl);
-        if (videoId) {
-          document.getElementById('video-container').innerHTML = `
-            <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          `;
-        }
-      }
-
-      // Reviews
-      if (reviews && reviews.length > 0) {
-        document.getElementById('reviews-section').style.display = 'block';
-        const reviewsGrid = document.getElementById('reviews-grid');
-        reviewsGrid.innerHTML = '';
-        reviews.forEach(r => {
-          reviewsGrid.innerHTML += `
-            <div class="review-card">
-              <div class="review-header">
-                <div class="review-avatar">${(r.name || '?')[0].toUpperCase()}</div>
-                <div>
-                  <div class="review-name">${r.name || ''}</div>
-                  <div class="review-stars">${'★'.repeat(r.rating || 5)}</div>
-                </div>
-              </div>
-              <p class="review-text">"${r.text || ''}"</p>
-            </div>
-          `;
-        });
-      }
-
-      // FAQ
-      if (faq && faq.length > 0) {
-        document.getElementById('faq-section').style.display = 'block';
-        const faqList = document.getElementById('faq-list');
-        faqList.innerHTML = '';
-        faq.forEach(f => {
-          faqList.innerHTML += `
-            <div class="faq-item">
-              <div class="faq-question" onclick="toggleFaq(this)">
-                <span>${f.question || ''}</span>
-                <span class="faq-icon">+</span>
-              </div>
-              <div class="faq-answer">${f.answer || ''}</div>
-            </div>
-          `;
-        });
-      }
-
-      // Final CTA
-      document.getElementById('final-title').textContent = course.finalTitle || i18n[currentLang].enroll;
-      document.getElementById('final-subtitle').textContent = course.finalSubtitle || '';
-      document.getElementById('final-cta-text').textContent = i18n[currentLang].enroll;
-      if (course.guarantee) {
-        document.getElementById('guarantee-text').textContent = course.guarantee;
+      if (theme.primaryColor) {
+        document.documentElement.style.setProperty('--gold', theme.primaryColor);
       }
 
       // SEO
-      document.getElementById('page-title').textContent = course.metaTitle || course.title;
+      document.title = course.metaTitle || course.title;
       document.getElementById('meta-desc').content = course.metaDescription || course.subtitle;
       document.getElementById('og-title').content = course.metaTitle || course.title;
       document.getElementById('og-desc').content = course.metaDescription || course.subtitle;
@@ -1481,11 +1619,313 @@
         document.getElementById('og-image').content = course.photo;
       }
 
-      // Footer
-      document.getElementById('footer-copy').textContent = `© ${new Date().getFullYear()} ${author?.name || ''}`;
+      // Favicon
+      if (theme.favicon) {
+        document.getElementById('favicon-link').href = theme.favicon;
+      }
+
+      // Custom head code
+      if (data.custom_head_code) {
+        const container = document.getElementById('custom-head-code');
+        container.innerHTML = data.custom_head_code;
+      }
+
+      // Header
+      document.getElementById('header-logo').textContent = author.name || 'КУРС';
+
+      // Hero
+      document.getElementById('hero-title').innerHTML = course.title.replace(/(\S+)$/, '<span>$1</span>');
+      document.getElementById('hero-subtitle').textContent = course.subtitle || '';
+      if (course.photo) {
+        document.getElementById('hero-photo').src = course.photo;
+      }
+
+      // Timer
+      if (course.showTimer && course.timerEnd) {
+        document.getElementById('timer-box').style.display = 'flex';
+        document.getElementById('timer-box-bottom').style.display = 'flex';
+        startCountdown(course.timerEnd);
+      }
+
+      // Modules
+      renderModules(data.modules);
+
+      // Audience
+      renderAudience(data.audience);
+
+      // Author
+      renderAuthor(author);
+
+      // Diplomas
+      renderDiplomas(author.diplomas);
+
+      // Results
+      renderResults(data.results);
+
+      // Video
+      if (course.videoUrl) {
+        document.getElementById('video').style.display = 'block';
+        document.getElementById('video-title').textContent = course.videoTitle || 'Подивіться відео';
+        renderVideo(course.videoUrl);
+      }
+
+      // Reviews
+      renderReviews(data.reviews);
+
+      // FAQ
+      renderFAQ(data.faq);
+
+      // Final CTA
+      document.getElementById('final-title').innerHTML = (course.finalTitle || 'Зробіть перший крок до змін').replace(/(\S+\s+\S+)$/, '<span>$1</span>');
+      document.getElementById('final-subtitle').textContent = course.finalSubtitle || '';
+
+      // Pricing
+      if (course.salePrice && course.price) {
+        document.getElementById('price-old').style.display = 'block';
+        document.getElementById('price-old').textContent = '₴ ' + course.price;
+        document.getElementById('price-current').innerHTML = '₴ ' + course.salePrice + ' <span>/ місяць</span>';
+      } else if (course.price) {
+        document.getElementById('price-current').innerHTML = '₴ ' + course.price + ' <span>/ місяць</span>';
+      }
+
+      // Guarantee
+      if (course.guarantee) {
+        document.getElementById('guarantee-text').style.display = 'block';
+        document.getElementById('guarantee-text').querySelector('span').textContent = course.guarantee;
+      }
+
+      // Footer contacts
+      renderContacts(data.contacts);
+
+      // Legal
+      document.getElementById('modal-offer-text').textContent = data.legal.offer || '';
+      document.getElementById('modal-privacy-text').textContent = data.legal.privacy_policy || '';
+
+      // Hide loading
+      document.getElementById('loading').classList.add('hidden');
+
+      // Init animations
+      initScrollAnimations();
     }
 
-    // Countdown
+    // Render modules
+    function renderModules(modules) {
+      const container = document.getElementById('modules-grid');
+      if (!modules || modules.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+
+      container.innerHTML = modules.map((m, i) => `
+        <div class="module-card animate-on-scroll">
+          <div class="module-image">
+            <img src="https://images.unsplash.com/photo-${1500000000000 + i * 1000}?w=600&h=400&fit=crop" alt="${m.title}" onerror="this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&h=400&fit=crop'">
+          </div>
+          <div class="module-content">
+            <div class="module-number">Модуль ${i + 1}</div>
+            <h3>${m.title}</h3>
+            <p>${m.description || ''}</p>
+            ${m.result ? `<div class="module-result"><strong>Результат:</strong> ${m.result}</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render audience
+    function renderAudience(audience) {
+      const container = document.getElementById('audience-grid');
+      if (!audience || audience.length === 0) {
+        document.getElementById('audience').style.display = 'none';
+        return;
+      }
+
+      const icons = [
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a8.38 8.38 0 0 1 13 0"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
+      ];
+
+      container.innerHTML = audience.map((a, i) => `
+        <div class="audience-card animate-on-scroll">
+          <div class="audience-avatar">${icons[i % icons.length]}</div>
+          <h3>${a.title}</h3>
+          <p>${a.text}</p>
+        </div>
+      `).join('');
+    }
+
+    // Render author
+    function renderAuthor(author) {
+      if (author.photo) {
+        document.getElementById('author-photo').src = author.photo;
+      }
+      document.getElementById('author-name').textContent = author.name || '';
+      document.getElementById('author-bio').textContent = author.bio || '';
+
+      const creds = document.getElementById('author-credentials');
+      const items = [];
+      if (author.experience) {
+        items.push(`${author.experience}+ років практики`);
+      }
+      if (author.specializations && author.specializations.length > 0) {
+        items.push(...author.specializations.slice(0, 4));
+      }
+
+      creds.innerHTML = items.map(item => `
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          ${item}
+        </li>
+      `).join('');
+    }
+
+    // Render diplomas
+    function renderDiplomas(diplomas) {
+      const container = document.getElementById('diplomas-carousel');
+      if (!diplomas || diplomas.length === 0) {
+        document.getElementById('diplomas').style.display = 'none';
+        return;
+      }
+
+      container.innerHTML = diplomas.map(d => `
+        <div class="diploma-card">
+          <img src="${d.url || d}" alt="Сертифікат">
+        </div>
+      `).join('');
+    }
+
+    // Render results
+    function renderResults(results) {
+      const container = document.getElementById('results-grid');
+      if (!results || results.length === 0) {
+        document.getElementById('results').style.display = 'none';
+        return;
+      }
+
+      const icons = [
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'
+      ];
+
+      container.innerHTML = results.map((r, i) => `
+        <div class="result-card animate-on-scroll">
+          <div class="result-icon">${icons[i % icons.length]}</div>
+          <p>${r}</p>
+        </div>
+      `).join('');
+    }
+
+    // Render video
+    function renderVideo(url) {
+      const container = document.getElementById('video-wrapper');
+      const videoId = extractYouTubeId(url);
+
+      if (videoId) {
+        container.innerHTML = `
+          <div class="video-placeholder" onclick="this.innerHTML='<iframe src=\\'https://www.youtube.com/embed/${videoId}?autoplay=1\\' frameborder=\\'0\\' allowfullscreen></iframe>'">
+            <img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="Video thumbnail">
+            <div class="video-play-btn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function extractYouTubeId(url) {
+      const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+      return match ? match[1] : null;
+    }
+
+    // Render reviews
+    function renderReviews(reviews) {
+      const container = document.getElementById('reviews-grid');
+      if (!reviews || reviews.length === 0) {
+        document.getElementById('reviews').style.display = 'none';
+        return;
+      }
+
+      container.innerHTML = reviews.slice(0, 6).map(r => `
+        <div class="review-card animate-on-scroll">
+          <div class="review-header">
+            <img class="review-avatar" src="${r.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(r.name) + '&background=d4a853&color=1a1512'}" alt="${r.name}">
+            <div>
+              <div class="review-name">${r.name}</div>
+              <div class="review-stars">
+                ${Array(r.rating || 5).fill('<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>').join('')}
+              </div>
+            </div>
+          </div>
+          <p class="review-text">"${r.text}"</p>
+        </div>
+      `).join('');
+    }
+
+    // Render FAQ
+    function renderFAQ(faq) {
+      const container = document.getElementById('faq-list');
+      if (!faq || faq.length === 0) {
+        document.getElementById('faq').style.display = 'none';
+        return;
+      }
+
+      container.innerHTML = faq.map((f, i) => `
+        <div class="faq-item animate-on-scroll" onclick="toggleFAQ(this)">
+          <div class="faq-question">
+            <span>${f.question}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-answer">
+            <p>${f.answer}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleFAQ(el) {
+      el.classList.toggle('open');
+    }
+
+    // Render contacts
+    function renderContacts(contacts) {
+      const container = document.getElementById('footer-contacts');
+      let html = '';
+
+      if (contacts.telegram) {
+        html += `<a href="https://t.me/${contacts.telegram.replace('@', '')}" target="_blank" title="Telegram">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+        </a>`;
+      }
+
+      if (contacts.instagram) {
+        html += `<a href="https://instagram.com/${contacts.instagram.replace('@', '')}" target="_blank" title="Instagram">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </a>`;
+      }
+
+      if (contacts.youtube) {
+        html += `<a href="${contacts.youtube}" target="_blank" title="YouTube">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        </a>`;
+      }
+
+      if (contacts.email) {
+        html += `<a href="mailto:${contacts.email}" title="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>`;
+      }
+
+      container.innerHTML = html;
+    }
+
+    // Countdown timer
     function startCountdown(endDate) {
       const end = new Date(endDate).getTime();
 
@@ -1495,13 +1935,8 @@
 
         if (diff <= 0) {
           clearInterval(countdownTimer);
-          document.getElementById('countdown').style.display = 'none';
-          document.getElementById('final-countdown').style.display = 'none';
           return;
         }
-
-        document.getElementById('countdown').style.display = 'flex';
-        document.getElementById('final-countdown').style.display = 'flex';
 
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -1513,57 +1948,68 @@
         document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
         document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
 
-        document.getElementById('final-days').textContent = String(days).padStart(2, '0');
-        document.getElementById('final-hours').textContent = String(hours).padStart(2, '0');
-        document.getElementById('final-minutes').textContent = String(minutes).padStart(2, '0');
-        document.getElementById('final-seconds').textContent = String(seconds).padStart(2, '0');
+        document.getElementById('days-b').textContent = String(days).padStart(2, '0');
+        document.getElementById('hours-b').textContent = String(hours).padStart(2, '0');
+        document.getElementById('minutes-b').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('seconds-b').textContent = String(seconds).padStart(2, '0');
       }
 
       update();
       countdownTimer = setInterval(update, 1000);
     }
 
-    // Extract YouTube ID
-    function extractYouTubeId(url) {
-      if (!url) return null;
-      const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-      return match ? match[1] : null;
+    // Modals
+    function openModal(type) {
+      document.getElementById('modal-' + type).classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
 
-    // Toggle FAQ
-    function toggleFaq(el) {
-      el.parentElement.classList.toggle('open');
+    function closeModal(type) {
+      document.getElementById('modal-' + type).classList.remove('active');
+      document.body.style.overflow = '';
     }
 
-    // Scroll to booking
-    function scrollToBooking() {
-      document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // Open image modal
-    function openImageModal(url) {
-      document.getElementById('modal-image').src = url;
-      document.getElementById('image-modal').classList.add('show');
-    }
-
-    // Close modal on click
-    document.getElementById('image-modal').addEventListener('click', function() {
-      this.classList.remove('show');
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      });
     });
+
+    // Scroll to CTA
+    function scrollToCTA() {
+      document.getElementById('final-cta').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Scroll animations
+    function initScrollAnimations() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.animate-on-scroll').forEach(el => {
+        observer.observe(el);
+      });
+    }
 
     // Language switcher
     document.querySelectorAll('.lang-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        switchLanguage(btn.dataset.lang);
+        setLanguage(btn.dataset.lang);
       });
     });
 
-    // Initialize
+    // Init
     currentLang = detectLanguage();
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.lang === currentLang);
-    });
-    loadCourse();
+    setLanguage(currentLang);
+    loadCourseData();
   </script>
 </body>
 </html>
