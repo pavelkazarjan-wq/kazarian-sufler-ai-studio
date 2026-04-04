@@ -3970,8 +3970,16 @@
               <input type="text" id="service-name-ru" placeholder="Индивидуальная консультация">
             </div>
             <div class="form-group">
-              <label>Описание</label>
-              <textarea id="service-description-uk" rows="3" placeholder="Описание услуги..."></textarea>
+              <label>Service name (EN)</label>
+              <input type="text" id="service-name-en" placeholder="Individual consultation">
+            </div>
+            <div class="form-group">
+              <label>Описание (укр)</label>
+              <textarea id="service-description-uk" rows="2" placeholder="Опис послуги..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Description (EN)</label>
+              <textarea id="service-description-en" rows="2" placeholder="Service description..."></textarea>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
               <div class="form-group">
@@ -8873,7 +8881,9 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
       document.getElementById('service-edit-id').value = id || '';
       document.getElementById('service-name-uk').value = '';
       document.getElementById('service-name-ru').value = '';
+      document.getElementById('service-name-en').value = '';
       document.getElementById('service-description-uk').value = '';
+      document.getElementById('service-description-en').value = '';
       document.getElementById('service-duration').value = '60';
       document.getElementById('service-price').value = '';
       document.getElementById('service-prepayment').checked = false;
@@ -8883,7 +8893,9 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
         if (service) {
           document.getElementById('service-name-uk').value = service.name_uk || '';
           document.getElementById('service-name-ru').value = service.name_ru || '';
+          document.getElementById('service-name-en').value = service.name_en || '';
           document.getElementById('service-description-uk').value = service.description_uk || '';
+          document.getElementById('service-description-en').value = service.description_en || '';
           document.getElementById('service-duration').value = service.duration || 60;
           document.getElementById('service-price').value = service.price || '';
           document.getElementById('service-prepayment').checked = service.prepayment_required || false;
@@ -8913,12 +8925,14 @@ ${supervisionMessages.map(m => `${m.role === 'assistant' ? 'Супервизор
         return;
       }
 
+      const nameEn = document.getElementById('service-name-en').value.trim();
       const servicePayload = {
         site_id: siteData.id,
         name_uk: nameUk,
         name_ru: document.getElementById('service-name-ru').value.trim() || nameUk,
-        name_en: nameUk,
+        name_en: nameEn || nameUk,
         description_uk: document.getElementById('service-description-uk').value,
+        description_en: document.getElementById('service-description-en').value,
         duration: parseInt(document.getElementById('service-duration').value) || 60,
         price: parseFloat(document.getElementById('service-price').value) || null,
         currency: 'UAH',
