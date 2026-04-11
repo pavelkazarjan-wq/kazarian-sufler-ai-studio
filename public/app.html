@@ -1279,65 +1279,79 @@
       position: fixed;
       top: 70px;
       left: 10px;
-      width: 400px;
-      min-width: 250px;
-      min-height: 200px;
-      background: rgba(15, 23, 42, 0.75);
+      width: 500px;
+      height: 400px;
+      min-width: 300px;
+      min-height: 250px;
+      background: rgba(15, 23, 42, 0.95);
       border: 1px solid rgba(59, 130, 246, 0.4);
       border-radius: 12px;
       z-index: 200;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
       resize: both;
       overflow: hidden;
     }
     #teleprompter-panel .panel-header {
       cursor: move;
       user-select: none;
-      padding: 12px;
+      padding: 10px 12px;
       margin: 0;
-      background: rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.3);
       border-radius: 12px 12px 0 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      height: 40px;
+      box-sizing: border-box;
     }
     #teleprompter-panel .panel-header h4 { color: #60a5fa; margin: 0; font-size: 14px; }
     #teleprompter-panel .panel-close {
-      background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 16px;
+      background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 18px; padding: 4px 8px;
     }
     #teleprompter-panel .panel-close:hover { color: #ef4444; }
     #teleprompter-body {
+      position: absolute;
+      top: 40px;
+      left: 0;
+      right: 0;
+      bottom: 50px;
       padding: 12px;
-      max-height: 400px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
+      overflow: hidden;
     }
     #teleprompter-content {
-      color: #e2e8f0;
+      width: 100%;
+      height: 100%;
+      color: #f1f5f9;
       white-space: pre-wrap;
-      flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 10px;
-      background: rgba(0,0,0,0.3);
+      padding: 16px;
+      background: rgba(0,0,0,0.4);
       border-radius: 8px;
       outline: none;
-      line-height: 1.8;
-      font-size: 18px;
+      line-height: 1.9;
+      font-size: 20px;
+      box-sizing: border-box;
     }
     #teleprompter-content:focus {
       border: 1px solid rgba(59, 130, 246, 0.5);
     }
-    #teleprompter-content::-webkit-scrollbar { width: 6px; }
-    #teleprompter-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }
-    #teleprompter-content::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 3px; }
+    #teleprompter-content::-webkit-scrollbar { width: 8px; }
+    #teleprompter-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+    #teleprompter-content::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.6); border-radius: 4px; }
     #teleprompter-controls {
-      margin-top: 10px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      padding: 10px 12px;
       display: flex;
-      gap: 8px;
-      padding: 0 12px 12px 12px;
+      gap: 10px;
+      align-items: center;
+      box-sizing: border-box;
+      background: rgba(0,0,0,0.2);
     }
 
     /* Emotion Panel - Professional Analytics Dashboard */
@@ -3458,6 +3472,10 @@
         <line x1="12" y1="19" x2="12" y2="23"></line>
       </svg>
     </button>
+
+    <select id="audio-device-select" title="Выбор микрофона" style="max-width: 150px; padding: 6px 10px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #f1f5f9; font-size: 12px; cursor: pointer;">
+      <option value="">Загрузка...</option>
+    </select>
 
     <button class="btn btn-secondary btn-icon" id="btn-mirror" title="Зеркало">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -9108,9 +9126,12 @@
             window.lastConsultationChunks = [...consultationAudioChunks];
             window.lastConsultationMimeType = recordedMimeType;
 
-            // Call auto-analyze (function already exists)
-            if (typeof autoAnalyzeAudio === 'function') {
+            // Call auto-analyze only if OpenAI key is configured
+            const hasOpenAIKey = localStorage.getItem('openai-api-key');
+            if (typeof autoAnalyzeAudio === 'function' && hasOpenAIKey) {
               autoAnalyzeAudio(audioBlob, durationSec);
+            } else if (!hasOpenAIKey) {
+              console.log('⏭️ Auto-analyze skipped: OpenAI API key not configured');
             }
           } else {
             console.log('⏭️ Consultation too short for analysis:', durationSec, 'sec');
@@ -9323,6 +9344,74 @@
     const recTime = document.getElementById('rec-time');
     const micLevel = document.getElementById('mic-level');
     const micBarFill = document.getElementById('mic-bar-fill');
+    const audioDeviceSelect = document.getElementById('audio-device-select');
+    let selectedAudioDeviceId = localStorage.getItem('selectedAudioDeviceId') || '';
+
+    // Function to populate audio device list
+    async function updateAudioDevices() {
+      try {
+        // Need to request permission first to get device labels
+        const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        tempStream.getTracks().forEach(t => t.stop());
+
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioInputs = devices.filter(d => d.kind === 'audioinput');
+
+        audioDeviceSelect.innerHTML = '';
+
+        if (audioInputs.length === 0) {
+          audioDeviceSelect.innerHTML = '<option value="">Нет микрофонов</option>';
+          return;
+        }
+
+        audioInputs.forEach((device, index) => {
+          const option = document.createElement('option');
+          option.value = device.deviceId;
+          option.textContent = device.label || `Микрофон ${index + 1}`;
+          if (device.deviceId === selectedAudioDeviceId) {
+            option.selected = true;
+          }
+          audioDeviceSelect.appendChild(option);
+        });
+
+        // If no saved device or saved device not found, select first
+        if (!selectedAudioDeviceId || !audioInputs.find(d => d.deviceId === selectedAudioDeviceId)) {
+          selectedAudioDeviceId = audioInputs[0].deviceId;
+          localStorage.setItem('selectedAudioDeviceId', selectedAudioDeviceId);
+        }
+
+        console.log('🎤 Audio devices updated:', audioInputs.length, 'microphones found');
+      } catch (err) {
+        console.error('Failed to enumerate audio devices:', err);
+        audioDeviceSelect.innerHTML = '<option value="">Ошибка доступа</option>';
+      }
+    }
+
+    // Update device list when new device is connected
+    navigator.mediaDevices.addEventListener('devicechange', () => {
+      console.log('🔌 Device change detected, updating list...');
+      updateAudioDevices();
+    });
+
+    // Handle device selection
+    audioDeviceSelect.addEventListener('change', (e) => {
+      selectedAudioDeviceId = e.target.value;
+      localStorage.setItem('selectedAudioDeviceId', selectedAudioDeviceId);
+      console.log('🎤 Selected audio device:', selectedAudioDeviceId);
+
+      // If mic is active, switch to new device
+      if (micStream) {
+        micStream.getTracks().forEach(t => t.stop());
+        micStream = null;
+        btnMic.classList.remove('active');
+        // Trigger mic button to reconnect with new device
+        btnMic.click();
+      }
+    });
+
+    // Initialize audio devices list on page load
+    updateAudioDevices();
+
     const splitView = document.getElementById('split-view');
     const splitCamera = document.getElementById('split-camera');
     const splitSlideCanvas = document.getElementById('split-slide-canvas');
@@ -10072,8 +10161,10 @@
 
         setTimeout(() => {
           loadScheduledConsultations();
-          // Auto-refresh every 60 seconds
-          scheduledRefreshInterval = setInterval(loadScheduledConsultations, 60000);
+          // Auto-refresh every 60 seconds (prevent multiple intervals)
+          if (!scheduledRefreshInterval) {
+            scheduledRefreshInterval = setInterval(loadScheduledConsultations, 60000);
+          }
         }, 1000);
 
         // Toggle dropdown
@@ -14863,9 +14954,18 @@ ${presentationText.slice(0, 8000)}
           splitSlideCanvas.width = viewport.width;
           splitSlideCanvas.height = viewport.height;
           const ctx = splitSlideCanvas.getContext('2d');
-          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+          // Cancel previous render if still in progress
+          if (window._splitRenderTask) {
+            window._splitRenderTask.cancel();
+          }
+          window._splitRenderTask = page.render({ canvasContext: ctx, viewport: viewport });
+          await window._splitRenderTask.promise;
+          window._splitRenderTask = null;
         } catch (err) {
-          console.error('Split view PDF render error:', err);
+          if (err.name !== 'RenderingCancelledException') {
+            console.error('Split view PDF render error:', err);
+          }
           // Recovery will be triggered by main renderSlide
         }
       } else if (slide.type === 'image') {
@@ -15431,9 +15531,17 @@ ${presentationText.slice(0, 8000)}
               sender.track.enabled = true;
             }
           }
-          micStream = await navigator.mediaDevices.getUserMedia({
-            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-          });
+          const audioConstraints = {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          };
+          // Use selected device if available
+          if (selectedAudioDeviceId) {
+            audioConstraints.deviceId = { exact: selectedAudioDeviceId };
+          }
+          micStream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints });
+          console.log('🎤 Microphone connected:', micStream.getAudioTracks()[0]?.label);
           btnMic.classList.add('active');
           micLevel.style.display = 'flex';
 
@@ -15562,7 +15670,14 @@ ${presentationText.slice(0, 8000)}
     // Server recording is always ON by default (no toggle needed)
 
     // Server-side recording function
+    let serverRecordingStarting = false;
     async function startServerRecording() {
+      // Prevent multiple simultaneous calls
+      if (serverRecordingStarting || (serverRecordingWs && serverRecordingWs.readyState <= WebSocket.OPEN)) {
+        console.log('🎬 Server recording already starting/active, skipping');
+        return;
+      }
+      serverRecordingStarting = true;
       console.log('🎬 Starting SERVER recording...');
 
       // Create canvas for compositing
@@ -15721,6 +15836,7 @@ ${presentationText.slice(0, 8000)}
 
             // Start drawing frames
             drawServerRecordingFrame();
+            serverRecordingStarting = false;
             resolve();
           }
 
@@ -15730,21 +15846,29 @@ ${presentationText.slice(0, 8000)}
 
           if (msg.type === 'error') {
             console.error('Server recording error:', msg.message);
+            serverRecordingStarting = false;
             reject(new Error(msg.message));
           }
         };
 
         serverRecordingWs.onerror = (err) => {
           console.error('WebSocket error:', err);
+          serverRecordingStarting = false;
           reject(new Error('Failed to connect to recording server'));
         };
 
         serverRecordingWs.onclose = () => {
           console.log('Recording connection closed');
+          serverRecordingStarting = false;
         };
 
         // Timeout
-        setTimeout(() => reject(new Error('Connection timeout')), 10000);
+        setTimeout(() => {
+          if (serverRecordingStarting) {
+            serverRecordingStarting = false;
+            reject(new Error('Connection timeout'));
+          }
+        }, 10000);
       });
     }
 
@@ -16802,9 +16926,15 @@ ${presentationText.slice(0, 8000)}
       if (!micStream) {
         try {
           console.log('AUDIO: Auto-requesting microphone for recording...');
-          micStream = await navigator.mediaDevices.getUserMedia({
-            audio: { echoCancellation: true, noiseSuppression: true }
-          });
+          const recordingAudioConstraints = {
+            echoCancellation: true,
+            noiseSuppression: true
+          };
+          if (selectedAudioDeviceId) {
+            recordingAudioConstraints.deviceId = { exact: selectedAudioDeviceId };
+          }
+          micStream = await navigator.mediaDevices.getUserMedia({ audio: recordingAudioConstraints });
+          console.log('AUDIO: Microphone connected:', micStream.getAudioTracks()[0]?.label);
           btnMic.classList.add('active');
           micLevel.style.display = 'flex';
           console.log('AUDIO: Microphone enabled automatically');
@@ -18608,11 +18738,14 @@ ${presentationText.slice(0, 8000)}
           console.log('AUDIO: Audio file saved, size:', (audioBlob.size / 1024 / 1024).toFixed(2), 'MB');
         }
 
-        // ALWAYS auto-analyze audio after video recording
-        if (audioBlob && audioBlob.size > 50000) { // At least 50KB
+        // Auto-analyze audio if OpenAI key is configured
+        const hasOpenAIKey = localStorage.getItem('openai-api-key');
+        if (audioBlob && audioBlob.size > 50000 && hasOpenAIKey) { // At least 50KB
           const durationSec = recordingSeconds || 60;
           console.log('AUDIO: Starting auto-analysis...');
           autoAnalyzeAudio(audioBlob, durationSec);
+        } else if (!hasOpenAIKey) {
+          console.log('AUDIO: Auto-analyze skipped - no OpenAI key');
         } else {
           console.log('AUDIO: Audio too small for analysis');
         }
