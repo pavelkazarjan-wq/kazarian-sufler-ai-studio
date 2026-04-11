@@ -3476,6 +3476,11 @@
     <select id="audio-device-select" title="Выбор микрофона" style="max-width: 150px; padding: 6px 10px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #f1f5f9; font-size: 12px; cursor: pointer;">
       <option value="">Загрузка...</option>
     </select>
+    <button class="btn btn-secondary btn-icon" id="btn-refresh-devices" title="Обновить список устройств" style="padding: 6px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+        <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+    </button>
 
     <button class="btn btn-secondary btn-icon" id="btn-mirror" title="Зеркало">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -9407,6 +9412,17 @@
         // Trigger mic button to reconnect with new device
         btnMic.click();
       }
+    });
+
+    // Refresh devices button
+    const btnRefreshDevices = document.getElementById('btn-refresh-devices');
+    btnRefreshDevices.addEventListener('click', async () => {
+      console.log('🔄 Manual device refresh requested');
+      btnRefreshDevices.style.opacity = '0.5';
+      btnRefreshDevices.disabled = true;
+      await updateAudioDevices();
+      btnRefreshDevices.style.opacity = '1';
+      btnRefreshDevices.disabled = false;
     });
 
     // Initialize audio devices list on page load
