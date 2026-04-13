@@ -3801,6 +3801,17 @@
       <h3 style="font-size: 16px; font-weight: 600;">⚙️ Настройки</h3>
       <button class="overlay-close-btn" id="overlay-close-btn">&times;</button>
     </div>
+
+    <!-- Camera Rotation and Zoom Control -->
+    <h4>🎥 Коррекция камеры</h4>
+    <label>Поворот камеры (градусы)</label>
+    <input type="range" id="camera-rotation" min="-15" max="15" value="0" step="0.5">
+    <div class="range-value" id="camera-rotation-value">0°</div>
+    <label>Зум камеры</label>
+    <input type="range" id="camera-zoom" min="1" max="2" value="1" step="0.05">
+    <div class="range-value" id="camera-zoom-value">1.0x</div>
+    <button class="overlay-btn overlay-btn-secondary" id="btn-reset-camera" style="width:100%; margin-bottom:16px;">Сбросить всё</button>
+
     <h4>Бегущая строка</h4>
     <div class="toggle-row">
       <span>Включить</span>
@@ -6230,10 +6241,10 @@
       // Generate unique ID with timestamp to avoid conflicts
       const studioId = 'studio-' + producerSessionCode + '-' + Date.now().toString(36).slice(-4);
 
-      // Custom PeerJS server (Hetzner via nginx SSL proxy)
+      // Custom PeerJS server (Hetzner via Caddy SSL proxy)
       const PEERJS_HOST = 'peerjs.tgcombain.org.ua';
       const PEERJS_PORT = 443;
-      const PEERJS_PATH = '/peerjs';
+      const PEERJS_PATH = '/'; // Library adds /peerjs automatically
 
       // ICE servers with TURN for NAT traversal (metered.ca)
       const peerConfig = {
@@ -10986,11 +10997,11 @@
           }
         ]
       };
-      // Use custom PeerJS server (Hetzner via nginx SSL proxy)
+      // Use custom PeerJS server (Hetzner via Caddy SSL proxy)
       consultationPeer = new Peer(sessionId, {
         host: 'peerjs.tgcombain.org.ua',
         port: 443,
-        path: '/peerjs',
+        path: '/', // Library adds /peerjs automatically
         secure: true,
         debug: 2,
         config: iceConfig
@@ -12488,6 +12499,57 @@
       document.getElementById('ticker-pos-bottom').classList.add('active');
       document.getElementById('ticker-pos-top').classList.remove('active');
       saveOverlaySettings();
+    });
+
+    // Camera Rotation and Zoom Control
+    let cameraRotation = parseFloat(localStorage.getItem('cameraRotation') || '0');
+    let cameraZoom = parseFloat(localStorage.getItem('cameraZoom') || '1');
+
+    function applyCameraTransform() {
+      const videoElements = [
+        document.querySelector('#split-camera'),
+        document.querySelector('#camera-circle video'),
+        document.querySelector('#pip-video')
+      ];
+
+      videoElements.forEach(video => {
+        if (video) {
+          video.style.transform = `rotate(${cameraRotation}deg) scale(${cameraZoom})`;
+        }
+      });
+    }
+
+    // Apply saved settings on load
+    applyCameraTransform();
+    document.getElementById('camera-rotation').value = cameraRotation;
+    document.getElementById('camera-rotation-value').textContent = cameraRotation + '°';
+    document.getElementById('camera-zoom').value = cameraZoom;
+    document.getElementById('camera-zoom-value').textContent = cameraZoom.toFixed(2) + 'x';
+
+    document.getElementById('camera-rotation').addEventListener('input', (e) => {
+      cameraRotation = parseFloat(e.target.value);
+      document.getElementById('camera-rotation-value').textContent = cameraRotation + '°';
+      applyCameraTransform();
+      localStorage.setItem('cameraRotation', cameraRotation);
+    });
+
+    document.getElementById('camera-zoom').addEventListener('input', (e) => {
+      cameraZoom = parseFloat(e.target.value);
+      document.getElementById('camera-zoom-value').textContent = cameraZoom.toFixed(2) + 'x';
+      applyCameraTransform();
+      localStorage.setItem('cameraZoom', cameraZoom);
+    });
+
+    document.getElementById('btn-reset-camera').addEventListener('click', () => {
+      cameraRotation = 0;
+      cameraZoom = 1;
+      document.getElementById('camera-rotation').value = 0;
+      document.getElementById('camera-rotation-value').textContent = '0°';
+      document.getElementById('camera-zoom').value = 1;
+      document.getElementById('camera-zoom-value').textContent = '1.00x';
+      applyCameraTransform();
+      localStorage.setItem('cameraRotation', '0');
+      localStorage.setItem('cameraZoom', '1');
     });
 
     document.getElementById('ticker-speed').addEventListener('input', (e) => {
@@ -15423,6 +15485,20 @@ ${presentationText.slice(0, 8000)}
       };
     }
 
+    // Mirror button for host camera
+    let hostMirrored = true;
+    const btnMirror = document.getElementById('btn-mirror');
+    if (btnMirror) {
+      btnMirror.addEventListener('click', () => {
+        hostMirrored = !hostMirrored;
+        const mirrorValue = hostMirrored ? 'scaleX(-1)' : 'scaleX(1)';
+        if (cameraVideo) cameraVideo.style.transform = mirrorValue;
+        if (splitCamera) splitCamera.style.transform = mirrorValue;
+        btnMirror.style.background = hostMirrored ? '' : 'rgba(59, 130, 246, 0.3)';
+        btnMirror.title = hostMirrored ? 'Зеркало (вкл)' : 'Зеркало (выкл)';
+      });
+    }
+
     // Camera (with WebRTC muting for consultation)
     btnCamera.addEventListener('click', async () => {
       // Check if video is currently active
@@ -15491,20 +15567,6 @@ ${presentationText.slice(0, 8000)}
         }
       }
     });
-
-    // Mirror button for host camera
-    let hostMirrored = true;
-    const btnMirror = document.getElementById('btn-mirror');
-    if (btnMirror) {
-      btnMirror.addEventListener('click', () => {
-        hostMirrored = !hostMirrored;
-        const mirrorValue = hostMirrored ? 'scaleX(-1)' : 'scaleX(1)';
-        if (cameraVideo) cameraVideo.style.transform = mirrorValue;
-        if (splitCamera) splitCamera.style.transform = mirrorValue;
-        btnMirror.style.background = hostMirrored ? '' : 'rgba(59, 130, 246, 0.3)';
-        btnMirror.title = hostMirrored ? 'Зеркало (вкл)' : 'Зеркало (выкл)';
-      });
-    }
 
     // Microphone
     // Mic toggle button - simple mute/unmute
