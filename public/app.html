@@ -14919,6 +14919,7 @@ ${presentationText.slice(0, 8000)}
       });
     }
 
+    let _mainRenderInProgress = false;
     async function renderSlide(index) {
       const slide = slides[index];
       if (!slide) return;
@@ -14933,18 +14934,39 @@ ${presentationText.slice(0, 8000)}
         slideCanvas.style.display = 'block';
         slideImage.style.display = 'none';
 
+        // Prevent concurrent renders
+        if (_mainRenderInProgress) {
+          console.log('⏳ Main render already in progress, skipping');
+          return;
+        }
+        _mainRenderInProgress = true;
+
         try {
           const page = slide.page;
           const viewport = page.getViewport({ scale: 2 });
           slideCanvas.width = viewport.width;
           slideCanvas.height = viewport.height;
           const ctx = slideCanvas.getContext('2d');
-          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-        } catch (err) {
-          console.error('PDF render error, attempting recovery...', err);
-          if (await recoverPDF()) {
-            await renderSlide(index); // Retry after recovery
+
+          // Cancel previous render if still in progress
+          if (window._mainRenderTask) {
+            try { window._mainRenderTask.cancel(); } catch(e) {}
+            await new Promise(r => setTimeout(r, 50));
           }
+          window._mainRenderTask = page.render({ canvasContext: ctx, viewport: viewport });
+          await window._mainRenderTask.promise;
+          window._mainRenderTask = null;
+        } catch (err) {
+          if (err.name !== 'RenderingCancelledException') {
+            console.error('PDF render error, attempting recovery...', err);
+            if (await recoverPDF()) {
+              _mainRenderInProgress = false;
+              await renderSlide(index); // Retry after recovery
+              return;
+            }
+          }
+        } finally {
+          _mainRenderInProgress = false;
         }
       } else if (slide.type === 'image') {
         slideCanvas.style.display = 'none';
@@ -15007,6 +15029,7 @@ ${presentationText.slice(0, 8000)}
       }
     }
 
+    let _splitRenderInProgress = false;
     async function renderSplitSlide() {
       if (viewMode !== 'split') return;
 
@@ -15019,6 +15042,12 @@ ${presentationText.slice(0, 8000)}
 
       if (slides.length === 0) return;
 
+      // Prevent concurrent renders
+      if (_splitRenderInProgress) {
+        console.log('⏳ Split render already in progress, skipping');
+        return;
+      }
+
       const slide = slides[currentSlide];
       splitScreenVideo.style.display = 'none';
 
@@ -15026,6 +15055,7 @@ ${presentationText.slice(0, 8000)}
         splitSlideCanvas.style.display = 'block';
         splitSlideImage.style.display = 'none';
 
+        _splitRenderInProgress = true;
         try {
           const page = slide.page;
           const viewport = page.getViewport({ scale: 1.5 });
@@ -15035,7 +15065,8 @@ ${presentationText.slice(0, 8000)}
 
           // Cancel previous render if still in progress
           if (window._splitRenderTask) {
-            window._splitRenderTask.cancel();
+            try { window._splitRenderTask.cancel(); } catch(e) {}
+            await new Promise(r => setTimeout(r, 50)); // Wait for cancel
           }
           window._splitRenderTask = page.render({ canvasContext: ctx, viewport: viewport });
           await window._splitRenderTask.promise;
@@ -15044,7 +15075,8 @@ ${presentationText.slice(0, 8000)}
           if (err.name !== 'RenderingCancelledException') {
             console.error('Split view PDF render error:', err);
           }
-          // Recovery will be triggered by main renderSlide
+        } finally {
+          _splitRenderInProgress = false;
         }
       } else if (slide.type === 'image') {
         splitSlideCanvas.style.display = 'none';
@@ -15084,9 +15116,19 @@ ${presentationText.slice(0, 8000)}
           contentSlideCanvas.width = viewport.width;
           contentSlideCanvas.height = viewport.height;
           const ctx = contentSlideCanvas.getContext('2d');
-          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+          // Cancel previous render if still in progress
+          if (window._contentRenderTask) {
+            try { window._contentRenderTask.cancel(); } catch(e) {}
+            await new Promise(r => setTimeout(r, 50));
+          }
+          window._contentRenderTask = page.render({ canvasContext: ctx, viewport: viewport });
+          await window._contentRenderTask.promise;
+          window._contentRenderTask = null;
         } catch (err) {
-          console.error('Content view PDF render error:', err);
+          if (err.name !== 'RenderingCancelledException') {
+            console.error('Content view PDF render error:', err);
+          }
         }
       } else if (slide.type === 'image') {
         if (contentSlideCanvas) contentSlideCanvas.style.display = 'none';
